@@ -28,6 +28,11 @@
   width: 300px;
 }
 
+.react-player {
+  display: block;
+  margin: auto;
+}
+
 .App-link {
   color: #61dafb;
 }
