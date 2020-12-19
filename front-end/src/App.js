@@ -64,6 +64,7 @@ class App extends Component {
         </header>
         <ReactPlayer
           ref={this.ref}
+          class="Video-preview"
           className="react-player"
           url={url}
           playing={playing}
