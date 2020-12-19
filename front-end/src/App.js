@@ -1,26 +1,30 @@
 import React, { Component } from "react";
 import ReactPlayer from "react-player";
 import "./App.css";
+import Duration from "./components/Duration";
 
 class App extends Component {
   state = {
-    url: null,
+    playing: false,
+    url: "test.mp4",
     played: 0,
+    duration: 0,
   };
 
   handleSeekMouseDown = (e) => {
     console.log("down");
-    this.setState({ seeking: true });
+    this.setState({ seeking: true, playing: false });
   };
 
   handleSeekChange = (e) => {
     console.log("Change");
+    this.player.seekTo(parseFloat(e.target.value));
     this.setState({ played: parseFloat(e.target.value) });
   };
 
   handleSeekMouseUp = (e) => {
     console.log("Up");
-    this.setState({ seeking: false });
+    this.setState({ seeking: false, playing: true });
     this.player.seekTo(parseFloat(e.target.value));
   };
 
@@ -31,12 +35,27 @@ class App extends Component {
     }
   };
 
+  handlePlayButton = () => {
+    console.log("play");
+    this.setState({ playing: true });
+  };
+
+  handlePauseButton = () => {
+    console.log("pause toggle");
+    this.setState({ playing: !this.state.playing });
+  };
+
+  handleDuration = (duration) => {
+    console.log("onDuration", duration);
+    this.setState({ duration });
+  };
+
   ref = (player) => {
     this.player = player;
   };
 
   render() {
-    const { url, played } = this.state;
+    const { url, played, duration, playing } = this.state;
 
     return (
       <div className="App">
@@ -46,10 +65,35 @@ class App extends Component {
         <ReactPlayer
           ref={this.ref}
           className="react-player"
-          url="test.mp4"
+          url={url}
+          playing={playing}
           onSeek={(e) => console.log("onSeek", e)}
+          onDuration={this.handleDuration}
+          onProgress={this.handleProgress}
+          progressInterval={10}
         />
+
+        <table>
+          <tbody>
+            <tr>
+              <th>Duration</th>
+              <td>
+                <Duration seconds={duration} />
+              </td>
+              <th>Elapsed</th>
+              <td>
+                <Duration seconds={duration * played} />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <button onClick={this.handlePauseButton}>
+          {playing ? "Pause" : "Play"}
+        </button>
+
         <input
+          class="Input-slider"
           type="range"
           min={0}
           max={0.99999}
