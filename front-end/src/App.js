@@ -2,6 +2,17 @@ import React, { Component } from "react";
 import ReactPlayer from "react-player";
 import "./App.css";
 import Duration from "./components/Duration";
+import Bar from "./components/Bar";
+import {Grid } from "@material-ui/core";
+import IconButton from '@material-ui/core/IconButton';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import PauseIcon from '@material-ui/icons/Pause';
+
+var rootStyle = {
+  backgroundColor : '#2e2d2d',
+  color : 'white',
+  height: '100vh',
+  }
 
 class App extends Component {
   state = {
@@ -58,11 +69,20 @@ class App extends Component {
     const { url, played, duration, playing } = this.state;
 
     return (
-      <div className="App">
+      <div className="App" style={rootStyle}>
+	<Bar/>
         <header>
           <p>Audio Description Project Main Page</p>
         </header>
-        <ReactPlayer
+        <Grid
+        container
+        direction="row"
+        alignItems="center"
+	justify ="space-between"
+      	>
+	<div></div>
+	<div>
+	<ReactPlayer
           ref={this.ref}
           class="Video-preview"
           className="react-player"
@@ -89,9 +109,10 @@ class App extends Component {
           </tbody>
         </table>
 
-        <button onClick={this.handlePauseButton}>
-          {playing ? "Pause" : "Play"}
-        </button>
+        <IconButton onClick={this.handlePauseButton}>
+          {playing ? <PauseIcon /> : <PlayArrowIcon />}
+		
+        </IconButton>
 
         <input
           class="Input-slider"
@@ -105,7 +126,10 @@ class App extends Component {
           onInput={this.handleSeekChange}
           onMouseUp={this.handleSeekMouseUp}
         />
+	</div>
+	</Grid>
       </div>
+     
     );
   }
 }
