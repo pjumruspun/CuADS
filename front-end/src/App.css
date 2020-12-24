@@ -24,8 +24,13 @@
   color: white;
 }
 
+.Table-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .Input-slider {
-  width: 300px;
+  width: 500px;
 }
 
 .react-player {
