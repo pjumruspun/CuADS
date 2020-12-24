@@ -2,6 +2,17 @@ import React, { Component } from "react";
 import ReactPlayer from "react-player";
 import "./App.css";
 import Duration from "./components/Duration";
+import Bar from "./components/Bar";
+import { Grid } from "@material-ui/core";
+import IconButton from "@material-ui/core/IconButton";
+import PlayArrowIcon from "@material-ui/icons/PlayArrow";
+import PauseIcon from "@material-ui/icons/Pause";
+
+var rootStyle = {
+  backgroundColor: "#2e2d2d",
+  color: "white",
+  height: "100vh",
+};
 
 class App extends Component {
   state = {
@@ -58,59 +69,69 @@ class App extends Component {
     const { url, played, duration, playing } = this.state;
 
     return (
-      <div className="App">
+      <div className="App" style={rootStyle}>
+        <Bar />
         <header>
           <p>Audio Description Project Main Page</p>
         </header>
-        <ReactPlayer
-          ref={this.ref}
-          className="react-player"
-          url={url}
-          playing={playing}
-          onSeek={(e) => console.log("onSeek", e)}
-          onDuration={this.handleDuration}
-          onProgress={this.handleProgress}
-          progressInterval={10}
+        <Grid
+          container
+          direction="row"
+          alignItems="center"
+          justify="space-between"
+        >
+          <div></div>
+          <div>
+            <ReactPlayer
+              ref={this.ref}
+              className="react-player"
+              url={url}
+              playing={playing}
+              onSeek={(e) => console.log("onSeek", e)}
+              onDuration={this.handleDuration}
+              onProgress={this.handleProgress}
+              progressInterval={10}
+            />
+
+            <table className="Table-center">
+              <tbody>
+                <tr>
+                  <th>Duration</th>
+                  <td>
+                    <Duration seconds={duration} />
+                  </td>
+                  <th>Elapsed</th>
+                  <td>
+                    <Duration seconds={duration * played} />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <table className="Table-center">
+              <tbody>
+                <tr>
+                  <IconButton onClick={this.handlePauseButton}>
+                    {playing ? <PauseIcon /> : <PlayArrowIcon />}
+                  </IconButton>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </Grid>
+        <input
+          className="Input-slider"
+          margin="center"
+          type="range"
+          min={0}
+          max={0.99999}
+          step="any"
+          value={played}
+          onMouseDown={this.handleSeekMouseDown}
+          onChange={this.handleSeekChange}
+          onInput={this.handleSeekChange}
+          onMouseUp={this.handleSeekMouseUp}
         />
-
-        <table className="Table-center">
-          <tbody>
-            <tr>
-              <th>Duration</th>
-              <td>
-                <Duration seconds={duration} />
-              </td>
-              <th>Elapsed</th>
-              <td>
-                <Duration seconds={duration * played} />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <table className="Table-center">
-          <tbody>
-            <tr>
-              <button onClick={this.handlePauseButton}>
-                {playing ? "Pause" : "Play"}
-              </button>
-            </tr>
-            <tr>
-              <input
-                className="Input-slider"
-                type="range"
-                min={0}
-                max={0.99999}
-                step="any"
-                value={played}
-                onMouseDown={this.handleSeekMouseDown}
-                onChange={this.handleSeekChange}
-                onInput={this.handleSeekChange}
-                onMouseUp={this.handleSeekMouseUp}
-              />
-            </tr>
-          </tbody>
-        </table>
       </div>
     );
   }
