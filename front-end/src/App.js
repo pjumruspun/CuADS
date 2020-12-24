@@ -64,7 +64,6 @@ class App extends Component {
         </header>
         <ReactPlayer
           ref={this.ref}
-          class="Video-preview"
           className="react-player"
           url={url}
           playing={playing}
@@ -74,7 +73,7 @@ class App extends Component {
           progressInterval={10}
         />
 
-        <table>
+        <table className="Table-center">
           <tbody>
             <tr>
               <th>Duration</th>
@@ -89,22 +88,29 @@ class App extends Component {
           </tbody>
         </table>
 
-        <button onClick={this.handlePauseButton}>
-          {playing ? "Pause" : "Play"}
-        </button>
-
-        <input
-          class="Input-slider"
-          type="range"
-          min={0}
-          max={0.99999}
-          step="any"
-          value={played}
-          onMouseDown={this.handleSeekMouseDown}
-          onChange={this.handleSeekChange}
-          onInput={this.handleSeekChange}
-          onMouseUp={this.handleSeekMouseUp}
-        />
+        <table className="Table-center">
+          <tbody>
+            <tr>
+              <button onClick={this.handlePauseButton}>
+                {playing ? "Pause" : "Play"}
+              </button>
+            </tr>
+            <tr>
+              <input
+                className="Input-slider"
+                type="range"
+                min={0}
+                max={0.99999}
+                step="any"
+                value={played}
+                onMouseDown={this.handleSeekMouseDown}
+                onChange={this.handleSeekChange}
+                onInput={this.handleSeekChange}
+                onMouseUp={this.handleSeekMouseUp}
+              />
+            </tr>
+          </tbody>
+        </table>
       </div>
     );
   }
