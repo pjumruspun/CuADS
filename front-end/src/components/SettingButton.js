@@ -17,6 +17,10 @@ export default function SimpleMenu(props) {
     setAnchorEl(null);
   };
 
+  const onChangeVolume = (e) => {
+    state.masterVolume = parseFloat(e.target.value);
+  };
+
   var ButtonStyle = {
     color: "white",
   };
@@ -39,8 +43,8 @@ export default function SimpleMenu(props) {
         onClose={handleClose}
         anchorPosition={{ vertical: "top", horizontal: "left" }}
       >
-        <MenuItem onClick={(event) => props.onChange(state.masterVolume)}>
-          Setting1
+        <MenuItem onClick={() => props.onChange(state.masterVolume)}>
+          Master Volume <input type="range" onChange={onChangeVolume} />
         </MenuItem>
         <MenuItem onClick={handleClose}>Setting2</MenuItem>
       </Menu>
