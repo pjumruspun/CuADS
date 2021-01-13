@@ -22,6 +22,10 @@ class App extends Component {
     duration: 0,
   };
 
+  handleUrlChange = (url) => {
+    this.setState({ url: url });
+  };
+
   handleSeekMouseDown = (e) => {
     console.log("down");
     this.setState({ seeking: true, playing: false });
