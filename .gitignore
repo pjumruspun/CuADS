@@ -102,3 +102,39 @@ dist
 
 # TernJS port file
 .tern-port
+
+### BACKEND
+# compiled output
+/back-end/dist
+/back-end/node_modules
+
+# Logs
+/back-end/logs
+/back-end/*.log
+/back-end/npm-debug.log*
+/back-end/yarn-debug.log*
+/back-end/yarn-error.log*
+/back-end/lerna-debug.log*
+
+# OS
+/back-end/.DS_Store
+
+# Tests
+/back-end/coverage
+/back-end/.nyc_output
+
+# IDEs and editors
+/back-end/.idea
+/back-end/.project
+/back-end/.classpath
+/back-end/.c9/
+/back-end/*.launch
+/back-end/.settings/
+/back-end/*.sublime-workspace
+
+# IDE - VSCode
+/back-end/.vscode/*
+/back-end/!.vscode/settings.json
+/back-end/!.vscode/tasks.json
+/back-end/!.vscode/launch.json
+/back-end/!.vscode/extensions.json
