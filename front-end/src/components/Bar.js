@@ -3,7 +3,7 @@ import FileButton from "./FileButton.js";
 import SettingButton from "./SettingButton.js";
 import { Grid } from "@material-ui/core";
 
-export default function SimpleMenu() {
+export default function SimpleMenu(props) {
   const [nameState, setNameState] = React.useState("testt");
   var rootStyle = {
     backgroundColor: "#141414",
@@ -17,7 +17,7 @@ export default function SimpleMenu() {
     <div align="left" style={rootStyle}>
       <Grid container direction="row">
         <FileButton />
-        <SettingButton onChange={(value) => alert(value)} />
+        <SettingButton onChange={(value) => props.onVolumeChange(value)} />
       </Grid>
     </div>
   );
