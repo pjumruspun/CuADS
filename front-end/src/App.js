@@ -17,9 +17,11 @@ var rootStyle = {
 class App extends Component {
   state = {
     playing: false,
-    url: "test.mp4",
+    url:
+      "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4",
     played: 0,
     duration: 0,
+    volume: 0.8,
   };
 
   handleUrlChange = (url) => {
@@ -27,42 +29,41 @@ class App extends Component {
   };
 
   handleSeekMouseDown = (e) => {
-    console.log("down");
     this.setState({ seeking: true, playing: false });
   };
 
   handleSeekChange = (e) => {
-    console.log("Change");
     this.player.seekTo(parseFloat(e.target.value));
     this.setState({ played: parseFloat(e.target.value) });
   };
 
   handleSeekMouseUp = (e) => {
-    console.log("Up");
     this.setState({ seeking: false, playing: true });
     this.player.seekTo(parseFloat(e.target.value));
   };
 
   handleProgress = (state) => {
-    console.log("onProgress", state);
     if (!this.state.seeking) {
       this.setState(state);
     }
   };
 
   handlePlayButton = () => {
-    console.log("play");
     this.setState({ playing: true });
   };
 
   handlePauseButton = () => {
-    console.log("pause toggle");
     this.setState({ playing: !this.state.playing });
   };
 
   handleDuration = (duration) => {
-    console.log("onDuration", duration);
     this.setState({ duration });
+  };
+
+  handleVolumeChange = (e) => {
+    console.log(e);
+    console.log("volume change " + e);
+    this.setState({ volume: parseFloat(e) });
   };
 
   ref = (player) => {
@@ -70,11 +71,11 @@ class App extends Component {
   };
 
   render() {
-    const { url, played, duration, playing } = this.state;
+    const { url, played, duration, playing, volume } = this.state;
 
     return (
       <div className="App" style={rootStyle}>
-        <Bar />
+        <Bar onVolumeChange={(value) => this.handleVolumeChange(value)} />
         <header>
           <p>Audio Description Project Main Page</p>
         </header>
@@ -91,6 +92,7 @@ class App extends Component {
               className="react-player"
               url={url}
               playing={playing}
+              volume={volume}
               onSeek={(e) => console.log("onSeek", e)}
               onDuration={this.handleDuration}
               onProgress={this.handleProgress}
