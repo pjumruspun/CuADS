@@ -23,7 +23,7 @@ export default function SimpleMenu(props) {
       file = files.item(i);
       alert(file.name);
     }
-    console.log(file.name);
+    if (file) console.log(file.name);
     setAnchorEl(null);
   };
 
@@ -50,13 +50,17 @@ export default function SimpleMenu(props) {
         anchorPosition={{ vertical: "top", horizontal: "left" }}
       >
         <MenuItem for="file-upload">
-          <label for="avatar">Import </label>
-          <input
-            type="file"
-            id="video-input"
-            accept="video/mp4, video/webm"
-            onChange={handleImport}
-          />
+          <label className="custom-file-upload">
+            {" "}
+            <input
+              type="file"
+              id="video-input"
+              hidden
+              accept="video/mp4, video/webm"
+              onChange={handleImport}
+            />{" "}
+            <i className="fa fa-cloud-upload" /> Import{" "}
+          </label>
         </MenuItem>
         <MenuItem onClick={handleClose}>Export</MenuItem>
       </Menu>
