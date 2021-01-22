@@ -1,25 +1,24 @@
-import React, { Component }  from 'react';
-import FileButton from './FileButton.js';
-import SettingButton from './SettingButton.js';
+import React from "react";
+import FileButton from "./FileButton.js";
+import SettingButton from "./SettingButton.js";
 import { Grid } from "@material-ui/core";
 
-var rootStyle = {
-  backgroundColor : '#141414',
-  }
+export default function SimpleMenu(props) {
+  const [nameState, setNameState] = React.useState("testt");
+  var rootStyle = {
+    backgroundColor: "#141414",
+  };
 
-class Bar extends Component {
-render(){
-return (
-    <div align="left" style={rootStyle} >
-      <Grid
-          container
-          direction="row"
-        >
-      <FileButton />
-      <SettingButton />
-      </Grid >
+  var ButtonStyle = {
+    color: "white",
+  };
+
+  return (
+    <div align="left" style={rootStyle}>
+      <Grid container direction="row">
+        <FileButton />
+        <SettingButton onChange={(value) => props.onVolumeChange(value)} />
+      </Grid>
     </div>
   );
 }
-}
-export default Bar;
