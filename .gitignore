@@ -138,3 +138,6 @@ dist
 /back-end/!.vscode/tasks.json
 /back-end/!.vscode/launch.json
 /back-end/!.vscode/extensions.json
+
+# MacOS .DS_Store
+.DS_Store
