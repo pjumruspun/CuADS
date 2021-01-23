@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { CreateProjectDto } from './create-project.dto';
+import { CreateProjectDto } from './dto/create-project.dto';
 import { Project } from './projects.schema';
 import { ProjectsService } from './projects.service';
 

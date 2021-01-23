@@ -10,6 +10,32 @@ export class Project {
 
     @Prop()
     videoURL: string;
+
+    @Prop()
+    tracks: [{
+        name: string,
+        audioClips: [{ type: audioClips }],
+    }];
+}
+
+export class audioClips {
+    @Prop()
+    content: string;
+
+    @Prop()
+    startTime: string;
+
+    @Prop()
+    volume: number;
+
+    @Prop()
+    speed: number;
+
+    @Prop()
+    pitch: number;
+
+    @Prop()
+    audioFileURL: string;
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);

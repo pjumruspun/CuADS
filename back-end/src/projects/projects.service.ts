@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { CreateProjectDto } from './create-project.dto';
+import { CreateProjectDto } from './dto/create-project.dto';
 import { IProject } from './projects.interface';
 
 @Injectable()
