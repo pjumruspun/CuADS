@@ -16,4 +16,9 @@ export class ProjectsController {
     async create(@Body() createProjectDto: CreateProjectDto) {
         return this.projectsService.create(createProjectDto);
     }
+
+    @Post('new')
+    async createNewProject() {
+        return this.projectsService.createNewProject();
+    }
 }

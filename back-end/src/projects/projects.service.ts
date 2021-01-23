@@ -15,4 +15,14 @@ export class ProjectsService {
     async findAll(): Promise<IProject[]> {
         return this.projectModel.find().exec();
     }
+
+    async createNewProject(): Promise<IProject> {
+        const newProject = new CreateProjectDto;
+        newProject.passcode = "";
+        newProject.videoURL = "";
+        newProject.tracks = [];
+
+        const createdProject = new this.projectModel(newProject);
+        return createdProject.save();
+    }
 }
