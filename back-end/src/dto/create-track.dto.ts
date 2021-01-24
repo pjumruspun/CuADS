@@ -10,7 +10,8 @@ export class CreateTrackDto {
 
     @ApiProperty({
         description: 'List of all audio clips in this track.',
-        type: [CreateAudioClipDto],
+        default: [],
+        type: Types.ObjectId,
     })
-    audioClips: CreateAudioClipDto[];
+    audioClips: [Types.ObjectId];
 }
