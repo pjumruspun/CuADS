@@ -53,4 +53,25 @@ export class ProjectsService {
         updateProjectDto.tracks.push(id);
         await this.projectModel.findByIdAndUpdate(projectId, updateProjectDto);
     }
+
+    async deleteTrack(trackId: string): Promise<boolean> {
+        var allProjects = await this.findAll()
+        var updateProject;
+        var found: boolean = false;
+        allProjects.forEach((project, i) => {
+            project.tracks.forEach((iterTrackId, i) => {
+                if(String(iterTrackId) == trackId){
+                    found = true;
+                    updateProject = project;
+                }
+            });
+        });
+
+        if(found) {
+            updateProject.tracks = updateProject.tracks.filter(item => item != String(trackId));
+            await this.projectModel.findByIdAndUpdate(updateProject._id, updateProject);
+        }
+
+        return found;
+    }
 }

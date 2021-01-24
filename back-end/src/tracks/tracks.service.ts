@@ -1,6 +1,8 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { AnyARecord } from 'dns';
 import { Model } from 'mongoose';
 import { CreateTrackDto } from 'src/dto/create-track.dto';
+import { UpdateTrackDto } from 'src/dto/update-track.dto';
 import { ITrack } from 'src/interface/tracks.interface';
 import { ProjectsService } from 'src/projects/projects.service';
 
@@ -15,10 +17,10 @@ export class TracksService {
         return this.trackModel.find().exec();
     }
 
-    async create(projectId: string, createTrackDto: CreateTrackDto) {
+    async create(projectId: string, createTrackDto: CreateTrackDto): Promise<ITrack> {
         var found: boolean = await this.projectsService.contains(projectId);
         if(!found) {
-            console.log("error");
+            console.log("ProjectId does not exist.");
             throw new NotFoundException();
         }
         const createdTrack = new this.trackModel(createTrackDto);
@@ -28,5 +30,18 @@ export class TracksService {
         this.projectsService.createTrack(projectId, trackId);
 
         return save;
+    }
+
+    async update(trackId: string, updateTrackDto: UpdateTrackDto): Promise<ITrack> {
+        return await this.trackModel.findByIdAndUpdate(trackId, updateTrackDto);
+    }
+
+    async delete(trackId: string): Promise<ITrack | any> {
+        var deleteSuccessful: boolean = await this.projectsService.deleteTrack(trackId);
+        if(!deleteSuccessful) {
+            console.log("TrackId does not exist in any project.");
+            throw new NotFoundException();
+        }
+        return await this.trackModel.findByIdAndRemove(trackId);
     }
 }
