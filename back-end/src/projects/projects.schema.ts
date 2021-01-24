@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type ProjectDocument = Project & Document;
 
@@ -13,6 +13,7 @@ export class Project {
 
     @Prop()
     tracks: [{
+        track_id: Types.ObjectId,
         name: string,
         audioClips: [{ 
             content: string,

@@ -1,9 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { IProject } from './interface/projects.interface';
+import { generateObjectID } from '../utils/mongo.util';
 
 @Injectable()
 export class ProjectsService {
@@ -46,7 +47,9 @@ export class ProjectsService {
             clips = createTrackDto.audioClips;
         }
 
+        var id: Types.ObjectId = generateObjectID();
         updateProjectDto.tracks.push({
+            track_id: id,
             name: createTrackDto.name,
             audioClips: clips,
         });
