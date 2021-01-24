@@ -1,10 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Model, Types } from 'mongoose';
-import { CreateProjectDto } from './dto/create-project.dto';
-import { CreateTrackDto } from './dto/create-track.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
-import { IProject } from './interface/projects.interface';
-import { generateObjectID } from '../utils/mongo.util';
+import { CreateProjectDto } from '../dto/create-project.dto';
+import { UpdateProjectDto } from '../dto/update-project.dto';
+import { IProject } from '../interface/projects.interface';
 
 @Injectable()
 export class ProjectsService {
@@ -27,7 +25,6 @@ export class ProjectsService {
         const newProject = new CreateProjectDto;
         newProject.passcode = "";
         newProject.videoURL = "";
-        newProject.tracks = [];
 
         const createdProject = new this.projectModel(newProject);
         return createdProject.save();
@@ -38,23 +35,22 @@ export class ProjectsService {
         return await this.projectModel.findById(id);
     }
 
-    async createTrack(projectId: string, createTrackDto: CreateTrackDto) {
-        var updateProjectDto: UpdateProjectDto = await this.projectModel.findById(projectId);
-        var clips = []; // default audioClips is no clip at all
-
-        if(typeof createTrackDto.audioClips !== 'undefined') {
-            // If createdTrack somehow has clips in it
-            clips = createTrackDto.audioClips;
+    async contains(id: string): Promise<boolean> {
+        var found: boolean;
+        try {
+            found = await this.projectModel.findById(id) != null;
+            console.log(`Found = ${found}`);
+        } catch {
+            found = false;
         }
+        return found;
+    }
 
-        var id: Types.ObjectId = generateObjectID();
-        updateProjectDto.tracks.push({
-            track_id: id,
-            name: createTrackDto.name,
-            audioClips: clips,
-        });
-
+    async createTrack(projectId: string, trackId: string) {
+        var id: Types.ObjectId = Types.ObjectId(trackId);
+        var updateProjectDto = await this.projectModel.findById(projectId);
+        console.log(updateProjectDto);
+        updateProjectDto.tracks.push(id);
         await this.projectModel.findByIdAndUpdate(projectId, updateProjectDto);
-        return await this.projectModel.findById(projectId);
     }
 }

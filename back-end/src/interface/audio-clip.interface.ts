@@ -1,6 +1,6 @@
-import { Types } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
-export interface IAudioClip {
+export interface IAudioClip extends Document {
     readonly audioClip_id: Types.ObjectId;
     readonly content: string;
     readonly startTime: string;

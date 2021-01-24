@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CreateTrackDto } from './create-track.dto';
+import { Types } from 'mongoose';
 
 export class CreateProjectDto {
     @ApiProperty({
@@ -14,7 +15,8 @@ export class CreateProjectDto {
 
     @ApiProperty({
         description: 'List of all tracks in this project.',
-        type: [CreateTrackDto],
+        default: [],
+        type: Types.ObjectId,
     })
-    tracks: CreateTrackDto[]
+    tracks: [Types.ObjectId]
 }
