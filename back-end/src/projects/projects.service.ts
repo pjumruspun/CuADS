@@ -35,9 +35,8 @@ export class ProjectsService {
         return createdProject.save();
     }
 
-    async updateById(id: string, updateProjectDto: UpdateProjectDto) {
-        await this.projectModel.findByIdAndUpdate(id, updateProjectDto);
-        return await this.projectModel.findById(id);
+    async update(id: string, updateProjectDto: UpdateProjectDto) {
+        return await this.projectModel.findByIdAndUpdate(id, updateProjectDto, { new: true });
     }
 
     async contains(id: string): Promise<boolean> {

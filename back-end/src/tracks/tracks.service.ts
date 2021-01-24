@@ -32,7 +32,7 @@ export class TracksService {
     }
 
     async update(trackId: string, updateTrackDto: UpdateTrackDto): Promise<ITrack> {
-        return await this.trackModel.findByIdAndUpdate(trackId, updateTrackDto);
+        return await this.trackModel.findByIdAndUpdate(trackId, updateTrackDto, { new: true });
     }
 
     async delete(trackId: string): Promise<ITrack | any> {

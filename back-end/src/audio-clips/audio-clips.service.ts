@@ -1,6 +1,7 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { CreateAudioClipDto } from 'src/dto/create-audio-clip.dto';
+import { UpdateAudioClipDto } from 'src/dto/update-audio-clip.dto';
 import { IAudioClip } from 'src/interface/audio-clip.interface';
 import { TracksService } from 'src/tracks/tracks.service';
 
@@ -28,5 +29,9 @@ export class AudioClipsService {
         this.tracksService.addAudioClip(trackId, audioClipId);
         
         return createdAudioClip.save();
+    }
+
+    async update(audioClipId: string, updateAudioClipDto: UpdateAudioClipDto): Promise<IAudioClip> {
+        return await this.audioClipModel.findByIdAndUpdate(audioClipId, updateAudioClipDto, { new: true });
     }
 }

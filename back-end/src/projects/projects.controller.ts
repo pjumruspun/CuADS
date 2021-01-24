@@ -45,6 +45,6 @@ export class ProjectsController {
     @ApiOperation({ summary: 'Update one project by {id}, intended for ONLY updating passcode or/and videoURL'})
     @Put(':id')
     async update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto): Promise<IProject> {
-        return this.projectsService.updateById(id, updateProjectDto);
+        return this.projectsService.update(id, updateProjectDto);
     }
 }
