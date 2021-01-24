@@ -16,6 +16,7 @@ export class Project {
         track_id: Types.ObjectId,
         name: string,
         audioClips: [{ 
+            audioClip_id: Types.ObjectId,
             content: string,
             startTime: string,
             volume: number,

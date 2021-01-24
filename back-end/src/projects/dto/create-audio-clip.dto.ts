@@ -1,6 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { Types } from 'mongoose';
 
 export class CreateAudioClipDto {
+    @ApiProperty()
+    audioClip_id: Types.ObjectId;
+
     @ApiProperty({
         description: 'Content of the TTS audio clip.',
         required: true,
