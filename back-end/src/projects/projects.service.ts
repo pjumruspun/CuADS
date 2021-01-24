@@ -56,12 +56,12 @@ export class ProjectsService {
         await this.projectModel.findByIdAndUpdate(projectId, updateProjectDto);
     }
 
-    async deleteTrack(trackId: string): Promise<boolean> {
-        var allProjects = await this.findAll()
+    async removeTrack(trackId: string): Promise<boolean> {
+        var allProjects = await this.findAll() // Very heavy, could optimize later
         var updateProject;
         var found: boolean = false;
         allProjects.forEach((project, i) => {
-            project.tracks.forEach((iterTrackId, i) => {
+            project.tracks.forEach(iterTrackId => {
                 if(String(iterTrackId) == trackId){
                     found = true;
                     updateProject = project;

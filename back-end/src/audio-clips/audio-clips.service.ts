@@ -34,4 +34,13 @@ export class AudioClipsService {
     async update(audioClipId: string, updateAudioClipDto: UpdateAudioClipDto): Promise<IAudioClip> {
         return await this.audioClipModel.findByIdAndUpdate(audioClipId, updateAudioClipDto, { new: true });
     }
+
+    async delete(audioClipId: string): Promise<IAudioClip | any> {
+        var removeSuccessful: boolean = await this.tracksService.removeAudioClip(audioClipId);
+        if(!removeSuccessful) {
+            console.log(`audioClipId: ${audioClipId} does not exist in any project.`);
+            throw new NotFoundException();
+        }
+        return await this.audioClipModel.findByIdAndRemove(audioClipId);
+    }
 }

@@ -35,9 +35,9 @@ export class TracksService {
         return await this.trackModel.findByIdAndUpdate(trackId, updateTrackDto, { new: true });
     }
 
-    async delete(trackId: string): Promise<ITrack | any> {
-        var deleteSuccessful: boolean = await this.projectsService.deleteTrack(trackId);
-        if(!deleteSuccessful) {
+    async delete(trackId: string): Promise<ITrack> {
+        var removeSuccessful: boolean = await this.projectsService.removeTrack(trackId);
+        if(!removeSuccessful) {
             console.log("TrackId does not exist in any project.");
             throw new NotFoundException();
         }
@@ -59,5 +59,26 @@ export class TracksService {
         var createTrackDto = await this.trackModel.findById(trackId);
         createTrackDto.audioClips.push(id);
         await this.trackModel.findByIdAndUpdate(trackId, createTrackDto);
+    }
+
+    async removeAudioClip(audioClipId: string): Promise<boolean> {
+        var allTracks = await this.findAll(); // Very heavy, could optimize later
+        var updateTrack;
+        var found: boolean = false;
+        allTracks.forEach((track, i) => {
+            track.audioClips.forEach(iterClipId => {
+                if(String(iterClipId) == audioClipId) {
+                    found = true;
+                    updateTrack = track;
+                }
+            })
+        })
+
+        if(found) {
+            updateTrack.audioClips = updateTrack.audioClips.filter(item => item != String(audioClipId));
+            await this.trackModel.findByIdAndUpdate(updateTrack._id, updateTrack);
+        }
+
+        return found;
     }
 }
