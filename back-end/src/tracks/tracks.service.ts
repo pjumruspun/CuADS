@@ -1,6 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { AnyARecord } from 'dns';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateTrackDto } from 'src/dto/create-track.dto';
 import { UpdateTrackDto } from 'src/dto/update-track.dto';
 import { ITrack } from 'src/interface/tracks.interface';
@@ -20,14 +19,14 @@ export class TracksService {
     async create(projectId: string, createTrackDto: CreateTrackDto): Promise<ITrack> {
         var found: boolean = await this.projectsService.contains(projectId);
         if(!found) {
-            console.log("ProjectId does not exist.");
+            console.log(`projectId: ${projectId} does not exist.`);
             throw new NotFoundException();
         }
         const createdTrack = new this.trackModel(createTrackDto);
         const save = await createdTrack.save();
         
         const trackId = save._id;
-        this.projectsService.createTrack(projectId, trackId);
+        this.projectsService.addTrack(projectId, trackId);
 
         return save;
     }
@@ -43,5 +42,22 @@ export class TracksService {
             throw new NotFoundException();
         }
         return await this.trackModel.findByIdAndRemove(trackId);
+    }
+
+    async contains(id: string): Promise<boolean> {
+        var found: boolean;
+        try {
+            found = await this.trackModel.findById(id) != null;
+        } catch {
+            found = false;
+        }
+        return found;
+    }
+
+    async addAudioClip(trackId: string, audioClipId: string) {
+        var id: Types.ObjectId = Types.ObjectId(audioClipId);
+        var createTrackDto = await this.trackModel.findById(trackId);
+        createTrackDto.audioClips.push(id);
+        await this.trackModel.findByIdAndUpdate(trackId, createTrackDto);
     }
 }

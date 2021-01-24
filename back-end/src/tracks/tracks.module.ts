@@ -7,6 +7,7 @@ import { TrackSchema } from './tracks.schema';
 import { trackProviders } from './tracks.providers';
 import { ProjectsService } from 'src/projects/projects.service';
 import { projectProviders } from 'src/projects/projects.providers';
+import { audioClipsProviders } from 'src/audio-clips/audio-clips.providers';
 
 @Module({
   imports: [

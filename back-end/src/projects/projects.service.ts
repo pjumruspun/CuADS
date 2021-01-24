@@ -50,7 +50,7 @@ export class ProjectsService {
         return found;
     }
 
-    async createTrack(projectId: string, trackId: string) {
+    async addTrack(projectId: string, trackId: string) {
         var id: Types.ObjectId = Types.ObjectId(trackId);
         var updateProjectDto = await this.projectModel.findById(projectId);
         updateProjectDto.tracks.push(id);
