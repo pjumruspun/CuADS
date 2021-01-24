@@ -4,6 +4,7 @@ import { CreateTrackDto } from 'src/dto/create-track.dto';
 import { UpdateTrackDto } from 'src/dto/update-track.dto';
 import { ITrack } from 'src/interface/tracks.interface';
 import { TracksService } from './tracks.service'; 
+import { Types } from 'mongoose';
 
 @ApiTags('Tracks')
 @Controller('tracks')
@@ -14,6 +15,18 @@ export class TracksController {
     @Get()
     async findAll(): Promise<ITrack[]> {
         return this.tracksService.findAll();
+    }
+
+    @ApiOperation({ summary: 'Find one track by {trackId}'})
+    @Get('findbyid/:trackId')
+    async findById(@Param('trackId') trackId: string): Promise<ITrack> {
+        return this.tracksService.findById(trackId);
+    }
+
+    @ApiOperation({ summary: 'Get all audio clips by {trackId}'})
+    @Get('getallclips/:trackId')
+    async findAllAudioClips(@Param('trackId') trackId: string): Promise<Types.ObjectId[]> {
+        return this.tracksService.findAllAudioClips(trackId);
     }
 
     @ApiOperation({ summary: 'Add a track into {projectId}'})

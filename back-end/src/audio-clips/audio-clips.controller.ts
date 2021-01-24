@@ -17,6 +17,12 @@ export class AudioClipsController {
         return this.audioClipsService.findAll();
     }
 
+    @ApiOperation({ summary: 'Find one audio clip by {audioClipId}'})
+    @Get('findbyid/:audioClipId')
+    async findById(@Param('audioClipId') audioClipId: string): Promise<IAudioClip> {
+        return this.audioClipsService.findById(audioClipId);
+    }
+
     @ApiOperation({ summary: 'Add an audio clip into {trackId}'})
     @Post(':trackId')
     async create(@Param('trackId') trackId: string, @Body() createAudioClipDto: CreateAudioClipDto): Promise<IAudioClip> {

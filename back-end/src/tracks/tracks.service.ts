@@ -16,6 +16,14 @@ export class TracksService {
         return this.trackModel.find().exec();
     }
 
+    async findById(trackId: string): Promise<ITrack> {
+        return await this.trackModel.findById(trackId);
+    }
+
+    async findAllAudioClips(trackId: string): Promise<Types.ObjectId[]> {
+        return (await this.trackModel.findById(trackId)).audioClips;
+    }
+
     async create(projectId: string, createTrackDto: CreateTrackDto): Promise<ITrack> {
         var found: boolean = await this.projectsService.contains(projectId);
         if(!found) {
@@ -38,7 +46,7 @@ export class TracksService {
     async delete(trackId: string): Promise<ITrack> {
         var removeSuccessful: boolean = await this.projectsService.removeTrack(trackId);
         if(!removeSuccessful) {
-            console.log("TrackId does not exist in any project.");
+            console.log(`trackId: ${trackId} does not exist in any project.`);
             throw new NotFoundException();
         }
         return await this.trackModel.findByIdAndRemove(trackId);

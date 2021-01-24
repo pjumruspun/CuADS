@@ -16,6 +16,10 @@ export class AudioClipsService {
         return this.audioClipModel.find().exec();
     }
 
+    async findById(audioClipId: string): Promise<IAudioClip> {
+        return this.audioClipModel.findById(audioClipId);
+    }
+
     async create(trackId: string, createAudioClipDto: CreateAudioClipDto): Promise<IAudioClip> {
         var found: boolean = await this.tracksService.contains(trackId);
         if(!found) {
