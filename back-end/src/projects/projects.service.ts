@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Model, Types } from 'mongoose';
+import { ITrack } from 'src/interface/tracks.interface';
 import { CreateProjectDto } from '../dto/create-project.dto';
 import { UpdateProjectDto } from '../dto/update-project.dto';
 import { IProject } from '../interface/projects.interface';
@@ -17,8 +18,12 @@ export class ProjectsService {
         return this.projectModel.find().exec();
     }
 
-    async findOne(id: string): Promise<IProject> {
+    async findById(id: string): Promise<IProject> {
         return this.projectModel.findById(id);
+    }
+
+    async findAllTracks(projectId: string): Promise<Types.ObjectId[]> {
+        return (await this.projectModel.findById(projectId)).tracks;
     }
 
     async createNewProject(): Promise<IProject> {
@@ -39,7 +44,6 @@ export class ProjectsService {
         var found: boolean;
         try {
             found = await this.projectModel.findById(id) != null;
-            console.log(`Found = ${found}`);
         } catch {
             found = false;
         }
@@ -49,7 +53,6 @@ export class ProjectsService {
     async createTrack(projectId: string, trackId: string) {
         var id: Types.ObjectId = Types.ObjectId(trackId);
         var updateProjectDto = await this.projectModel.findById(projectId);
-        console.log(updateProjectDto);
         updateProjectDto.tracks.push(id);
         await this.projectModel.findByIdAndUpdate(projectId, updateProjectDto);
     }
