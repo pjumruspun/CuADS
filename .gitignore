@@ -139,4 +139,5 @@ dist
 /back-end/!.vscode/launch.json
 /back-end/!.vscode/extensions.json
 
-/back-end/.env
+# MacOS .DS_Store
+.DS_Store
