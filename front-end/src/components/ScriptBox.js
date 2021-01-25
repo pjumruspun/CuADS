@@ -13,10 +13,40 @@ var rootStyle = {
 class ScriptBox extends Component {
 constructor(props) {
     super(props);
-    this.state = {volumn: '100%'
-		,speed: 'x1'
+    this.state = {volumn: 100
+		,speed: '1'
 		,pitch: '1.0'};
   }
+rmVolumn = () => {
+  if(this.state.volumn!=0){
+  this.setState({volumn:this.state.volumn-5});
+  }
+}
+addVolumn = () => {
+  if(this.state.volumn!=100){
+  this.setState({volumn:this.state.volumn+5});
+  }
+}
+rmSpeed = () => {
+  if(this.state.speed!=0.25){
+  this.setState({speed:this.state.speed-0.25});
+  }
+}
+addSpeed = () => {
+  if(this.state.speed!=2.00){
+  this.setState({speed:this.state.speed+0.25});
+  }
+}
+rmPitch = () => {
+  if(this.state.pitch!=-10){
+  this.setState({pitch:this.state.pitch-0.25});
+  }
+}
+addPitch = () => {
+  if(this.state.pitch!=10){
+  this.setState({pitch:this.state.pitch+0.25});
+  }
+}
 render(){
 return (
     <div align="left" style={rootStyle} >
@@ -84,31 +114,31 @@ return (
 		</div>
 		<div>
 			<Grid container direction="row" style={{marginBottom:'3px', alignItems: 'center'}} >
-				<Button>
+				<Button onClick={this.rmVolumn}>
       				<RemoveIcon style={{color : '#bababa'}}/>
 				</Button>
-      					<input type="text" placeholder="Volumn" value={this.state.volumn} class="input-box" style={{backgroundColor : '#bababa',width: '3vw'}}/>
-      				<Button>
+      					<input type="text" placeholder="Volumn" value={this.state.volumn+"%"} class="input-box" style={{backgroundColor : '#bababa',width: '3vw'}}/>
+      				<Button onClick={this.addVolumn}>
 				<AddIcon style={{color : '#bababa'}}/>
 				</Button>
 			</Grid>
 			<Grid container direction="row" style={{marginBottom:'3px', alignItems: 'center'}} >
 
-      				<Button>
+      				<Button onClick={this.rmSpeed}>
       				<RemoveIcon style={{color : '#bababa'}}/>
 				</Button>
-      					<input type="text" placeholder="Speed" value={this.state.speed} class="input-box" style={{backgroundColor : '#bababa',width: '3vw'}}/>
-      				<Button>
+      					<input type="text" placeholder="Speed" value={"x"+this.state.speed} class="input-box" style={{backgroundColor : '#bababa',width: '3vw'}}/>
+      				<Button onClick={this.addSpeed}>
 				<AddIcon style={{color : '#bababa'}}/>
 				</Button>
 			</Grid>
 			<Grid container direction="row" style={{marginBottom:'3px', alignItems: 'center'}} >
 
-      				<Button>
+      				<Button onClick={this.rmPitch}>
       				<RemoveIcon style={{color : '#bababa'}}/>
 				</Button>
       					<input type="text" placeholder="Pitch" value={this.state.pitch} class="input-box" style={{backgroundColor : '#bababa',width: '3vw'}}/>
-      				<Button>
+      				<Button onClick={this.addPitch}>
 				<AddIcon style={{color : '#bababa'}}/>
 				</Button>
    			</Grid>
