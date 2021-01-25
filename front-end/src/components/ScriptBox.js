@@ -1,4 +1,4 @@
-import React, { Component }  from 'react';
+import React, { Component,useState }  from 'react';
 import { Grid } from "@material-ui/core";
 import Button from '@material-ui/core/Button';
 import InputBase from '@material-ui/core/InputBase';
@@ -9,7 +9,14 @@ var rootStyle = {
   height: '52vh',
   width: '40vw',
   }
+
 class ScriptBox extends Component {
+constructor(props) {
+    super(props);
+    this.state = {volumn: '100%'
+		,speed: 'x1'
+		,pitch: '1.0'};
+  }
 render(){
 return (
     <div align="left" style={rootStyle} >
@@ -76,22 +83,34 @@ return (
 			<div style={{marginRight:'10px',marginBottom:'12px'}} >Pitch:</div>
 		</div>
 		<div>
-			<Grid container direction="row" style={{marginBottom:'12px', alignItems: 'center'}} >
-      				<RemoveIcon/>
-      					<input type="text" placeholder="Volumn" value="100%" class="input-box" style={{backgroundColor : '#bababa',width: '3vw'}}/>
-      				<AddIcon/>
+			<Grid container direction="row" style={{marginBottom:'3px', alignItems: 'center'}} >
+				<Button>
+      				<RemoveIcon style={{color : '#bababa'}}/>
+				</Button>
+      					<input type="text" placeholder="Volumn" value={this.state.volumn} class="input-box" style={{backgroundColor : '#bababa',width: '3vw'}}/>
+      				<Button>
+				<AddIcon style={{color : '#bababa'}}/>
+				</Button>
 			</Grid>
-			<Grid container direction="row" style={{marginBottom:'12px', alignItems: 'center'}} >
+			<Grid container direction="row" style={{marginBottom:'3px', alignItems: 'center'}} >
 
-      				<RemoveIcon/>
-      					<input type="text" placeholder="Speed" value="x1" class="input-box" style={{backgroundColor : '#bababa',width: '3vw'}}/>
-      				<AddIcon/>
+      				<Button>
+      				<RemoveIcon style={{color : '#bababa'}}/>
+				</Button>
+      					<input type="text" placeholder="Speed" value={this.state.speed} class="input-box" style={{backgroundColor : '#bababa',width: '3vw'}}/>
+      				<Button>
+				<AddIcon style={{color : '#bababa'}}/>
+				</Button>
 			</Grid>
-			<Grid container direction="row" style={{marginBottom:'12px', alignItems: 'center'}} >
+			<Grid container direction="row" style={{marginBottom:'3px', alignItems: 'center'}} >
 
-      				<RemoveIcon />
-      					<input type="text" placeholder="Pitch" value="1.0" class="input-box" style={{backgroundColor : '#bababa',width: '3vw'}}/>
-      				<AddIcon/>
+      				<Button>
+      				<RemoveIcon style={{color : '#bababa'}}/>
+				</Button>
+      					<input type="text" placeholder="Pitch" value={this.state.pitch} class="input-box" style={{backgroundColor : '#bababa',width: '3vw'}}/>
+      				<Button>
+				<AddIcon style={{color : '#bababa'}}/>
+				</Button>
    			</Grid>
 		</div>
 	</Grid>
