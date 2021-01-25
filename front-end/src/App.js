@@ -3,6 +3,7 @@ import ReactPlayer from "react-player";
 import "./App.css";
 import Duration from "./components/Duration";
 import Bar from "./components/Bar";
+import ScriptBox from "./components/ScriptBox";
 import { Grid } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
@@ -82,10 +83,10 @@ class App extends Component {
         <Grid
           container
           direction="row"
-          alignItems="center"
-          justify="space-between"
+          alignItems="flex-start"
+          justify="space-around"
         >
-          <div></div>
+          <div><ScriptBox /></div>
           <div>
             <ReactPlayer
               ref={this.ref}
