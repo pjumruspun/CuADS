@@ -5,7 +5,8 @@ import { AppService } from './app.service';
 import { FileuploadModule } from './fileupload/fileupload.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ProjectsModule } from './projects/projects.module';
-import { DatabaseModule } from './database/database.module';
+import { TracksModule } from './tracks/tracks.module';
+import { AudioClipsModule } from './audio-clips/audio-clips.module';
 
 @Module({
   imports: [
@@ -16,6 +17,8 @@ import { DatabaseModule } from './database/database.module';
     }),
     ProjectsModule,
     MongooseModule.forRoot('mongodb://localhost:27017/nest'),
+    TracksModule,
+    AudioClipsModule,
   ],
   controllers: [AppController,],
   providers: [AppService],

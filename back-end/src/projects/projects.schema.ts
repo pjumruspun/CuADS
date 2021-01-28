@@ -1,15 +1,11 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Document, Schema } from 'mongoose';
 
-export type ProjectDocument = Project & Document;
-
-@Schema()
-export class Project {
-    @Prop()
-    passcode: string;
-
-    @Prop()
-    videoURL: string;
-}
-
-export const ProjectSchema = SchemaFactory.createForClass(Project);
+export const ProjectSchema = new Schema({
+    passcode: String,
+    videoURL: String,
+    tracks: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Track'
+    }]
+});
