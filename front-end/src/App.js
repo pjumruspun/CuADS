@@ -26,6 +26,7 @@ class App extends Component {
   };
 
   handleUrlChange = (url) => {
+    console.log(`New url: ${url}`);
     this.setState({ url: url });
   };
 
@@ -76,7 +77,10 @@ class App extends Component {
 
     return (
       <div className="App" style={rootStyle}>
-        <Bar onVolumeChange={(value) => this.handleVolumeChange(value)} />
+        <Bar
+          onVolumeChange={(value) => this.handleVolumeChange(value)}
+          onURLChange={(url) => this.handleUrlChange(url)}
+        />
         <header>
           <p>Audio Description Project Main Page</p>
         </header>
@@ -86,7 +90,9 @@ class App extends Component {
           alignItems="flex-start"
           justify="space-around"
         >
-          <div><ScriptBox /></div>
+          <div>
+            <ScriptBox />
+          </div>
           <div>
             <ReactPlayer
               ref={this.ref}

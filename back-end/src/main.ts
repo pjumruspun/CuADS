@@ -17,7 +17,7 @@ async function bootstrap() {
 
   // Access Swagger with 'localhost:port/api' route
   SwaggerModule.setup('api', app, document);
-
+  app.enableCors();
   await app.listen(3001);
 }
 bootstrap();

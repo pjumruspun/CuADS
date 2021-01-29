@@ -2,9 +2,13 @@ import React from "react";
 import Button from "@material-ui/core/Button";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
+import axios from "axios";
 
 export default function SimpleMenu(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const classNames = {
+    videoInput: "video-input",
+  };
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -15,15 +19,28 @@ export default function SimpleMenu(props) {
   };
 
   const handleImport = () => {
-    var fileInput = document.getElementById("video-input");
+    var fileInput = document.getElementById(classNames.videoInput);
     var files = fileInput.files;
     var file;
 
-    for (var i = 0; i < files.length; ++i) {
-      file = files.item(i);
-      alert(file.name);
-    }
+    file = files.item(0);
     if (file) console.log(file.name);
+
+    var formData = new FormData();
+    formData.append("upload", file);
+    axios
+      .post(`http://localhost:3001/fileupload`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((res) => {
+        // res.data contains S3 video URL
+        props.onChange(res.data);
+      });
+
+    document.getElementById(classNames.videoInput).value = "";
+
     setAnchorEl(null);
   };
 
@@ -54,7 +71,7 @@ export default function SimpleMenu(props) {
             {" "}
             <input
               type="file"
-              id="video-input"
+              id={classNames.videoInput}
               hidden
               accept="video/mp4, video/webm"
               onChange={handleImport}
