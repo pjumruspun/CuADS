@@ -14,5 +14,7 @@ RUN yarn install
 #copy code into container
 COPY . .
 
+# Should export the same port as BACKEND_PORT in .env
 EXPOSE 3001
+
 CMD [ "yarn", "start" ]

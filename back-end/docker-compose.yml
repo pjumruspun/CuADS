@@ -3,7 +3,7 @@ services:
   app:
     build: .
     ports:
-      - 3001:3001
+      - ${BACKEND_PORT}:${BACKEND_PORT}
     links:
       - mongo
     depends_on:
@@ -11,4 +11,4 @@ services:
 
   mongo:
     image: mongo:latest
-    ports: ['27017:27017']
+    ports: ['${MONGO_PORT}:${MONGO_PORT}']
