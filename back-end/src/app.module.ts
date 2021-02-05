@@ -16,7 +16,7 @@ import { AudioClipsModule } from './audio-clips/audio-clips.module';
       isGlobal: true,
     }),
     ProjectsModule,
-    MongooseModule.forRoot('mongodb://localhost:27017/nest'),
+    MongooseModule.forRoot('mongodb://mongo:27017/nest'),
     TracksModule,
     AudioClipsModule,
   ],

@@ -1,0 +1,14 @@
+version: '3.7'
+services:
+  app:
+    build: .
+    ports:
+      - 3001:3001
+    links:
+      - mongo
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:latest
+    ports: ['27017:27017']
