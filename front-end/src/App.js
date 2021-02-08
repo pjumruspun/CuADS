@@ -3,6 +3,7 @@ import ReactPlayer from "react-player";
 import "./App.css";
 import Duration from "./components/Duration";
 import Bar from "./components/Bar";
+import Wave from "./components/Wave";
 import ScriptBox from "./components/ScriptBox";
 import { Grid } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
@@ -145,6 +146,9 @@ class App extends Component {
           onInput={this.handleSeekChange}
           onMouseUp={this.handleSeekMouseUp}
         />
+	<div>
+		<Wave /> 
+	</div>
       </div>
     );
   }
