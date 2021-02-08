@@ -5,9 +5,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 
 export default function SimpleMenu(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  var state = {
-    masterVolume: 1,
-  };
+  const [masterVolumn, setMasterVolumn] = React.useState(1);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -18,7 +16,8 @@ export default function SimpleMenu(props) {
   };
 
   const onChangeVolume = (e) => {
-    state.masterVolume = parseFloat(e.target.value);
+    setMasterVolumn(parseFloat(e.target.value));
+
   };
 
   var ButtonStyle = {
@@ -43,7 +42,7 @@ export default function SimpleMenu(props) {
         onClose={handleClose}
         anchorPosition={{ vertical: "top", horizontal: "left" }}
       >
-        <MenuItem onClick={() => props.onChange(state.masterVolume)}>
+        <MenuItem onClick={() => props.onChange(masterVolumn)}>
           Master Volume{" "}
           <input
             type="range"

@@ -141,3 +141,6 @@ dist
 
 # MacOS .DS_Store
 .DS_Store
+
+# Visual Studio settings
+/.vs/
