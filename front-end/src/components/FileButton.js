@@ -2,10 +2,12 @@ import React from "react";
 import Button from "@material-ui/core/Button";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
+import MyModal from './MyModal.js';
 import axios from "axios";
 
 export default function SimpleMenu(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [modalShow, setModalShow] = React.useState(false);
   const classNames = {
     videoInput: "video-input",
   };
@@ -66,6 +68,8 @@ export default function SimpleMenu(props) {
         onClose={handleClose}
         anchorPosition={{ vertical: "top", horizontal: "left" }}
       >
+	<MenuItem onClick={handleClose}>New</MenuItem>
+	<MyModal />
         <MenuItem for="file-upload">
           <label className="custom-file-upload">
             {" "}
