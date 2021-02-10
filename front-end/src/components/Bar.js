@@ -15,7 +15,11 @@ export default function SimpleMenu(props) {
   return (
     <div align="left" style={rootStyle}>
       <Grid container direction="row">
-        <FileButton onChange={(url) => props.onURLChange(url)} />
+        <FileButton
+          onChange={(url) => props.onURLChange(url)}
+          onProjectChange={(project) => props.onProjectChange(project)}
+          onSaveProject={() => props.onSaveProject()}
+        />
         <SettingButton onChange={(value) => props.onVolumeChange(value)} />
       </Grid>
     </div>

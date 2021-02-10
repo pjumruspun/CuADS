@@ -8,6 +8,7 @@ import { Grid } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
+import axios from "axios";
 
 var rootStyle = {
   backgroundColor: "#2e2d2d",
@@ -23,6 +24,7 @@ class App extends Component {
     played: 0,
     duration: 0,
     volume: 0.8,
+    projectId: "",
   };
 
   handleUrlChange = (url) => {
@@ -68,6 +70,27 @@ class App extends Component {
     this.setState({ volume: parseFloat(e) });
   };
 
+  handleProjectChange = (project) => {
+    console.log(`change project id to: ${project._id}`);
+    this.setState({ projectId: project._id });
+    // Also need to update URL and other stuff
+    this.handleUrlChange(project.videoURL);
+  };
+
+  handleSaveProject = () => {
+    console.log(
+      `saving url=${this.state.url}, projectId=${this.state.projectId}`
+    );
+
+    axios
+      .put(`http://localhost:3001/projects/${this.state.projectId}`, {
+        videoURL: this.state.url,
+      })
+      .then((res) => {
+        console.log(res);
+      });
+  };
+
   ref = (player) => {
     this.player = player;
   };
@@ -80,6 +103,8 @@ class App extends Component {
         <Bar
           onVolumeChange={(value) => this.handleVolumeChange(value)}
           onURLChange={(url) => this.handleUrlChange(url)}
+          onProjectChange={(project) => this.handleProjectChange(project)}
+          onSaveProject={() => this.handleSaveProject()}
         />
         <header>
           <p>Audio Description Project Main Page</p>

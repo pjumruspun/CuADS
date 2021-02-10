@@ -14,18 +14,18 @@ function getModalStyle() {
   return {
     top: `${top}%`,
     left: `${left}%`,
-    transform: `translate(-${top}%, -${left}%)`
+    transform: `translate(-${top}%, -${left}%)`,
   };
 }
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
     position: "absolute",
     backgroundColor: theme.palette.background.paper,
     border: "2px solid #000",
     boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3)
-  }
+    padding: theme.spacing(2, 4, 3),
+  },
 }));
 
 const MyModal = () => {
@@ -55,10 +55,12 @@ const MyModal = () => {
           <h2 id="simple-modal-title">Select Project</h2>
           <p id="simple-modal-description">
             All Project in AWS S3 will be listed here.
+            <MenuItem>Hello 1</MenuItem>
+            <MenuItem>Hello 2</MenuItem>
           </p>
         </div>
       </Modal>
     </div>
   );
-}
-export default MyModal
+};
+export default MyModal;

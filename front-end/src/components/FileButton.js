@@ -2,7 +2,7 @@ import React from "react";
 import Button from "@material-ui/core/Button";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import MyModal from './MyModal.js';
+import MyModal from "./MyModal.js";
 import axios from "axios";
 
 export default function SimpleMenu(props) {
@@ -17,6 +17,23 @@ export default function SimpleMenu(props) {
   };
 
   const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleNew = () => {
+    axios.post(`http://localhost:3001/projects/new`).then((res) => {
+      const project = res.data;
+      console.log(project);
+      alert(`Created a new project with ID: ${project._id}`);
+      props.onProjectChange(project);
+    });
+
+    setAnchorEl(null);
+  };
+
+  const handleSave = () => {
+    console.log("trying to save...");
+    props.onSaveProject();
     setAnchorEl(null);
   };
 
@@ -68,8 +85,9 @@ export default function SimpleMenu(props) {
         onClose={handleClose}
         anchorPosition={{ vertical: "top", horizontal: "left" }}
       >
-	<MenuItem onClick={handleClose}>New</MenuItem>
-	<MyModal />
+        <MenuItem onClick={handleNew}>New</MenuItem>
+        <MenuItem onClick={handleSave}>Save</MenuItem>
+        <MyModal />
         <MenuItem for="file-upload">
           <label className="custom-file-upload">
             {" "}
