@@ -3,7 +3,7 @@ import ReactPlayer from "react-player";
 import "./App.css";
 import Duration from "./components/Duration";
 import Bar from "./components/Bar";
-import Wave from "./components/Wave";
+import Waveform from "./components/Wave";
 import ScriptBox from "./components/ScriptBox";
 import { Grid } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
@@ -24,6 +24,8 @@ class App extends Component {
     played: 0,
     duration: 0,
     volume: 0.8,
+    trackvolume:50,
+    speed:1.0
   };
 
   handleUrlChange = (url) => {
@@ -73,8 +75,12 @@ class App extends Component {
     this.player = player;
   };
 
+  onChange(field, value) {
+        // parent class change handler is always called with field name and value
+        this.setState({[field]: value});
+    }
   render() {
-    const { url, played, duration, playing, volume } = this.state;
+    const { url, played, duration, playing, volume,trackvolume,speed } = this.state;
 
     return (
       <div className="App" style={rootStyle}>
@@ -92,7 +98,7 @@ class App extends Component {
           justify="space-around"
         >
           <div>
-            <ScriptBox />
+            <ScriptBox onChange={this.onChange.bind(this)}/>
           </div>
           <div>
             <ReactPlayer
@@ -147,7 +153,7 @@ class App extends Component {
           onMouseUp={this.handleSeekMouseUp}
         />
 	<div>
-		<Wave /> 
+		<Waveform url={"https://reelcrafter-east.s3.amazonaws.com/aux/test.m4a"} trackvolume={(trackvolume)/100} speed={speed}/> 
 	</div>
       </div>
     );
