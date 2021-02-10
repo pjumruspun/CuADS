@@ -9,7 +9,7 @@ import { AudioUtilityService } from './audio-utility.service';
 export class AudioUtilityController {
     constructor(private audioUtilityService: AudioUtilityService) {}
 
-    @Post('fromreq')
+    @Post('test/fromreq')
     @UseInterceptors(FilesInterceptor('files'))
     async modifyAudioFromReq(@Req() request, @Res() response, @Body() modifyAudioDto: ModifyAudioDto) {
         try {
@@ -20,13 +20,14 @@ export class AudioUtilityController {
         }
     }
 
-    @Post('fromurl')
-    async modifyAudioFromURL(@Res() response, @Body() modifyAudioFromUrlDto: ModifyAudioFromURLDto) {
+    @Post('test/fromurl')
+    @UseInterceptors(FilesInterceptor('files'))
+    async modifyAudioFromURL(@Res() response, @Body() modifyAudioFromURLDto: ModifyAudioFromURLDto) {
         try {
-            await this.audioUtilityService.modifyAudioFromURL(response, modifyAudioFromUrlDto);
+            await this.audioUtilityService.modifyAudioFromURL(response, modifyAudioFromURLDto);
         } catch (error) {
             console.log(error.message);
-            return response.status(500).json(`Failed to modify from url: ${error.message}`);
+            return response.status(500).json(`Failed to modify from req: ${error.message}`);
         }
     }
 }

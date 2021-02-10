@@ -7,7 +7,7 @@ var path = require('path')
 var ffmpeg = require('fluent-ffmpeg')
 var pathToFfmpeg = require('ffmpeg-static')
 var fs = require('fs');
-var http = require('http')
+var https = require('https')
 ffmpeg.setFfmpegPath(pathToFfmpeg);
 
 @Injectable()
@@ -24,24 +24,6 @@ export class AudioUtilityService {
         // File that has been uploaded in the request
         var file = request.files[0]
 
-        await this.modifyAudio(file, response, modifyAudioDto);
-    }
-
-    async modifyAudioFromURL(@Res() response, @Body() modifyAudioFromURLDto: ModifyAudioFromURLDto) {
-        const url = "http://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3"
-        const urlList = url.split('/');
-        const fileName = urlList[urlList.length - 1];
-        console.log(fileName)
-
-        const tmpFilePath = `tmp/${fileName}`
-
-        const fwrite = fs.createWriteStream(tmpFilePath);
-        const req = http.get(url, function(res) {
-            res.pipe(fwrite); // Successfully written file
-        });
-    }
-
-    async modifyAudio(file, @Res() response, @Body() modifyAudioDto: ModifyAudioDto) {
         // We will delete this file later
         const tmpFilePath = `tmp/${file.originalname}`;
 
@@ -50,9 +32,56 @@ export class AudioUtilityService {
             if (err) console.log(`ERROR: ${err}`);
         })
 
+        await this.modifyAudio(tmpFilePath, file.originalname, response, modifyAudioDto);
+    }
+
+    async modifyAudioFromURL(@Res() response, @Body() modifyAudioFromURLDto: ModifyAudioFromURLDto) {
+        const url = "https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3"
+        const urlList = url.split('/');
+        const fileName = urlList[urlList.length - 1];
+        console.log(fileName)
+
+        const tmpFilePath = `tmp/${fileName}`
+
+        const fwrite = await fs.createWriteStream(tmpFilePath);
+
+        var params = {
+            host: 'file-examples-com.github.io',
+            method: 'GET',
+            path: '/uploads/2017/11/file_example_MP3_700KB.mp3'
+        };
+
+        await this.getSomething(url).then(console.log);
+
+        const req = https.get(url, function(res) {
+            res.pipe(fwrite);
+            res.on('end', function() {
+                // Need to fix this, cannot call modifyAudio from this callback event
+                this.modifyAudio(tmpFilePath, fileName, response, modifyAudioFromURLDto);
+            })
+        })
+    }
+
+    getSomething(url) {
+        return new Promise((resolve, reject) => {
+            https.get(url, (res) => {
+                res.on('error', () => {
+                    console.log("Promise error")
+                    reject("Meep")
+                })
+                resolve(res)
+            })
+        })
+    }
+
+    async modifyAudio(tmpFilePath, originalFileName, @Res() response, @Body() modifyAudioDto: ModifyAudioDto) {
+        // Cut the old file type from the name
+        const fileName = originalFileName.slice(0, -4)
+        console.log(fileName)
+
         // We will modify temp file and export the result into ffmpegOutPath
         var ffmpegInPath = path.join(__dirname, `../../${tmpFilePath}`) 
-        var ffmpegOutPath = path.join(__dirname, `../../tmp/${file.originalname}.mp3`)
+        var ffmpegOutPath = path.join(__dirname, `../../tmp/${fileName}.mp3`)
 
         // Audio filters
         const volumeFilter = `volume=${modifyAudioDto.volume}`
