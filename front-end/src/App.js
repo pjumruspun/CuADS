@@ -13,7 +13,12 @@ import PauseIcon from "@material-ui/icons/Pause";
 var rootStyle = {
   backgroundColor: "#2e2d2d",
   color: "white",
-  height: "100vh",
+  height: "100%",
+};
+
+const ZOOM_RANGE = {
+  min: 20,
+  max: 200
 };
 
 class App extends Component {
@@ -21,11 +26,13 @@ class App extends Component {
     playing: false,
     url:
       "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4",
-    played: 0,
+    played: 0.5,
     duration: 0,
     volume: 0.8,
     trackvolume:50,
-    speed:1.0
+    speed:1.0,
+    zoom:50
+    
   };
 
   handleUrlChange = (url) => {
@@ -79,8 +86,9 @@ class App extends Component {
         // parent class change handler is always called with field name and value
         this.setState({[field]: value});
     }
+
   render() {
-    const { url, played, duration, playing, volume,trackvolume,speed } = this.state;
+    const { url, played, duration, playing, volume,trackvolume,speed,zoom} = this.state;
 
     return (
       <div className="App" style={rootStyle}>
@@ -153,7 +161,19 @@ class App extends Component {
           onMouseUp={this.handleSeekMouseUp}
         />
 	<div>
-		<Waveform url={"https://reelcrafter-east.s3.amazonaws.com/aux/test.m4a"} trackvolume={(trackvolume)/100} speed={speed}/> 
+		<Waveform url={"https://reelcrafter-east.s3.amazonaws.com/aux/test.m4a"} trackvolume={(trackvolume)/100} speed={speed} zoom={zoom} playing={playing} played={duration * played}/>
+		<Waveform url={"https://reelcrafter-east.s3.amazonaws.com/aux/test.m4a"} trackvolume={(trackvolume)/100} speed={speed} zoom={zoom} playing={playing} played={duration * played}/> 	
+	<div id="zoom">
+          zoom
+          <input
+            type="range"
+            value={zoom}
+            onChange={e => this.setState({ zoom: e.target.value })}
+            min={ZOOM_RANGE.min}
+            max={ZOOM_RANGE.max}
+            step="10"
+          ></input>
+        </div>
 	</div>
       </div>
     );

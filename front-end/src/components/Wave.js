@@ -11,27 +11,23 @@ const formWaveSurferOptions = ref => ({
   barRadius: 3,
   responsive: true,
   height: 80,
-  // If true, normalize by the maximum peak instead of 1.0.
   normalize: true,
   // Use the PeakCache to improve rendering speed of large waveforms.
   //partialRender: true
 });
 
-const ZOOM_RANGE = {
-  min: 20,
-  max: 200
-};
-
-export default function Waveform({url,trackvolume,speed}) {
+export default function Waveform({url,trackvolume,speed,zoom,playing,played}) {
   const waveformRef = useRef(null);
   const wavesurfer = useRef(null);
-  const [playing, setPlay] = useState(false);
+  //const [playing, setPlay] = useState(false);
   const [volume, setVolume] = useState(0.5);
-  const [zoom, setZoom] = useState(50);
+  const [border, setBorder] = useState('1px solid grey');
+  const [selected, setSelected] = useState(false);
+  //const [zoom, setZoom] = useState(50);
   // create new WaveSurfer instance
   // On component mount and when url changes
   useEffect(() => {
-    setPlay(false);
+    //setPlay(false);
 
     const options = formWaveSurferOptions(waveformRef.current);
     wavesurfer.current = WaveSurfer.create(options);
@@ -66,28 +62,30 @@ export default function Waveform({url,trackvolume,speed}) {
     const waveSurfer = wavesurfer.current;
     if (waveSurfer) waveSurfer.zoom(zoom);
   }, [zoom]);
- const handlePlayPause = () => {
-    setPlay(!playing);
+
+   useEffect(() => {
     wavesurfer.current.playPause();
+   }, [playing]);
+  
+   useEffect(() => {
+    const waveSurfer = wavesurfer.current;
+	if(playing){
+        waveSurfer.play(played);
+	}
+  }, [played]);
+ 
+ const handleSelected = () => {
+    if(!selected){
+    setBorder('3px solid white');
+    setSelected(true);}
+    else{
+    setBorder('1px solid grey');
+    setSelected(false);}
   };
 
   return (
     <div>
-      <div className="controls">
-        <button onClick={handlePlayPause}>{!playing ? "Play" : "Pause"}</button>
-      </div>
-      <div style={{border: '1px solid grey',height: 80 }} id="waveform" ref={waveformRef} />  
-    <div id="zoom">
-          zoom
-          <input
-            type="range"
-            value={zoom}
-            onChange={e => setZoom(e.target.value)}
-            min={ZOOM_RANGE.min}
-            max={ZOOM_RANGE.max}
-            step="10"
-          ></input>
-        </div>
+      <div style={{border: border ,height: 80 }} onClick={handleSelected} id="waveform" ref={waveformRef} /> 
   </div>
   );
 }
