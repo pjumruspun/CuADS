@@ -25,6 +25,8 @@ class App extends Component {
     duration: 0,
     volume: 0.8,
     projectId: "",
+    topText:
+      "No project opened, please create a new project or open an existing project from File menu.",
   };
 
   handleUrlChange = (url) => {
@@ -65,19 +67,27 @@ class App extends Component {
   };
 
   handleVolumeChange = (e) => {
-    console.log(e);
     console.log("volume change " + e);
     this.setState({ volume: parseFloat(e) });
   };
 
   handleProjectChange = (project) => {
     console.log(`change project id to: ${project._id}`);
-    this.setState({ projectId: project._id });
+    this.setState({
+      projectId: project._id,
+      topText: `ProjectID: ${project._id}`,
+    });
     // Also need to update URL and other stuff
     this.handleUrlChange(project.videoURL);
   };
 
   handleSaveProject = () => {
+    if (this.state.projectId == "") {
+      alert(
+        `You have no currently active project, please create a new project or open an existing project.`
+      );
+      return;
+    }
     console.log(
       `saving url=${this.state.url}, projectId=${this.state.projectId}`
     );
@@ -96,7 +106,15 @@ class App extends Component {
   };
 
   render() {
-    const { url, played, duration, playing, volume } = this.state;
+    const {
+      url,
+      played,
+      duration,
+      playing,
+      volume,
+      topText,
+      projectId,
+    } = this.state;
 
     return (
       <div className="App" style={rootStyle}>
@@ -107,7 +125,7 @@ class App extends Component {
           onSaveProject={() => this.handleSaveProject()}
         />
         <header>
-          <p>Audio Description Project Main Page</p>
+          <p>{topText}</p>
         </header>
         <Grid
           container

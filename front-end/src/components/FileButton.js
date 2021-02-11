@@ -87,7 +87,9 @@ export default function SimpleMenu(props) {
       >
         <MenuItem onClick={handleNew}>New</MenuItem>
         <MenuItem onClick={handleSave}>Save</MenuItem>
-        <MyModal />
+        <MyModal
+          onProjectChange={(project) => props.onProjectChange(project)}
+        />
         <MenuItem for="file-upload">
           <label className="custom-file-upload">
             {" "}
