@@ -49,7 +49,7 @@ export default function SimpleMenu(props) {
     let progress = 0;
 
     setProgress('in-progress');
-
+    props.onProgressChange('in-progress');
     file = files.item(0);
     if (file) console.log(file.name);
 
@@ -66,12 +66,16 @@ export default function SimpleMenu(props) {
           console.log(`${loaded}kb of ${total}kb | ${progress}%`);
   
           setPercentage(progress);
+	  props.onUploading(progress);
+       
         }
       })
       .then((res) => {
         // res.data contains S3 video URL
         props.onChange(res.data);
         setProgress('finished');
+
+	props.onProgressChange('finished');
       });
 
     document.getElementById(classNames.videoInput).value = "";
@@ -93,8 +97,6 @@ export default function SimpleMenu(props) {
       >
         File
       </Button>
-      { progress === 'in-progress' ? <CircularProgress variant="determinate" value={percentage} /> : null }
-      <span className="text">{progress === 'in-progress' ? 'Uploading' : null}</span>
       <Menu
         id="simple-menu1"
         anchorEl={anchorEl}
