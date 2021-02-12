@@ -22,6 +22,11 @@ export default function SimpleMenu(props) {
       setProgress(progress)
    }
 
+   const progressStyle = {
+     color: '#F2C94C',
+     padding: '0 10px 0 10px'
+   }
+
   return (
     <div align="left" style={rootStyle}>
       <Grid container direction="row">
@@ -33,7 +38,7 @@ export default function SimpleMenu(props) {
 	  onProgressChange={onProgressChange}
         />
         <SettingButton onChange={(value) => props.onVolumeChange(value)} />
-	{ progress === 'in-progress' ? <CircularProgress variant="determinate" value={percentage} /> : null }
+	{ progress === 'in-progress' ? <CircularProgress variant="determinate" style={progressStyle} value={percentage} /> : null }
       <span className="text">{progress === 'in-progress' ? 'Uploading' : null}</span>
       </Grid>
     </div>
