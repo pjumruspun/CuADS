@@ -9,6 +9,7 @@ import { Grid } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
+import axios from "axios";
 
 var rootStyle = {
   backgroundColor: "#2e2d2d",
@@ -32,7 +33,9 @@ class App extends Component {
     trackvolume:50,
     speed:1.0,
     zoom:50
-    
+    projectId: "",
+    topText:
+      "No project opened, please create a new project or open an existing project from File menu.",
   };
 
   handleUrlChange = (url) => {
@@ -73,9 +76,38 @@ class App extends Component {
   };
 
   handleVolumeChange = (e) => {
-    console.log(e);
     console.log("volume change " + e);
     this.setState({ volume: parseFloat(e) });
+  };
+
+  handleProjectChange = (project) => {
+    console.log(`change project id to: ${project._id}`);
+    this.setState({
+      projectId: project._id,
+      topText: `ProjectID: ${project._id}`,
+    });
+    // Also need to update URL and other stuff
+    this.handleUrlChange(project.videoURL);
+  };
+
+  handleSaveProject = () => {
+    if (this.state.projectId == "") {
+      alert(
+        `You have no currently active project, please create a new project or open an existing project.`
+      );
+      return;
+    }
+    console.log(
+      `saving url=${this.state.url}, projectId=${this.state.projectId}`
+    );
+
+    axios
+      .put(`http://localhost:3001/projects/${this.state.projectId}`, {
+        videoURL: this.state.url,
+      })
+      .then((res) => {
+        console.log(res);
+      });
   };
 
   ref = (player) => {
@@ -88,16 +120,30 @@ class App extends Component {
     }
 
   render() {
-    const { url, played, duration, playing, volume,trackvolume,speed,zoom} = this.state;
+
+    const {
+      url,
+      played,
+      duration,
+      playing,
+      volume,
+      topText,
+      projectId,
+      trackvolume,
+      speed,
+      zoom
+    } = this.state;
 
     return (
       <div className="App" style={rootStyle}>
         <Bar
           onVolumeChange={(value) => this.handleVolumeChange(value)}
           onURLChange={(url) => this.handleUrlChange(url)}
+          onProjectChange={(project) => this.handleProjectChange(project)}
+          onSaveProject={() => this.handleSaveProject()}
         />
         <header>
-          <p>Audio Description Project Main Page</p>
+          <p>{topText}</p>
         </header>
         <Grid
           container
