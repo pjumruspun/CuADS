@@ -9,6 +9,8 @@ import IconButton from "@material-ui/core/IconButton";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 
+import TrackSection from "./components/TrackSection"
+
 var rootStyle = {
   backgroundColor: "#2e2d2d",
   color: "white",
@@ -145,6 +147,7 @@ class App extends Component {
           onInput={this.handleSeekChange}
           onMouseUp={this.handleSeekMouseUp}
         />
+        <TrackSection />
       </div>
     );
   }
