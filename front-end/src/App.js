@@ -14,7 +14,7 @@ import axios from "axios";
 var rootStyle = {
   backgroundColor: "#2e2d2d",
   color: "white",
-  height: "100%",
+  height: "100vh",
 };
 
 const ZOOM_RANGE = {
@@ -32,7 +32,7 @@ class App extends Component {
     volume: 0.8,
     trackvolume:50,
     speed:1.0,
-    zoom:50
+    zoom:50,
     projectId: "",
     topText:
       "No project opened, please create a new project or open an existing project from File menu.",
@@ -118,7 +118,7 @@ class App extends Component {
         // parent class change handler is always called with field name and value
         this.setState({[field]: value});
     }
-
+  
   render() {
 
     const {
@@ -208,7 +208,6 @@ class App extends Component {
         />
 	<div>
 		<Waveform url={"https://reelcrafter-east.s3.amazonaws.com/aux/test.m4a"} trackvolume={(trackvolume)/100} speed={speed} zoom={zoom} playing={playing} played={duration * played}/>
-		<Waveform url={"https://reelcrafter-east.s3.amazonaws.com/aux/test.m4a"} trackvolume={(trackvolume)/100} speed={speed} zoom={zoom} playing={playing} played={duration * played}/> 	
 	<div id="zoom">
           zoom
           <input
