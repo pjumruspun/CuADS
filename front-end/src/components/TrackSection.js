@@ -10,49 +10,64 @@ var rootStyle = {
   align: "bottom",
   marginBottom: "10vh",
 };
-
 class TrackSection extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      numTracks: 0,
-      track_items: [],
+      tracks: [],
+      id: 0,
     };
   }
 
-  onAddTrack = (trackId) => {
-    this.setState({
-      numTracks: this.state.numTracks + 1,
-    });
+  onAddTrack = () => {
+    this.setState((prevState) => ({
+      tracks: [...prevState.tracks, prevState.id],
+      id: prevState.id + 1,
+    }));
   };
 
-
+  onDeleteTrack = (id) => {
+    this.setState((prevState) => ({
+      tracks: prevState.tracks.filter((el) => el !== id),
+    }));
+  };
 
   render() {
-    for (var i = 0; i < this.state.numTracks; i += 1) {
-      track_items.push(<TrackItem key={i} id={i} onDeleteTrack = {this.onDeleteTrack}/>);
-    }
-
     return (
       <div style={rootStyle}>
-        <Grid container style={{ margin: "3px" }}>
-          <Grid container direction="row">
-            <Grid item direction="column" style={{ backgroundColor: "333333" }}>
-              <Button onClick={this.onAddTrack} color="primary">
+        <Grid container>
+          <Grid container direction="row" style={{paddingLeft:'10px'}}>
+            <Grid item xs={3} direction="column" style={{ alignContent:'left', backgroundColor: "#333333", height:'10vh',width:'10vw',border:'solid',borderWidth:'thin',borderColor:'#4F4F4F'}}>
+              <Button onClick={this.onAddTrack} style={{textTransform: 'none',color:'#E0E0E0'}}>
                 +new track
               </Button>
             </Grid>
-            <Grid item direction="column" style={{ backgroundColor: "7C7C7C" }}>
+            <Grid item xs={9} direction="column" style={{ backgroundColor: "#333333",height:'10vh',border:'solid',borderWidth:'thin',borderColor:'#4F4F4F'}}>
               time ruler section
             </Grid>
           </Grid>
-          <Grid container direction="row">
+          <Grid container direction="row" style={{paddingLeft:'10px'}}>
+            <Grid item xs={3} direction="column" style={{ backgroundColor: "#333333",height:'10vh',width:'10vw',border:'solid',borderWidth:'thin',borderColor:'#4F4F4F'}}>
             video track
+            </Grid>
+             <Grid item xs={9} direction="column" style={{ backgroundColor: "#333333",height:'10vh',width:'10vw',border:'solid',borderWidth:'thin',borderColor:'#4F4F4F'}}>
+            
+            </Grid>
           </Grid>
-          <Grid container direction="row">
+          <Grid container direction="row" style={{paddingLeft:'10px'}}>
+            <Grid item xs={3} direction="column" style={{ backgroundColor: "#333333",height:'10vh',width:'10vw',border:'solid',borderWidth:'thin',borderColor:'#4F4F4F'}}>
             audio track
+            </Grid>
+            <Grid item xs={9} direction="column" style={{ backgroundColor: "#333333",height:'10vh',width:'10vw',border:'solid',borderWidth:'thin',borderColor:'#4F4F4F'}}>
+            </Grid>
           </Grid>
-          {track_items}
+          {this.state.tracks.map((track) => (
+              <TrackItem
+                key={track}
+                id={track}
+                  onDeleteTrack={this.onDeleteTrack}
+                />
+              ))}
         </Grid>
       </div>
     );
