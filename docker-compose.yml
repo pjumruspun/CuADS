@@ -1,0 +1,28 @@
+version: "3.7"
+services:
+  mongo:
+    container_name: mongo
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+
+  front-end:
+    build: ./front-end
+    tty: true
+    volumes:
+      - "./front-end:/usr/src/app"
+    command: ["yarn", "start"]
+    ports:
+      - "3000:3000"
+
+  back-end:
+    container_name: back-end
+    build: ./back-end
+    tty: true
+    depends_on:
+      - mongo
+    volumes:
+      - "./back-end:/usr/src/app"
+    ports:
+      - "3001:3001"
+    command: ["yarn", "start"]
