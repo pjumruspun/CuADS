@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { CreateProjectDto } from '../dto/create-project.dto';
 import { UpdateProjectDto } from '../dto/update-project.dto';
 import { IProject } from '../interface/projects.interface';
@@ -38,13 +38,19 @@ export class ProjectsController {
 
     @ApiOperation({ summary: 'Create blank project, use this instead of [POST] /projects if you can'})
     @Post('new')
-    async createNewProject(): Promise<IProject> {
-        return this.projectsService.createNewProject();
+    async createNewProject(@Body() createProjectDto: CreateProjectDto): Promise<IProject> {
+        return this.projectsService.createNewProject(createProjectDto);
     }
 
     @ApiOperation({ summary: 'Update one project by {id}, intended for ONLY updating passcode or/and videoURL'})
     @Put(':id')
     async update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto): Promise<IProject> {
         return this.projectsService.update(id, updateProjectDto);
+    }
+
+    @ApiOperation({ summary: 'Delete one project by {id}'})
+    @Delete(':id')
+    async delete(@Param('id') id: string): Promise<IProject> {
+        return this.projectsService.delete(id);
     }
 }
