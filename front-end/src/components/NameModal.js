@@ -2,8 +2,9 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import MenuItem from "@material-ui/core/MenuItem";
-import ProjectButton from "./ProjectButton.js";
+import TextField from "@material-ui/core/TextField";
 import axios from "axios";
+import Button from "@material-ui/core/Button";
 
 function rand() {
   return Math.round(Math.random() * 20) - 10;
@@ -30,56 +31,56 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const MyModal = (props) => {
+const NameModal = (props) => {
   const classes = useStyles();
   // getModalStyle is not a pure function, we roll the style only on the first render
   const [modalStyle] = React.useState(getModalStyle);
   const [open, setOpen] = React.useState(false);
-  const [nameIdPairs, setNameIdPairs] = React.useState([
-    { name: "dummyName", projectId: "dummyId" },
-  ]);
+  const [text, setText] = React.useState("");
 
-  const handleOpen = () => {
-    axios.get(`http://localhost:3001/projects`).then((res) => {
-      var pairs = [];
-      const projects = res.data;
-      projects.forEach((project) => {
-        pairs.push({ name: project.name, projectId: project._id });
-      });
-      setNameIdPairs(pairs);
-    });
+  const handleNew = () => {
     setOpen(true);
   };
 
+  const handleCreate = () => {
+    axios
+      .post(`http://localhost:3001/projects/new`, { name: text })
+      .then((res) => {
+        const project = res.data;
+        console.log(project);
+        // alert(`Created a new project with ID: ${project._id}`);
+        props.onProjectChange(project);
+      });
+    handleClose();
+  };
+
   const handleClose = () => {
+    setText("");
     setOpen(false);
   };
 
   return (
     <div>
-      <MenuItem onClick={handleOpen}>Open</MenuItem>
+      <MenuItem onClick={handleNew}>New</MenuItem>
       <Modal
         // aria-labelledby="simple-modal-title"
         // aria-describedby="simple-modal-description"
         open={open}
         onClose={handleClose}
-        x
       >
         <div style={modalStyle} className={classes.paper}>
-          <h2 id="simple-modal-title">Select Project</h2>
+          <h2 id="simple-modal-title">Input new project name</h2>
           <p id="simple-modal-description">
-            {nameIdPairs.map((pair) =>
-              React.createElement(ProjectButton, {
-                text: pair.name,
-                projectId: pair.projectId,
-                onProjectChange: (project) => props.onProjectChange(project),
-                onProjectButtonClick: handleClose,
-              })
-            )}
+            <TextField
+              label="Your new project name"
+              fullWidth="true"
+              onChange={(e) => setText(e.target.value)}
+            ></TextField>
+            <Button onClick={handleCreate}>Create</Button>
           </p>
         </div>
       </Modal>
     </div>
   );
 };
-export default MyModal;
+export default NameModal;

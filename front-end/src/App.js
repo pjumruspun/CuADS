@@ -75,7 +75,7 @@ class App extends Component {
     console.log(`change project id to: ${project._id}`);
     this.setState({
       projectId: project._id,
-      topText: `ProjectID: ${project._id}`,
+      topText: `Project Name: ${project.name}`,
     });
     // Also need to update URL and other stuff
     this.handleUrlChange(project.videoURL);
