@@ -1,9 +1,7 @@
 import React, { Component, useState } from "react";
 import { Grid, InputBase } from "@material-ui/core";
-import { ListItem } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
-import style from '../style/track.css'
 class TrackItem extends Component {
   constructor(props) {
     super(props);
@@ -16,7 +14,7 @@ class TrackItem extends Component {
   render() {
     var onDeleteTrack = this.props.onDeleteTrack;
     return (
-      <Grid container direction="row" className={style.track_container}>
+      <Grid container direction="row" style={{paddingLeft:'10px', height:'10vh'}}>
         <Grid item xs={3} direction="column"style={{ backgroundColor: "#333333",border:'solid',borderWidth:'thin',borderColor:'#4F4F4F',paddingTop:'10px'}}>
           <InputBase
             inputProps={{ "aria-label": "naked" }}
