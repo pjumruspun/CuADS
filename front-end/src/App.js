@@ -81,6 +81,11 @@ class App extends Component {
     console.log("volume change " + e);
     this.setState({ volume: parseFloat(e) });
   };
+  
+  handleSelected = (e,f) => {
+    this.setState({ trackvolume: e,speed:f });
+  };
+
 
   handleProjectChange = (project) => {
     console.log(`change project id to: ${project._id}`);
@@ -209,7 +214,7 @@ class App extends Component {
           onMouseUp={this.handleSeekMouseUp}
         />
 	
-        <TrackSection trackvolumw={trackvolume} speed={speed} zoom={zoom} playing={playing} played={duration * played} onChange={this.onChange.bind(this)}/>
+        <TrackSection trackvolume={trackvolume} speed={speed} zoom={zoom} playing={playing} played={duration * played} onSelected={this.handleSelected}/>
  
 	<div id="zoom">
           zoom

@@ -5,7 +5,7 @@ import TrackItem from "./TrackItem";
 import Waveform from "./Wave";
 
 var rootStyle = {
-  backgroundColor: "#141414",
+  backgroundColor: "#2e2d2d",
   height: "auto",
   width: "98vw",
   align: "bottom",
@@ -53,7 +53,7 @@ class TrackSection extends Component{
             </Grid>
              <Grid item xs={9} direction="column" style={{ backgroundColor: "#333333",height:'10vh',width:'10vw',border:'solid',borderWidth:'thin',borderColor:'#4F4F4F'}}>
              <div>
-		<Waveform url={"https://reelcrafter-east.s3.amazonaws.com/aux/test.m4a"} trackvolume={this.props.trackvolume} speed={this.props.speed} zoom={this.props.zoom} playing={this.props.playing} played={this.props.played}/>
+		<Waveform onSelected={(volume,speed) => this.props.onSelected(volume,speed)} url={"https://reelcrafter-east.s3.amazonaws.com/aux/test.m4a"} trackvolume={this.props.trackvolume} speed={this.props.speed} zoom={this.props.zoom} playing={this.props.playing} played={this.props.played}/>
              </div>
             </Grid>
           </Grid>

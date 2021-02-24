@@ -16,11 +16,12 @@ const formWaveSurferOptions = ref => ({
   //partialRender: true
 });
 
-export default function Waveform({url,trackvolume,speed,zoom,playing,played}) {
+export default function Waveform(props) {
   const waveformRef = useRef(null);
   const wavesurfer = useRef(null);
   //const [playing, setPlay] = useState(false);
-  const [volume, setVolume] = useState(0);
+  const [volume, setVolume] = useState(50);
+  const [speed, setSpeed] = useState(1.0);
   const [border, setBorder] = useState('1px solid grey');
   const [selected, setSelected] = useState(false);
   //const [zoom, setZoom] = useState(50);
@@ -32,7 +33,7 @@ export default function Waveform({url,trackvolume,speed,zoom,playing,played}) {
     const options = formWaveSurferOptions(waveformRef.current);
     wavesurfer.current = WaveSurfer.create(options);
 
-    wavesurfer.current.load(url);
+    wavesurfer.current.load(props.url);
 
     wavesurfer.current.on("ready", function() {
       // https://wavesurfer-js.org/docs/methods.html
@@ -42,47 +43,50 @@ export default function Waveform({url,trackvolume,speed,zoom,playing,played}) {
       // make sure object stillavailable when file loaded
       if (wavesurfer.current) {
         wavesurfer.current.setVolume(0);
-        setVolume(0);
       }
     });
      
     // Removes events, elements and disconnects Web Audio nodes.
     // when component unmount
   return () => wavesurfer.current.destroy();
-  }, [url]);
+  }, [props.url]);
   
   useEffect(() => {
     if(selected){
     wavesurfer.current.setVolume(0);
+    setVolume(props.trackvolume)
     }
-    }, [trackvolume]);
+    }, [props.trackvolume]);
   useEffect(() => {
     if(selected){
     wavesurfer.current.setPlaybackRate(1.0);
-    alert(speed);
+    setSpeed(props.speed);
     }
-    }, [speed]);
+    }, [props.speed]);
 
    useEffect(() => {
     const waveSurfer = wavesurfer.current;
-    if (waveSurfer) waveSurfer.zoom(zoom);
-  }, [zoom]);
+    if (waveSurfer) waveSurfer.zoom(props.zoom);
+  }, [props.zoom]);
 
    useEffect(() => {
     wavesurfer.current.playPause();
-   }, [playing]);
+   }, [props.playing]);
   
    useEffect(() => {
     const waveSurfer = wavesurfer.current;
-	if(playing){
-        waveSurfer.play(played);
+	if(props.playing){
+        waveSurfer.play(props.played);
 	}
-  }, [played]);
+  }, [props.played]);
  
  const handleSelected = () => {
     if(!selected){
     setBorder('3px solid white');
-    setSelected(true);}
+    props.onSelected(volume,speed); 
+    setSelected(true);
+    
+    }
     else{
     setBorder('1px solid grey');
     setSelected(false);}

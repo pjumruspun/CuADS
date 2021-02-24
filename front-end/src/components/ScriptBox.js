@@ -13,39 +13,36 @@ var rootStyle = {
 class ScriptBox extends Component {
 constructor(props) {
     super(props);
-    this.state = {volume: this.props.trackvolume
-		,speed: this.props.speed
-		,pitch: 1};
+    this.state = {pitch: 1};
   }
 rmVolume = () => {
-  if(this.state.volume!=0){
-  this.setState({volume:this.state.volume-5});
+  if(this.props.trackvolume!=0){
+  
   const fieldName = 'trackvolume';
-  const fieldValue = this.state.volume-5;
+  const fieldValue = this.props.trackvolume-5;
   this.props.onChange(fieldName, fieldValue);
   }
 }
 addVolume = () => {
-  if(this.state.volume!=100){
-  this.setState({volume:this.state.volume+5});
+  if(this.props.trackvolume!=100){
+
   const fieldName = 'trackvolume';
-  const fieldValue = this.state.volume+5;
+  const fieldValue = this.props.trackvolume+5;
   this.props.onChange(fieldName, fieldValue);
   }
 }
 rmSpeed = () => {
-  if(this.state.speed!=0.25){
-  this.setState({speed:this.state.speed-0.25});
+  if(this.props.speed!=0.25){
+  
   const fieldName = 'speed';
-  const fieldValue = this.state.speed-0.25;
+  const fieldValue = this.props.speed-0.25;
   this.props.onChange(fieldName, fieldValue);
   }
 }
 addSpeed = () => {
-  if(this.state.speed!=2.00){
-  this.setState({speed:this.state.speed+0.25});
+  if(this.props.speed!=2.00){
   const fieldName = 'speed';
-  const fieldValue = this.state.speed+0.25;
+  const fieldValue = this.props.speed+0.25;
   this.props.onChange(fieldName, fieldValue);
   }
 }
@@ -129,7 +126,7 @@ return (
 				<Button onClick={this.rmVolume}>
       				<RemoveIcon style={{color : '#bababa'}}/>
 				</Button>
-      					<input type="text" placeholder="Volume" value={this.state.volume+"%"} class="input-box" style={{backgroundColor : '#bababa',width: '3vw'}}/>
+      					<input type="text" placeholder="Volume" value={this.props.trackvolume+"%"} class="input-box" style={{backgroundColor : '#bababa',width: '3vw'}}/>
       				<Button onClick={this.addVolume}>
 				<AddIcon style={{color : '#bababa'}}/>
 				</Button>
@@ -139,7 +136,7 @@ return (
       				<Button onClick={this.rmSpeed}>
       				<RemoveIcon style={{color : '#bababa'}}/>
 				</Button>
-      					<input type="text" placeholder="Speed" value={"x"+this.state.speed} class="input-box" style={{backgroundColor : '#bababa',width: '3vw'}}/>
+      					<input type="text" placeholder="Speed" value={"x"+this.props.speed} class="input-box" style={{backgroundColor : '#bababa',width: '3vw'}}/>
       				<Button onClick={this.addSpeed}>
 				<AddIcon style={{color : '#bababa'}}/>
 				</Button>
