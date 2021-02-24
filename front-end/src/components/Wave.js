@@ -20,7 +20,7 @@ export default function Waveform({url,trackvolume,speed,zoom,playing,played}) {
   const waveformRef = useRef(null);
   const wavesurfer = useRef(null);
   //const [playing, setPlay] = useState(false);
-  const [volume, setVolume] = useState(0.5);
+  const [volume, setVolume] = useState(0);
   const [border, setBorder] = useState('1px solid grey');
   const [selected, setSelected] = useState(false);
   //const [zoom, setZoom] = useState(50);
@@ -41,8 +41,8 @@ export default function Waveform({url,trackvolume,speed,zoom,playing,played}) {
       //	wavesurfer.drawBuffer();
       // make sure object stillavailable when file loaded
       if (wavesurfer.current) {
-        wavesurfer.current.setVolume(trackvolume);
-        setVolume(trackvolume);
+        wavesurfer.current.setVolume(0);
+        setVolume(0);
       }
     });
      
@@ -52,10 +52,15 @@ export default function Waveform({url,trackvolume,speed,zoom,playing,played}) {
   }, [url]);
   
   useEffect(() => {
-    wavesurfer.current.setVolume(trackvolume);
+    if(selected){
+    wavesurfer.current.setVolume(0);
+    }
     }, [trackvolume]);
   useEffect(() => {
-    wavesurfer.current.setPlaybackRate(speed);
+    if(selected){
+    wavesurfer.current.setPlaybackRate(1.0);
+    alert(speed);
+    }
     }, [speed]);
 
    useEffect(() => {

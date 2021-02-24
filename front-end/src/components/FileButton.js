@@ -1,16 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import MyModal from "./MyModal.js";
 import axios from "axios";
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 export default function SimpleMenu(props) {
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [modalShow, setModalShow] = React.useState(false);
   const classNames = {
     videoInput: "video-input",
   };
+
+  const [percentage, setPercentage] = useState(0);
+  const [progress, setProgress] = useState(null);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -41,7 +46,10 @@ export default function SimpleMenu(props) {
     var fileInput = document.getElementById(classNames.videoInput);
     var files = fileInput.files;
     var file;
+    let progress = 0;
 
+    setProgress('in-progress');
+    props.onProgressChange('in-progress');
     file = files.item(0);
     if (file) console.log(file.name);
 
@@ -52,10 +60,22 @@ export default function SimpleMenu(props) {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        onUploadProgress: (ProgressEvent) => {
+          const {loaded, total} = ProgressEvent;
+          let progress = Math.floor( (loaded / total) * 100 )
+          console.log(`${loaded}kb of ${total}kb | ${progress}%`);
+  
+          setPercentage(progress);
+	  props.onUploading(progress);
+       
+        }
       })
       .then((res) => {
         // res.data contains S3 video URL
         props.onChange(res.data);
+        setProgress('finished');
+
+	props.onProgressChange('finished');
       });
 
     document.getElementById(classNames.videoInput).value = "";
@@ -108,3 +128,4 @@ export default function SimpleMenu(props) {
     </div>
   );
 }
+

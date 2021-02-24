@@ -3,7 +3,7 @@ import ReactPlayer from "react-player";
 import "./App.css";
 import Duration from "./components/Duration";
 import Bar from "./components/Bar";
-import Waveform from "./components/Wave";
+
 import ScriptBox from "./components/ScriptBox";
 import { Grid } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
@@ -11,10 +11,12 @@ import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import axios from "axios";
 
+import TrackSection from "./components/TrackSection"
+
 var rootStyle = {
   backgroundColor: "#2e2d2d",
   color: "white",
-  height: "100vh",
+  
 };
 
 const ZOOM_RANGE = {
@@ -152,7 +154,7 @@ class App extends Component {
           justify="space-around"
         >
           <div>
-            <ScriptBox onChange={this.onChange.bind(this)}/>
+            <ScriptBox trackvolume={trackvolume} speed={speed} onChange={this.onChange.bind(this)}/>
           </div>
           <div>
             <ReactPlayer
@@ -206,8 +208,9 @@ class App extends Component {
           onInput={this.handleSeekChange}
           onMouseUp={this.handleSeekMouseUp}
         />
-	<div>
-		<Waveform url={"https://reelcrafter-east.s3.amazonaws.com/aux/test.m4a"} trackvolume={(trackvolume)/100} speed={speed} zoom={zoom} playing={playing} played={duration * played}/>
+	
+        <TrackSection trackvolumw={trackvolume} speed={speed} zoom={zoom} playing={playing} played={duration * played} onChange={this.onChange.bind(this)}/>
+ 
 	<div id="zoom">
           zoom
           <input
@@ -218,9 +221,8 @@ class App extends Component {
             max={ZOOM_RANGE.max}
             step="10"
           ></input>
-        </div>
+    </div>
 	</div>
-      </div>
     );
   }
 }

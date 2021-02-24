@@ -13,8 +13,8 @@ var rootStyle = {
 class ScriptBox extends Component {
 constructor(props) {
     super(props);
-    this.state = {volume: 50
-		,speed: 1
+    this.state = {volume: this.props.trackvolume
+		,speed: this.props.speed
 		,pitch: 1};
   }
 rmVolume = () => {
