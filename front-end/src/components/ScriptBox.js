@@ -13,7 +13,6 @@ var rootStyle = {
 class ScriptBox extends Component {
 constructor(props) {
     super(props);
-    this.state = {pitch: 1};
   }
 rmVolume = () => {
   if(this.props.trackvolume!=0){
@@ -46,16 +45,7 @@ addSpeed = () => {
   this.props.onChange(fieldName, fieldValue);
   }
 }
-rmPitch = () => {
-  if(this.state.pitch!=-10){
-  this.setState({pitch:this.state.pitch-0.25});
-  }
-}
-addPitch = () => {
-  if(this.state.pitch!=10){
-  this.setState({pitch:this.state.pitch+0.25});
-  }
-}
+
 render(){
 return (
     <div align="left" style={rootStyle} >
@@ -119,7 +109,6 @@ return (
  		<div style={{marginRight:'12px'}}>
 			<div style={{marginRight:'10px',marginBottom:'12px'}} >Volume:</div>
 			<div style={{marginRight:'10px',marginBottom:'12px'}} >Speed:</div>
-			<div style={{marginRight:'10px',marginBottom:'12px'}} >Pitch:</div>
 		</div>
 		<div>
 			<Grid container direction="row" style={{marginBottom:'3px', alignItems: 'center'}} >
@@ -141,16 +130,6 @@ return (
 				<AddIcon style={{color : '#bababa'}}/>
 				</Button>
 			</Grid>
-			<Grid container direction="row" style={{marginBottom:'3px', alignItems: 'center'}} >
-
-      				<Button onClick={this.rmPitch}>
-      				<RemoveIcon style={{color : '#bababa'}}/>
-				</Button>
-      					<input type="text" placeholder="Pitch" value={this.state.pitch} class="input-box" style={{backgroundColor : '#bababa',width: '3vw'}}/>
-      				<Button onClick={this.addPitch}>
-				<AddIcon style={{color : '#bababa'}}/>
-				</Button>
-   			</Grid>
 		</div>
 	</Grid>
 	<Button variant="contained" style={{ alignSelf: "flex-end" }}>Generate TTS</Button>

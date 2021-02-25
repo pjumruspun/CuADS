@@ -12,19 +12,14 @@ const formWaveSurferOptions = ref => ({
   responsive: true,
   height: 80,
   normalize: true,
-  interact:false,
   // Use the PeakCache to improve rendering speed of large waveforms.
   //partialRender: true
 });
 
-export default function Waveform(props) {
+export default function AudioWave(props) {
   const waveformRef = useRef(null);
   const wavesurfer = useRef(null);
   //const [playing, setPlay] = useState(false);
-  const [volume, setVolume] = useState(50);
-  const [speed, setSpeed] = useState(1.0);
-  const [border, setBorder] = useState('1px solid grey');
-  const [selected, setSelected] = useState(false);
   //const [zoom, setZoom] = useState(50);
   // create new WaveSurfer instance
   // On component mount and when url changes
@@ -52,18 +47,6 @@ export default function Waveform(props) {
   return () => wavesurfer.current.destroy();
   }, [props.url]);
   
-  useEffect(() => {
-    if(selected){
-    wavesurfer.current.setVolume(props.trackvolume);
-    setVolume(props.trackvolume)
-    }
-    }, [props.trackvolume]);
-  useEffect(() => {
-    if(selected){
-    wavesurfer.current.setPlaybackRate(props.speed);
-    setSpeed(props.speed);
-    }
-    }, [props.speed]);
 
    useEffect(() => {
     const waveSurfer = wavesurfer.current;
@@ -74,23 +57,16 @@ export default function Waveform(props) {
     wavesurfer.current.playPause();
    }, [props.playing]);
   
- const handleSelected = () => {
-    if(!selected && !props.selecting){
-    setBorder('3px solid white');
-    props.onSelected(volume,speed); 
-    setSelected(true);
-    props.onSelecting(true);
-    }
-    if(selected){
-    setBorder('1px solid grey');
-    setSelected(false);
-    props.onSelecting(false);
-    }
-  };
-
+   useEffect(() => {
+    const waveSurfer = wavesurfer.current;
+	if(props.playing){
+        waveSurfer.play(props.played);
+	}
+  }, [props.played]);
+ 
   return (
     <div>
-      <div style={{border: border ,height: 80 }} onClick={handleSelected} id="waveform" ref={waveformRef} /> 
+      <div style={{height: 80 }} id="waveform" ref={waveformRef} /> 
   </div>
   );
 }

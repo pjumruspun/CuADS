@@ -2,7 +2,7 @@ import React, { Component, useEffect,useState } from "react";
 import { Grid } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import TrackItem from "./TrackItem";
-import Waveform from "./Wave";
+import AudioWave from "./AudioWave";
 
 var rootStyle = {
   backgroundColor: "#2e2d2d",
@@ -16,7 +16,8 @@ class TrackSection extends Component{
     super(props);
     this.state = {
       tracks: [],
-      id: 0
+      id: 0,
+      selecting:false
     };
   }
 
@@ -33,6 +34,9 @@ class TrackSection extends Component{
     }));
   };
   
+ handleSelecting = (e) =>{
+ 	this.setState({selecting:e});
+ }
   render() {
     return (
       <div style={rootStyle}>
@@ -48,27 +52,27 @@ class TrackSection extends Component{
             </Grid>
           </Grid>
           <Grid container direction="row" style={{paddingLeft:'10px'}}>
-            <Grid item xs={3} direction="column" style={{ backgroundColor: "#333333",height:'10vh',width:'10vw',border:'solid',borderWidth:'thin',borderColor:'#4F4F4F'}}>
-            video track
+            <Grid item xs={3} direction="column" style={{ backgroundColor: "#333333",height:'12vh',width:'10vw',border:'solid',borderWidth:'thin',borderColor:'#4F4F4F'}}>
+             audio track
             </Grid>
-             <Grid item xs={9} direction="column" style={{ backgroundColor: "#333333",height:'10vh',width:'10vw',border:'solid',borderWidth:'thin',borderColor:'#4F4F4F'}}>
+             <Grid item xs={9} direction="column" style={{ backgroundColor: "#333333",height:'12vh',width:'10vw',border:'solid',borderWidth:'thin',borderColor:'#4F4F4F'}}>
              <div>
-		<Waveform onSelected={(volume,speed) => this.props.onSelected(volume,speed)} url={"https://reelcrafter-east.s3.amazonaws.com/aux/test.m4a"} trackvolume={this.props.trackvolume} speed={this.props.speed} zoom={this.props.zoom} playing={this.props.playing} played={this.props.played}/>
+		<AudioWave url={"https://reelcrafter-east.s3.amazonaws.com/aux/test.m4a"} zoom={this.props.zoom} playing={this.props.playing} played={this.props.played}/>
              </div>
-            </Grid>
-          </Grid>
-          <Grid container direction="row" style={{paddingLeft:'10px'}}>
-            <Grid item xs={3} direction="column" style={{ backgroundColor: "#333333",height:'10vh',width:'10vw',border:'solid',borderWidth:'thin',borderColor:'#4F4F4F'}}>
-            audio track
-            </Grid>
-            <Grid item xs={9} direction="column" style={{ backgroundColor: "#333333",height:'10vh',width:'10vw',border:'solid',borderWidth:'thin',borderColor:'#4F4F4F'}}>
             </Grid>
           </Grid>
           {this.state.tracks.map((track) => (
               <TrackItem
                 key={track}
                 id={track}
-                  onDeleteTrack={this.onDeleteTrack}
+                onDeleteTrack={this.onDeleteTrack}
+		onSelected={(volume,speed) => this.props.onSelected(volume,speed)}
+                onSelecting={(e) => this.handleSelecting(e)}
+                trackvolume={this.props.trackvolume} 
+		speed={this.props.speed}
+		playing={this.props.playing} 
+		played={this.props.played}
+                selecting={this.state.selecting}
                 />
               ))}
         </Grid>
