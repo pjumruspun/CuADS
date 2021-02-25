@@ -43,15 +43,19 @@ const NameModal = (props) => {
   };
 
   const handleCreate = () => {
-    axios
-      .post(`http://localhost:3001/projects/new`, { name: text })
-      .then((res) => {
-        const project = res.data;
-        console.log(project);
-        // alert(`Created a new project with ID: ${project._id}`);
-        props.onProjectChange(project);
-      });
-    handleClose();
+    if (text == "") {
+      alert("Name cannot be empty.");
+    } else {
+      axios
+        .post(`http://localhost:3001/projects/new`, { name: text })
+        .then((res) => {
+          const project = res.data;
+          console.log(project);
+          // alert(`Created a new project with ID: ${project._id}`);
+          props.onProjectChange(project);
+        });
+      handleClose();
+    }
   };
 
   const handleClose = () => {

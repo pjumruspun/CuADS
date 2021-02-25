@@ -4,6 +4,8 @@ import Modal from "@material-ui/core/Modal";
 import MenuItem from "@material-ui/core/MenuItem";
 import ProjectButton from "./ProjectButton.js";
 import axios from "axios";
+import DeleteButton from "./DeleteButton.js";
+import Delete from "@material-ui/icons/Delete";
 
 function rand() {
   return Math.round(Math.random() * 20) - 10;
@@ -51,6 +53,29 @@ const MyModal = (props) => {
     setOpen(true);
   };
 
+  const createProjectButtons = (pair) => {
+    return (
+      <tr>
+        <td>
+          {React.createElement(ProjectButton, {
+            text: pair.name,
+            projectId: pair.projectId,
+            onProjectChange: (project) => props.onProjectChange(project),
+            onProjectButtonClick: handleClose,
+          })}
+        </td>
+        <td>
+          {React.createElement(DeleteButton, {
+            text: pair.name,
+            projectId: pair.projectId,
+            onProjectChange: (project) => props.onProjectChange(project),
+            onProjectButtonClick: handleClose,
+          })}
+        </td>
+      </tr>
+    );
+  };
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -68,14 +93,7 @@ const MyModal = (props) => {
         <div style={modalStyle} className={classes.paper}>
           <h2 id="simple-modal-title">Select Project</h2>
           <p id="simple-modal-description">
-            {nameIdPairs.map((pair) =>
-              React.createElement(ProjectButton, {
-                text: pair.name,
-                projectId: pair.projectId,
-                onProjectChange: (project) => props.onProjectChange(project),
-                onProjectButtonClick: handleClose,
-              })
-            )}
+            {nameIdPairs.map((pair) => createProjectButtons(pair))}
           </p>
         </div>
       </Modal>

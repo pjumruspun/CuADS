@@ -16,6 +16,9 @@ var rootStyle = {
   height: "100vh",
 };
 
+var topTextEmptyProject =
+  "No project opened, please create a new project or open an existing project from File menu.";
+
 class App extends Component {
   state = {
     playing: false,
@@ -25,8 +28,7 @@ class App extends Component {
     duration: 0,
     volume: 0.8,
     projectId: "",
-    topText:
-      "No project opened, please create a new project or open an existing project from File menu.",
+    topText: topTextEmptyProject,
   };
 
   handleUrlChange = (url) => {
@@ -73,9 +75,11 @@ class App extends Component {
 
   handleProjectChange = (project) => {
     console.log(`change project id to: ${project._id}`);
+    var topTextToSet =
+      project._id == "" ? topTextEmptyProject : `Project Name: ${project.name}`;
     this.setState({
       projectId: project._id,
-      topText: `Project Name: ${project.name}`,
+      topText: topTextToSet,
     });
     // Also need to update URL and other stuff
     this.handleUrlChange(project.videoURL);
