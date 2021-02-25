@@ -5,6 +5,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import TextField from "@material-ui/core/TextField";
 import axios from "axios";
 import Button from "@material-ui/core/Button";
+import { Box } from "@material-ui/core";
 
 function rand() {
   return Math.round(Math.random() * 20) - 10;
@@ -80,7 +81,11 @@ const NameModal = (props) => {
               fullWidth="true"
               onChange={(e) => setText(e.target.value)}
             ></TextField>
-            <Button onClick={handleCreate}>Create</Button>
+            <Box textAlign="center">
+              <Button onClick={handleCreate} variant="contained">
+                Create
+              </Button>
+            </Box>
           </p>
         </div>
       </Modal>
