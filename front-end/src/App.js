@@ -3,6 +3,7 @@ import ReactPlayer from "react-player";
 import "./App.css";
 import Duration from "./components/Duration";
 import Bar from "./components/Bar";
+
 import ScriptBox from "./components/ScriptBox";
 import { Grid } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
@@ -15,7 +16,12 @@ import TrackSection from "./components/TrackSection"
 var rootStyle = {
   backgroundColor: "#2e2d2d",
   color: "white",
-  height: "100vh",
+  
+};
+
+const ZOOM_RANGE = {
+  min: 20,
+  max: 200
 };
 
 class App extends Component {
@@ -23,9 +29,12 @@ class App extends Component {
     playing: false,
     url:
       "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4",
-    played: 0,
+    played: 0.5,
     duration: 0,
     volume: 0.8,
+    trackvolume:50,
+    speed:1.0,
+    zoom:50,
     projectId: "",
     topText:
       "No project opened, please create a new project or open an existing project from File menu.",
@@ -72,6 +81,11 @@ class App extends Component {
     console.log("volume change " + e);
     this.setState({ volume: parseFloat(e) });
   };
+  
+  handleSelected = (e,f) => {
+    this.setState({ trackvolume: e,speed:f });
+  };
+
 
   handleProjectChange = (project) => {
     console.log(`change project id to: ${project._id}`);
@@ -107,7 +121,13 @@ class App extends Component {
     this.player = player;
   };
 
+  onChange(field, value) {
+        // parent class change handler is always called with field name and value
+        this.setState({[field]: value});
+    }
+  
   render() {
+
     const {
       url,
       played,
@@ -116,6 +136,9 @@ class App extends Component {
       volume,
       topText,
       projectId,
+      trackvolume,
+      speed,
+      zoom
     } = this.state;
 
     return (
@@ -136,7 +159,7 @@ class App extends Component {
           justify="space-around"
         >
           <div>
-            <ScriptBox />
+            <ScriptBox trackvolume={trackvolume} speed={speed} onChange={this.onChange.bind(this)}/>
           </div>
           <div>
             <ReactPlayer
@@ -190,8 +213,21 @@ class App extends Component {
           onInput={this.handleSeekChange}
           onMouseUp={this.handleSeekMouseUp}
         />
-        <TrackSection />
-      </div>
+	
+        <TrackSection trackvolume={trackvolume} speed={speed} zoom={zoom} playing={playing} played={duration * played} onSelected={this.handleSelected}/>
+ 
+	<div id="zoom">
+          zoom
+          <input
+            type="range"
+            value={zoom}
+            onChange={e => this.setState({ zoom: e.target.value })}
+            min={ZOOM_RANGE.min}
+            max={ZOOM_RANGE.max}
+            step="10"
+          ></input>
+    </div>
+	</div>
     );
   }
 }

@@ -13,40 +13,39 @@ var rootStyle = {
 class ScriptBox extends Component {
 constructor(props) {
     super(props);
-    this.state = {volumn: 100
-		,speed: '1'
-		,pitch: '1.0'};
   }
-rmVolumn = () => {
-  if(this.state.volumn!=0){
-  this.setState({volumn:this.state.volumn-5});
+rmVolume = () => {
+  if(this.props.trackvolume!=0){
+  
+  const fieldName = 'trackvolume';
+  const fieldValue = this.props.trackvolume-5;
+  this.props.onChange(fieldName, fieldValue);
   }
 }
-addVolumn = () => {
-  if(this.state.volumn!=100){
-  this.setState({volumn:this.state.volumn+5});
+addVolume = () => {
+  if(this.props.trackvolume!=100){
+
+  const fieldName = 'trackvolume';
+  const fieldValue = this.props.trackvolume+5;
+  this.props.onChange(fieldName, fieldValue);
   }
 }
 rmSpeed = () => {
-  if(this.state.speed!=0.25){
-  this.setState({speed:this.state.speed-0.25});
+  if(this.props.speed!=0.25){
+  
+  const fieldName = 'speed';
+  const fieldValue = this.props.speed-0.25;
+  this.props.onChange(fieldName, fieldValue);
   }
 }
 addSpeed = () => {
-  if(this.state.speed!=2.00){
-  this.setState({speed:this.state.speed+0.25});
+  if(this.props.speed!=2.00){
+  const fieldName = 'speed';
+  const fieldValue = this.props.speed+0.25;
+  this.props.onChange(fieldName, fieldValue);
   }
 }
-rmPitch = () => {
-  if(this.state.pitch!=-10){
-  this.setState({pitch:this.state.pitch-0.25});
-  }
-}
-addPitch = () => {
-  if(this.state.pitch!=10){
-  this.setState({pitch:this.state.pitch+0.25});
-  }
-}
+
 render(){
 return (
     <div align="left" style={rootStyle} >
@@ -108,17 +107,16 @@ return (
   	justify="flex-start"
 	>
  		<div style={{marginRight:'12px'}}>
-			<div style={{marginRight:'10px',marginBottom:'12px'}} >Volumn:</div>
+			<div style={{marginRight:'10px',marginBottom:'12px'}} >Volume:</div>
 			<div style={{marginRight:'10px',marginBottom:'12px'}} >Speed:</div>
-			<div style={{marginRight:'10px',marginBottom:'12px'}} >Pitch:</div>
 		</div>
 		<div>
 			<Grid container direction="row" style={{marginBottom:'3px', alignItems: 'center'}} >
-				<Button onClick={this.rmVolumn}>
+				<Button onClick={this.rmVolume}>
       				<RemoveIcon style={{color : '#bababa'}}/>
 				</Button>
-      					<input type="text" placeholder="Volumn" value={this.state.volumn+"%"} class="input-box" style={{backgroundColor : '#bababa',width: '3vw'}}/>
-      				<Button onClick={this.addVolumn}>
+      					<input type="text" placeholder="Volume" value={this.props.trackvolume+"%"} class="input-box" style={{backgroundColor : '#bababa',width: '3vw'}}/>
+      				<Button onClick={this.addVolume}>
 				<AddIcon style={{color : '#bababa'}}/>
 				</Button>
 			</Grid>
@@ -127,21 +125,11 @@ return (
       				<Button onClick={this.rmSpeed}>
       				<RemoveIcon style={{color : '#bababa'}}/>
 				</Button>
-      					<input type="text" placeholder="Speed" value={"x"+this.state.speed} class="input-box" style={{backgroundColor : '#bababa',width: '3vw'}}/>
+      					<input type="text" placeholder="Speed" value={"x"+this.props.speed} class="input-box" style={{backgroundColor : '#bababa',width: '3vw'}}/>
       				<Button onClick={this.addSpeed}>
 				<AddIcon style={{color : '#bababa'}}/>
 				</Button>
 			</Grid>
-			<Grid container direction="row" style={{marginBottom:'3px', alignItems: 'center'}} >
-
-      				<Button onClick={this.rmPitch}>
-      				<RemoveIcon style={{color : '#bababa'}}/>
-				</Button>
-      					<input type="text" placeholder="Pitch" value={this.state.pitch} class="input-box" style={{backgroundColor : '#bababa',width: '3vw'}}/>
-      				<Button onClick={this.addPitch}>
-				<AddIcon style={{color : '#bababa'}}/>
-				</Button>
-   			</Grid>
 		</div>
 	</Grid>
 	<Button variant="contained" style={{ alignSelf: "flex-end" }}>Generate TTS</Button>
