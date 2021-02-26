@@ -4,10 +4,10 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import MyModal from "./MyModal.js";
 import axios from "axios";
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from "@material-ui/core/CircularProgress";
+import NameModal from "./NameModal.js";
 
 export default function SimpleMenu(props) {
-
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [modalShow, setModalShow] = React.useState(false);
   const classNames = {
@@ -25,16 +25,18 @@ export default function SimpleMenu(props) {
     setAnchorEl(null);
   };
 
-  const handleNew = () => {
-    axios.post(`http://localhost:3001/projects/new`).then((res) => {
-      const project = res.data;
-      console.log(project);
-      alert(`Created a new project with ID: ${project._id}`);
-      props.onProjectChange(project);
-    });
+  // const handleNew = () => {
+  //   axios
+  //     .post(`http://localhost:3001/projects/new`, { name: "TEMP" })
+  //     .then((res) => {
+  //       const project = res.data;
+  //       console.log(project);
+  //       alert(`Created a new project with ID: ${project._id}`);
+  //       props.onProjectChange(project);
+  //     });
 
-    setAnchorEl(null);
-  };
+  //   setAnchorEl(null);
+  // };
 
   const handleSave = () => {
     console.log("trying to save...");
@@ -48,8 +50,8 @@ export default function SimpleMenu(props) {
     var file;
     let progress = 0;
 
-    setProgress('in-progress');
-    props.onProgressChange('in-progress');
+    setProgress("in-progress");
+    props.onProgressChange("in-progress");
     file = files.item(0);
     if (file) console.log(file.name);
 
@@ -61,21 +63,20 @@ export default function SimpleMenu(props) {
           "Content-Type": "multipart/form-data",
         },
         onUploadProgress: (ProgressEvent) => {
-          const {loaded, total} = ProgressEvent;
-          let progress = Math.floor( (loaded / total) * 100 )
+          const { loaded, total } = ProgressEvent;
+          let progress = Math.floor((loaded / total) * 100);
           console.log(`${loaded}kb of ${total}kb | ${progress}%`);
-  
+
           setPercentage(progress);
-	  props.onUploading(progress);
-       
-        }
+          props.onUploading(progress);
+        },
       })
       .then((res) => {
         // res.data contains S3 video URL
         props.onChange(res.data);
-        setProgress('finished');
+        setProgress("finished");
 
-	props.onProgressChange('finished');
+        props.onProgressChange("finished");
       });
 
     document.getElementById(classNames.videoInput).value = "";
@@ -105,7 +106,10 @@ export default function SimpleMenu(props) {
         onClose={handleClose}
         anchorPosition={{ vertical: "top", horizontal: "left" }}
       >
-        <MenuItem onClick={handleNew}>New</MenuItem>
+        {/* <MenuItem onClick={handleNew}>New</MenuItem> */}
+        <NameModal
+          onProjectChange={(project) => props.onProjectChange(project)}
+        />
         <MenuItem onClick={handleSave}>Save</MenuItem>
         <MyModal
           onProjectChange={(project) => props.onProjectChange(project)}
@@ -128,4 +132,3 @@ export default function SimpleMenu(props) {
     </div>
   );
 }
-

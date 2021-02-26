@@ -4,6 +4,11 @@ import { Types } from 'mongoose';
 
 export class CreateProjectDto {
     @ApiProperty({
+        description: 'Name of the project.'
+    })
+    name: string;
+
+    @ApiProperty({
         description: 'Passcode of the project, can be blank.',
     })
     passcode: string;
