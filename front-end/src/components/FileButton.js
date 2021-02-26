@@ -6,6 +6,7 @@ import MyModal from "./MyModal.js";
 import axios from "axios";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import NameModal from "./NameModal.js";
+import fs from "fs";
 
 export default function SimpleMenu(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -55,30 +56,33 @@ export default function SimpleMenu(props) {
     file = files.item(0);
     if (file) console.log(file.name);
 
-    var formData = new FormData();
-    formData.append("upload", file);
-    axios
-      .post(`http://localhost:3001/fileupload`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        onUploadProgress: (ProgressEvent) => {
-          const { loaded, total } = ProgressEvent;
-          let progress = Math.floor((loaded / total) * 100);
-          console.log(`${loaded}kb of ${total}kb | ${progress}%`);
+    props.onImport(file.name);
 
-          setPercentage(progress);
-          props.onUploading(progress);
-        },
-      })
-      .then((res) => {
-        // res.data contains S3 video URL
-        props.onChange(res.data);
-        setProgress("finished");
+    // var formData = new FormData();
+    // formData.append("upload", file);
+    // axios
+    //   .post(`http://localhost:3001/fileupload`, formData, {
+    //     headers: {
+    //       "Content-Type": "multipart/form-data",
+    //     },
+    //     onUploadProgress: (ProgressEvent) => {
+    //       const { loaded, total } = ProgressEvent;
+    //       let progress = Math.floor((loaded / total) * 100);
+    //       console.log(`${loaded}kb of ${total}kb | ${progress}%`);
 
-        props.onProgressChange("finished");
-      });
+    //       setPercentage(progress);
+    //       props.onUploading(progress);
+    //     },
+    //   })
+    //   .then((res) => {
+    //     // res.data contains S3 video URL
+    //     props.onChange(res.data);
+    //     setProgress("finished");
 
+    //     props.onProgressChange("finished");
+    //   });
+
+    // deselect the file
     document.getElementById(classNames.videoInput).value = "";
 
     setAnchorEl(null);
