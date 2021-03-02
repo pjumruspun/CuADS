@@ -3,26 +3,41 @@ import ReactPlayer from "react-player";
 import "./App.css";
 import Duration from "./components/Duration";
 import Bar from "./components/Bar";
+
 import ScriptBox from "./components/ScriptBox";
 import { Grid } from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
+import axios from "axios";
+
+import TrackSection from "./components/TrackSection";
 
 var rootStyle = {
   backgroundColor: "#2e2d2d",
   color: "white",
-  height: "100vh",
 };
+
+const ZOOM_RANGE = {
+  min: 20,
+  max: 200,
+};
+
+var topTextEmptyProject =
+  "No project opened, please create a new project or open an existing project from File menu.";
 
 class App extends Component {
   state = {
     playing: false,
-    url:
-      "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4",
-    played: 0,
+    url: "",
+    played: 0.5,
     duration: 0,
     volume: 0.8,
+    trackvolume: 50,
+    speed: 1.0,
+    zoom: 50,
+    projectId: "",
+    topText: topTextEmptyProject,
   };
 
   handleUrlChange = (url) => {
@@ -63,26 +78,95 @@ class App extends Component {
   };
 
   handleVolumeChange = (e) => {
-    console.log(e);
     console.log("volume change " + e);
     this.setState({ volume: parseFloat(e) });
+  };
+
+  handleSelected = (e, f) => {
+    this.setState({ trackvolume: e, speed: f });
+  };
+
+  handleProjectChange = (project) => {
+    console.log(`change project id to: ${project._id}`);
+    var topTextToSet =
+      project._id == "" ? topTextEmptyProject : `Project Name: ${project.name}`;
+    this.setState({
+      projectId: project._id,
+      topText: topTextToSet,
+    });
+    // Also need to update URL and other stuff
+    this.handleUrlChange(project.videoURL);
+  };
+
+  handleSaveProject = () => {
+    if (this.state.projectId == "") {
+      alert(
+        `You have no currently active project, please create a new project or open an existing project.`
+      );
+      return;
+    }
+    console.log(
+      `saving url=${this.state.url}, projectId=${this.state.projectId}`
+    );
+
+    axios
+      .put(`http://localhost:3001/projects/${this.state.projectId}`, {
+        videoURL: this.state.url,
+      })
+      .then((res) => {
+        console.log(res);
+      });
+  };
+
+  handleImportProject = (fileName) => {
+    if (this.state.projectId == "") {
+      alert(
+        `You have no currently active project, please create a new project or open an existing project.`
+      );
+      return;
+    }
+
+    const videoDirectory = `videos/${fileName}`;
+    this.handleUrlChange(videoDirectory);
+    axios.put(`http://localhost:3001/projects/${this.state.projectId}`, {
+      videoURL: videoDirectory,
+    });
   };
 
   ref = (player) => {
     this.player = player;
   };
 
+  onChange(field, value) {
+    // parent class change handler is always called with field name and value
+    this.setState({ [field]: value });
+  }
+
   render() {
-    const { url, played, duration, playing, volume } = this.state;
+    const {
+      url,
+      played,
+      duration,
+      playing,
+      volume,
+      topText,
+      projectId,
+      trackvolume,
+      speed,
+      zoom,
+    } = this.state;
 
     return (
       <div className="App" style={rootStyle}>
         <Bar
           onVolumeChange={(value) => this.handleVolumeChange(value)}
           onURLChange={(url) => this.handleUrlChange(url)}
+          onProjectChange={(project) => this.handleProjectChange(project)}
+          onSaveProject={() => this.handleSaveProject()}
+          onImport={(fileName) => this.handleImportProject(fileName)}
         />
         <header>
-          <p>Audio Description Project Main Page</p>
+          <p>{topText}</p>
         </header>
         <Grid
           container
@@ -91,7 +175,11 @@ class App extends Component {
           justify="space-around"
         >
           <div>
-            <ScriptBox />
+            <ScriptBox
+              trackvolume={trackvolume}
+              speed={speed}
+              onChange={this.onChange.bind(this)}
+            />
           </div>
           <div>
             <ReactPlayer
@@ -145,6 +233,27 @@ class App extends Component {
           onInput={this.handleSeekChange}
           onMouseUp={this.handleSeekMouseUp}
         />
+
+        <TrackSection
+          trackvolume={trackvolume}
+          speed={speed}
+          zoom={zoom}
+          playing={playing}
+          played={duration * played}
+          onSelected={this.handleSelected}
+        />
+
+        <div id="zoom">
+          zoom
+          <input
+            type="range"
+            value={zoom}
+            onChange={(e) => this.setState({ zoom: e.target.value })}
+            min={ZOOM_RANGE.min}
+            max={ZOOM_RANGE.max}
+            step="10"
+          ></input>
+        </div>
       </div>
     );
   }

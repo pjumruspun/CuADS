@@ -26,8 +26,9 @@ export class ProjectsService {
         return (await this.projectModel.findById(projectId)).tracks;
     }
 
-    async createNewProject(): Promise<IProject> {
+    async createNewProject(createProjectDto: CreateProjectDto): Promise<IProject> {
         const newProject = new CreateProjectDto;
+        newProject.name = createProjectDto.name;
         newProject.passcode = "";
         newProject.videoURL = "";
 
@@ -75,5 +76,9 @@ export class ProjectsService {
         }
 
         return found;
+    }
+
+    async delete(id: string): Promise<IProject> {
+        return await this.projectModel.findByIdAndDelete(id);
     }
 }

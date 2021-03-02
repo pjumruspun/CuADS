@@ -4423,7 +4423,7 @@ mongoose-legacy-pluralize@1.0.2:
 
 mongoose@^5.11.13:
   version "5.11.13"
-  resolved "https://registry.npmjs.org/mongoose/-/mongoose-5.11.13.tgz"
+  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.11.13.tgz#1a8af3c83152d5e0427509966926ea7f5ead4d66"
   integrity sha512-rXbaxSJfLnKKO2RTm8MKt65glrtfKDc4ATEb6vEbbzsVGCiLut753K5axdpyvE7KeTH7GOh4LzmuQLOvaaWOmA==
   dependencies:
     "@types/mongodb" "^3.5.27"
