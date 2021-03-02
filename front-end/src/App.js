@@ -11,17 +11,16 @@ import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import axios from "axios";
 
-import TrackSection from "./components/TrackSection"
+import TrackSection from "./components/TrackSection";
 
 var rootStyle = {
   backgroundColor: "#2e2d2d",
   color: "white",
-  
 };
 
 const ZOOM_RANGE = {
   min: 20,
-  max: 200
+  max: 200,
 };
 
 var topTextEmptyProject =
@@ -30,14 +29,13 @@ var topTextEmptyProject =
 class App extends Component {
   state = {
     playing: false,
-    url:
-      "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4",
+    url: "",
     played: 0.5,
     duration: 0,
     volume: 0.8,
-    trackvolume:50,
-    speed:1.0,
-    zoom:50,
+    trackvolume: 50,
+    speed: 1.0,
+    zoom: 50,
     projectId: "",
     topText: topTextEmptyProject,
   };
@@ -83,11 +81,10 @@ class App extends Component {
     console.log("volume change " + e);
     this.setState({ volume: parseFloat(e) });
   };
-  
-  handleSelected = (e,f) => {
-    this.setState({ trackvolume: e,speed:f });
-  };
 
+  handleSelected = (e, f) => {
+    this.setState({ trackvolume: e, speed: f });
+  };
 
   handleProjectChange = (project) => {
     console.log(`change project id to: ${project._id}`);
@@ -121,17 +118,31 @@ class App extends Component {
       });
   };
 
+  handleImportProject = (fileName) => {
+    if (this.state.projectId == "") {
+      alert(
+        `You have no currently active project, please create a new project or open an existing project.`
+      );
+      return;
+    }
+
+    const videoDirectory = `videos/${fileName}`;
+    this.handleUrlChange(videoDirectory);
+    axios.put(`http://localhost:3001/projects/${this.state.projectId}`, {
+      videoURL: videoDirectory,
+    });
+  };
+
   ref = (player) => {
     this.player = player;
   };
 
   onChange(field, value) {
-        // parent class change handler is always called with field name and value
-        this.setState({[field]: value});
-    }
-  
-  render() {
+    // parent class change handler is always called with field name and value
+    this.setState({ [field]: value });
+  }
 
+  render() {
     const {
       url,
       played,
@@ -142,7 +153,7 @@ class App extends Component {
       projectId,
       trackvolume,
       speed,
-      zoom
+      zoom,
     } = this.state;
 
     return (
@@ -152,6 +163,7 @@ class App extends Component {
           onURLChange={(url) => this.handleUrlChange(url)}
           onProjectChange={(project) => this.handleProjectChange(project)}
           onSaveProject={() => this.handleSaveProject()}
+          onImport={(fileName) => this.handleImportProject(fileName)}
         />
         <header>
           <p>{topText}</p>
@@ -163,7 +175,11 @@ class App extends Component {
           justify="space-around"
         >
           <div>
-            <ScriptBox trackvolume={trackvolume} speed={speed} onChange={this.onChange.bind(this)}/>
+            <ScriptBox
+              trackvolume={trackvolume}
+              speed={speed}
+              onChange={this.onChange.bind(this)}
+            />
           </div>
           <div>
             <ReactPlayer
@@ -217,21 +233,28 @@ class App extends Component {
           onInput={this.handleSeekChange}
           onMouseUp={this.handleSeekMouseUp}
         />
-	
-        <TrackSection trackvolume={trackvolume} speed={speed} zoom={zoom} playing={playing} played={duration * played} onSelected={this.handleSelected}/>
- 
-	<div id="zoom">
+
+        <TrackSection
+          trackvolume={trackvolume}
+          speed={speed}
+          zoom={zoom}
+          playing={playing}
+          played={duration * played}
+          onSelected={this.handleSelected}
+        />
+
+        <div id="zoom">
           zoom
           <input
             type="range"
             value={zoom}
-            onChange={e => this.setState({ zoom: e.target.value })}
+            onChange={(e) => this.setState({ zoom: e.target.value })}
             min={ZOOM_RANGE.min}
             max={ZOOM_RANGE.max}
             step="10"
           ></input>
-    </div>
-	</div>
+        </div>
+      </div>
     );
   }
 }
