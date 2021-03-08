@@ -43,7 +43,7 @@ export default function Waveform(props) {
       //	wavesurfer.drawBuffer();
       // make sure object stillavailable when file loaded
       if (wavesurfer.current) {
-        wavesurfer.current.setVolume(0);
+        wavesurfer.current.setVolume(0.5);
       }
     });
      
@@ -54,7 +54,7 @@ export default function Waveform(props) {
   
   useEffect(() => {
     if(selected){
-    wavesurfer.current.setVolume(props.trackvolume);
+    wavesurfer.current.setVolume(props.trackvolume/100);
     setVolume(props.trackvolume)
     }
     }, [props.trackvolume]);
