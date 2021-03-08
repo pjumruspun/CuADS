@@ -4,6 +4,8 @@ import Button from '@material-ui/core/Button';
 import InputBase from '@material-ui/core/InputBase';
 import AddIcon from '@material-ui/icons/AddRounded';
 import RemoveIcon from '@material-ui/icons/RemoveRounded';
+import axios from 'axios';
+
 var rootStyle = {
   backgroundColor : '#141414',
   height: '52vh',
@@ -15,7 +17,8 @@ constructor(props) {
     super(props);
     this.state = {volumn: 100
 		,speed: '1'
-		,pitch: '1.0'};
+		,pitch: '1.0'
+		,audio: ''};
   }
 rmVolumn = () => {
   if(this.state.volumn!=0){
@@ -47,6 +50,21 @@ addPitch = () => {
   this.setState({pitch:this.state.pitch+0.25});
   }
 }
+handleText = (e) => {
+	this.setState({text: e.target.value})
+}
+generateTTS = () => {
+	
+}
+async downloadFile() {
+	const response = axios.get("http://localhost:3001/tts/ฉันเดินเข้าไปในห้อง");
+	// const bufferdecoded = Buffer.from((await response).data.audio, 'base64');
+	const decoded = "data:audio/mpeg;base64," + (await response).data.audio;
+	console.log("Playing");
+	var snd = new Audio(decoded);
+	snd.play();
+	console.log('Success!')
+}
 render(){
 return (
     <div align="left" style={rootStyle} >
@@ -63,6 +81,7 @@ return (
         multiline
         rows={3}
         inputProps={{ 'aria-label': 'naked' }}
+		onChange={this.handleText}
 	style={{
  	backgroundColor : '#bababa',
   	width: '38vw',
@@ -144,7 +163,7 @@ return (
    			</Grid>
 		</div>
 	</Grid>
-	<Button variant="contained" style={{ alignSelf: "flex-end" }}>Generate TTS</Button>
+	<Button variant="contained" style={{ alignSelf: "flex-end" }} onClick={this.downloadFile}>Generate TTS</Button>
 	</Grid>  
     </div>
   );
