@@ -4,6 +4,8 @@ import Modal from "@material-ui/core/Modal";
 import MenuItem from "@material-ui/core/MenuItem";
 import ProjectButton from "./ProjectButton.js";
 import axios from "axios";
+import DeleteButton from "./DeleteButton.js";
+import Delete from "@material-ui/icons/Delete";
 
 function rand() {
   return Math.round(Math.random() * 20) - 10;
@@ -35,18 +37,43 @@ const MyModal = (props) => {
   // getModalStyle is not a pure function, we roll the style only on the first render
   const [modalStyle] = React.useState(getModalStyle);
   const [open, setOpen] = React.useState(false);
-  const [texts, setTexts] = React.useState(["11", "22"]);
+  const [nameIdPairs, setNameIdPairs] = React.useState([
+    { name: "dummyName", projectId: "dummyId" },
+  ]);
 
   const handleOpen = () => {
     axios.get(`http://localhost:3001/projects`).then((res) => {
-      var texts = [];
+      var pairs = [];
       const projects = res.data;
       projects.forEach((project) => {
-        texts.push(project._id);
+        pairs.push({ name: project.name, projectId: project._id });
       });
-      setTexts(texts);
+      setNameIdPairs(pairs);
     });
     setOpen(true);
+  };
+
+  const createProjectButtons = (pair) => {
+    return (
+      <tr>
+        <td>
+          {React.createElement(ProjectButton, {
+            text: pair.name,
+            projectId: pair.projectId,
+            onProjectChange: (project) => props.onProjectChange(project),
+            onProjectButtonClick: handleClose,
+          })}
+        </td>
+        <td>
+          {React.createElement(DeleteButton, {
+            text: pair.name,
+            projectId: pair.projectId,
+            onProjectChange: (project) => props.onProjectChange(project),
+            onProjectButtonClick: handleClose,
+          })}
+        </td>
+      </tr>
+    );
   };
 
   const handleClose = () => {
@@ -61,19 +88,12 @@ const MyModal = (props) => {
         // aria-describedby="simple-modal-description"
         open={open}
         onClose={handleClose}
+        x
       >
         <div style={modalStyle} className={classes.paper}>
           <h2 id="simple-modal-title">Select Project</h2>
           <p id="simple-modal-description">
-            {React.createElement(ProjectButton, texts[0])}
-            {texts.map((text) =>
-              React.createElement(ProjectButton, {
-                text: text,
-                projectId: text,
-                onProjectChange: (project) => props.onProjectChange(project),
-                onProjectButtonClick: handleClose,
-              })
-            )}
+            {nameIdPairs.map((pair) => createProjectButtons(pair))}
           </p>
         </div>
       </Modal>

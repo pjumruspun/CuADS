@@ -9283,6 +9283,11 @@ react-scripts@4.0.1:
   optionalDependencies:
     fsevents "^2.1.3"
 
+react-selectable-fast@^3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/react-selectable-fast/-/react-selectable-fast-3.4.0.tgz#fb3e6490ebd3f91309b5a58ca17f629baab6e625"
+  integrity sha512-4DVrX6eTCLqt+GVtSNAEcL3S9ODUvtcPrzUL1ObjSL507D+i+HE4tCokSxUn4PqLtEsrWxXJU+CVC43XmwIVyw==
+
 react-transition-group@^4.4.0:
   version "4.4.1"
   resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-4.4.1.tgz#63868f9325a38ea5ee9535d828327f85773345c9"
@@ -11179,6 +11184,11 @@ watchpack@^1.7.4:
   optionalDependencies:
     chokidar "^3.4.1"
     watchpack-chokidar2 "^2.0.1"
+
+wavesurfer.js@^4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/wavesurfer.js/-/wavesurfer.js-4.4.0.tgz#3ada357691455b89e88fff4489869b2bbd64dcef"
+  integrity sha512-R8knBQRY2FjMYGn0Tp+obv55sk494tEaCanM+rpqNmuAhwknan4BL7SIIevwL3QgDbH75R8XUiQVczhvo6XW+A==
 
 wbuf@^1.1.0, wbuf@^1.7.3:
   version "1.7.3"

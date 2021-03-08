@@ -8,6 +8,7 @@ import { ProjectsModule } from './projects/projects.module';
 import { TracksModule } from './tracks/tracks.module';
 import { AudioClipsModule } from './audio-clips/audio-clips.module';
 import { TTSModule } from './texttospeech/tts.module';
+import { AudioUtilityModule } from './audio-utility/audio-utility.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { TTSModule } from './texttospeech/tts.module';
     TracksModule,
     AudioClipsModule,
     TTSModule,
+    AudioUtilityModule,
   ],
   controllers: [AppController,],
   providers: [AppService],
