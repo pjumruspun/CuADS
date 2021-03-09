@@ -15,13 +15,10 @@ var rootStyle = {
 class ScriptBox extends Component {
 constructor(props) {
     super(props);
-<<<<<<< HEAD
     this.state = {volumn: 100
 		,speed: '1'
 		,pitch: '1.0'
 		,audio: ''};
-=======
->>>>>>> 3c1971d9dac2cd78f66ffe8ebb065ae39539eef7
   }
 rmVolume = () => {
   if(this.props.trackvolume!=0){
@@ -54,7 +51,6 @@ addSpeed = () => {
   this.props.onChange(fieldName, fieldValue);
   }
 }
-<<<<<<< HEAD
 handleText = (e) => {
 	this.setState({text: e.target.value})
 }
@@ -70,9 +66,6 @@ async downloadFile() {
 	snd.play();
 	console.log('Success!')
 }
-=======
-
->>>>>>> 3c1971d9dac2cd78f66ffe8ebb065ae39539eef7
 render(){
 return (
     <div align="left" style={rootStyle} >
@@ -167,3 +160,6 @@ return (
 }
 }
 export default ScriptBox;
+
+// total 33800
+// tax 1014

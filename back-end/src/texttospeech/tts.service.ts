@@ -1,12 +1,16 @@
-import { Injectable, Req, Res, Param } from '@nestjs/common';
-import * as gTTS from 'gtts';
+import { Injectable, Req, Res, Param, Inject } from '@nestjs/common';
+import { Model } from 'mongoose';
+import { ITTS } from 'src/interface/tts.interface';
+import { TracksService } from 'src/tracks/tracks.service';
 import axios from 'axios';
 
 @Injectable()
 export class TTSService {
-    constructor() {}
+    constructor(
+        @Inject('TTS_MODEL') private ttsModel: Model<ITTS>
+    ) {}
 
-    async saveAudio(@Param('text') text: string, @Req() req, @Res() res) {
+    async saveAudio(@Param('text') text: string, @Req() req, @Res() res): Promise<ITTS> {
         try {
             axios.post(
                 process.env.TTS_API_ENDPOINT,
@@ -18,18 +22,17 @@ export class TTSService {
                 }
             ).then((response) => {
                 const sound = response.data;
-                return res.status(200).json({'audio': sound})
+                const responseAudio = new this.ttsModel({
+                    "project_id": 1,
+                    "tts_id": 2,
+                    "content": sound
+                });
+                const save = responseAudio.save();
+                
+                return res.status(200).json({'msg': 'success'})
             }).catch((response) => {
                 return res.status(400).json({'msg': response})
             });
-            // const save = gtts.save(`/tmp/${text}.mp3`, (err, result) => {
-            //     if (err) {
-            //         console.log(err)
-            //         return res.status(500).json(`Failed: ${err}`);
-            //     }
-            //     console.log(`Success! Open file /tmp/${text}.mp3 to hear result.`);
-            //     return res.status(200).json(`Success`);
-            // });
         } catch (error) {
             console.log(error);
             return res.status(500).json(`Failed: ${error}`);
