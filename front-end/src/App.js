@@ -118,7 +118,7 @@ class App extends Component {
       });
   };
 
-  handleImportProject = (fileName) => {
+  handleImportProject = (videoId) => {
     if (this.state.projectId == "") {
       alert(
         `You have no currently active project, please create a new project or open an existing project.`
@@ -126,11 +126,15 @@ class App extends Component {
       return;
     }
 
-    const videoDirectory = `videos/${fileName}`;
-    this.handleUrlChange(videoDirectory);
+    // Update mongo with file id
+    const videoUrl = `http://localhost:3001/files/${videoId}`;
+    console.log(videoUrl);
+    this.handleUrlChange(videoUrl);
     axios.put(`http://localhost:3001/projects/${this.state.projectId}`, {
-      videoURL: videoDirectory,
+      videoURL: videoUrl,
     });
+
+    //
   };
 
   ref = (player) => {
@@ -163,7 +167,7 @@ class App extends Component {
           onURLChange={(url) => this.handleUrlChange(url)}
           onProjectChange={(project) => this.handleProjectChange(project)}
           onSaveProject={() => this.handleSaveProject()}
-          onImport={(fileName) => this.handleImportProject(fileName)}
+          onImport={(videoId) => this.handleImportProject(videoId)}
         />
         <header>
           <p>{topText}</p>
