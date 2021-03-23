@@ -52,15 +52,18 @@ class App extends Component {
   };
 
   handleSeekMouseDown = (e) => {
+    console.log(e.target.value);
     this.setState({ seeking: true, playing: false });
   };
 
   handleSeekChange = (e) => {
+    console.log(parseFloat(e.target.value));
     this.player.seekTo(parseFloat(e.target.value));
     this.setState({ played: parseFloat(e.target.value) });
   };
 
   handleSeekMouseUp = (e) => {
+    console.log(parseFloat(e.target.value));
     this.setState({ seeking: false, playing: true });
     this.player.seekTo(parseFloat(e.target.value));
   };
@@ -158,7 +161,7 @@ class App extends Component {
       .then((res) => {
         console.log(`final res in handleImportProject: ${res.data}`);
         this.handleAudioURLChange(res.data.originalAudioURL);
-      });
+        });
 
     //
   };
@@ -184,6 +187,7 @@ class App extends Component {
       trackvolume,
       speed,
       zoom,
+      audioURL
     } = this.state;
 
     return (
@@ -267,6 +271,7 @@ class App extends Component {
         />
 
         <TrackSection
+          url={audioURL}
           trackvolume={trackvolume}
           speed={speed}
           zoom={zoom}
