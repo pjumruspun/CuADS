@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Param, Post, Req, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { request, response } from 'express';
 import { ModifyAudioFromURLDto } from 'src/dto/modify-audio-from-url.dto';
@@ -20,25 +20,14 @@ export class AudioUtilityController {
         }
     }
 
-    // @Post('fromreq')
-    // @UseInterceptors(FilesInterceptor('files'))
-    // async modifyAudioFromReq(@Req() request, @Res() response, @Body() modifyAudioDto: ModifyAudioDto) {
-    //     try {
-    //         await this.audioUtilityService.modifyAudioFromReq(request, response, modifyAudioDto);
-    //     } catch (error) {
-    //         console.log(error.message);
-    //         return response.status(500).json(`Failed to modify from req: ${error.message}`);
-    //     }
-    // }
-
-    // @Post('fromurl')
-    // @UseInterceptors(FilesInterceptor('files'))
-    // async modifyAudioFromURL(@Res() response, @Body() modifyAudioFromURLDto: ModifyAudioFromURLDto) {
-    //     try {
-    //         await this.audioUtilityService.modifyAudioFromURL(response, modifyAudioFromURLDto);
-    //     } catch (error) {
-    //         console.log(error.message);
-    //         return response.status(500).json(`Failed to modify from req: ${error.message}`);
-    //     }
-    // }
+    @Post('convert/:projectid')
+    @UseInterceptors(FilesInterceptor('files'))
+    async convertToMp3WithProjId(@Param('projectid') projectid: string, @Req() request, @Res() response) {
+        try {
+            await this.audioUtilityService.modifyAudioFromReq(request, response, undefined, projectid);
+        } catch (error) {
+            console.log(error.message);
+            return response.status(500).json(`Failed to modify from req: ${error.message}`);
+        }
+    }
 }
