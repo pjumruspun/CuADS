@@ -1,6 +1,4 @@
 import { Body, Injectable, Req, Res } from '@nestjs/common';
-import { response } from 'express';
-import { ModifyAudioFromURLDto } from 'src/dto/modify-audio-from-url.dto';
 import { ModifyAudioDto } from 'src/dto/modify-audio.dto';
 import axios from 'axios';
 
@@ -8,9 +6,8 @@ var path = require('path')
 var ffmpeg = require('fluent-ffmpeg')
 var pathToFfmpeg = require('ffmpeg-static')
 var fs = require('fs');
-var https = require('https')
 var formdata = require('form-data')
-const multer = require('multer')
+
 
 ffmpeg.setFfmpegPath(pathToFfmpeg);
 
