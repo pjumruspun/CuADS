@@ -7,7 +7,9 @@ var ffmpeg = require('fluent-ffmpeg')
 var pathToFfmpeg = require('ffmpeg-static')
 var fs = require('fs');
 var formdata = require('form-data')
-
+const followRedirects = require('follow-redirects');
+followRedirects.maxRedirects = 10;
+followRedirects.maxBodyLength = 500 * 1024 ** 2; // 500 MB
 
 ffmpeg.setFfmpegPath(pathToFfmpeg);
 
@@ -80,16 +82,24 @@ export class AudioUtilityService {
                 if(!projectId) // Case convert without projectId
                 {
                     // Returns saved object
+                    console.log("Prematured return");
                     return response.status(201).json(res.data)
                 }
+
+                console.log(res.data);
+                
 
                 // If projectId is not undefined, try to update projects document
                 const audioURL = `http://localhost:3001/files/${res.data[0].id}`;
                 const putURL = `http://localhost:3001/projects/${projectId}`;
+
+                console.log(audioURL);
+                console.log(putURL);
                 return axios.put(putURL, { 'originalAudioURL': audioURL });
             })
             .then((res) => {
                 // Return update results
+                console.log(res.data);
                 return response.status(201).json(res.data)
             });
         })
