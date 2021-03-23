@@ -28,6 +28,7 @@
     "@nestjs/platform-express": "^7.0.0",
     "@nestjs/swagger": "^4.7.12",
     "aws-sdk": "^2.829.0",
+    "axios": "^0.21.1",
     "ffmpeg-static": "^4.2.7",
     "fluent-ffmpeg": "^2.1.2",
     "mongo-gridfs": "^1.1.0",

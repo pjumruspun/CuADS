@@ -30,6 +30,7 @@ class App extends Component {
   state = {
     playing: false,
     url: "",
+    audioURL: "",
     played: 0.5,
     duration: 0,
     volume: 0.8,
@@ -45,16 +46,24 @@ class App extends Component {
     this.setState({ url: url });
   };
 
+  handleAudioURLChange = (audioURL) => {
+    console.log(`New audio url: ${audioURL}`);
+    this.setState({ audioURL: audioURL });
+  };
+
   handleSeekMouseDown = (e) => {
+    console.log(e.target.value);
     this.setState({ seeking: true, playing: false });
   };
 
   handleSeekChange = (e) => {
+    console.log(parseFloat(e.target.value));
     this.player.seekTo(parseFloat(e.target.value));
     this.setState({ played: parseFloat(e.target.value) });
   };
 
   handleSeekMouseUp = (e) => {
+    console.log(parseFloat(e.target.value));
     this.setState({ seeking: false, playing: true });
     this.player.seekTo(parseFloat(e.target.value));
   };
@@ -96,6 +105,7 @@ class App extends Component {
     });
     // Also need to update URL and other stuff
     this.handleUrlChange(project.videoURL);
+    this.handleAudioURLChange(project.originalAudioURL);
   };
 
   handleSaveProject = () => {
@@ -118,7 +128,7 @@ class App extends Component {
       });
   };
 
-  handleImportProject = (videoId) => {
+  handleImportProject = (videoId, videoFile) => {
     if (this.state.projectId == "") {
       alert(
         `You have no currently active project, please create a new project or open an existing project.`
@@ -130,9 +140,28 @@ class App extends Component {
     const videoUrl = `http://localhost:3001/files/${videoId}`;
     console.log(videoUrl);
     this.handleUrlChange(videoUrl);
-    axios.put(`http://localhost:3001/projects/${this.state.projectId}`, {
-      videoURL: videoUrl,
-    });
+    axios
+      .put(`http://localhost:3001/projects/${this.state.projectId}`, {
+        videoURL: videoUrl,
+      })
+      .then((res) => {
+        console.log(
+          `res after changing videoURL in handleImportProject: ${res.data}`
+        );
+
+        var formData = new FormData();
+        formData.append("files", videoFile);
+
+        return axios.post(
+          `http://localhost:3001/audio-utility/convert/${this.state.projectId}`,
+          formData,
+          { headers: { ContentType: "multipart/formdata" } }
+        );
+      })
+      .then((res) => {
+        console.log(`final res in handleImportProject: ${res.data}`);
+        this.handleAudioURLChange(res.data.originalAudioURL);
+        });
 
     //
   };
@@ -158,6 +187,7 @@ class App extends Component {
       trackvolume,
       speed,
       zoom,
+      audioURL
     } = this.state;
 
     return (
@@ -167,7 +197,9 @@ class App extends Component {
           onURLChange={(url) => this.handleUrlChange(url)}
           onProjectChange={(project) => this.handleProjectChange(project)}
           onSaveProject={() => this.handleSaveProject()}
-          onImport={(videoId) => this.handleImportProject(videoId)}
+          onImport={(videoId, videoFile) =>
+            this.handleImportProject(videoId, videoFile)
+          }
         />
         <header>
           <p>{topText}</p>
@@ -239,6 +271,7 @@ class App extends Component {
         />
 
         <TrackSection
+          url={audioURL}
           trackvolume={trackvolume}
           speed={speed}
           zoom={zoom}

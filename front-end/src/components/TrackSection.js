@@ -57,7 +57,7 @@ class TrackSection extends Component{
             </Grid>
              <Grid item xs={9} direction="column" style={{ backgroundColor: "#333333",height:'12vh',width:'10vw',border:'solid',borderWidth:'thin',borderColor:'#4F4F4F'}}>
              <div>
-		<AudioWave url={"https://reelcrafter-east.s3.amazonaws.com/aux/test.m4a"} zoom={this.props.zoom} playing={this.props.playing} played={this.props.played}/>
+		{(this.props.url!=undefined)&&(this.props.url!="") && <AudioWave url={this.props.url} zoom={this.props.zoom} playing={this.props.playing} played={this.props.played}/>}
              </div>
             </Grid>
           </Grid>

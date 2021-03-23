@@ -75,7 +75,7 @@ export default function SimpleMenu(props) {
       .then((res) => {
         console.log(res.data[0].id);
         const videoId = res.data[0].id;
-        props.onImport(videoId);
+        props.onImport(videoId, file);
         setProgress("finished");
 
         props.onProgressChange("finished");
