@@ -30,11 +30,11 @@ export class TTSService {
                     const sound = response.data.data;
                     const Model =  mongoose.model("AudioClip", AudioClipSchema, "audioclips");
                     const responseAudio = new Model({
-                        content: 'data:audio/mpeg;base64,'+sound
+                        content: sound
                     });
                     responseAudio.save((err) => {
                         if (err) return res.status(400).json({'msg': err})
-                        return res.status(200).json({'msg': 'success', 'audio': sound});
+                        return res.status(200).json({'msg': 'success', 'audio': 'data:audio/mpeg;base64,'+sound});
                     });
                 }).catch((response) => {
                     return res.status(400).json({'msg': response});
@@ -59,11 +59,11 @@ export class TTSService {
                 getSound(gtts.stream()).then((value) => {
                     const Model =  mongoose.model("AudioClip", AudioClipSchema, "audioclips");
                     const responseAudio = new Model({
-                        content: 'data:audio/mpeg;base64,'+value
+                        content: value
                     });
                     responseAudio.save((err) => {
                         if (err) return res.status(400).json({'msg': err})
-                        return res.status(200).json({'msg': 'success', 'audio': value});
+                        return res.status(200).json({'msg': 'success', 'audio': 'data:audio/mpeg;base64,'+value});
                     });
                 }).catch((error) => {
                     return res.status(400).json({'msg': error})

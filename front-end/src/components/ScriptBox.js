@@ -1,7 +1,9 @@
-import React, { Component,useState }  from 'react';
+import React, { Component }  from 'react';
 import { Grid } from "@material-ui/core";
 import Button from '@material-ui/core/Button';
 import InputBase from '@material-ui/core/InputBase';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 import AddIcon from '@material-ui/icons/AddRounded';
 import RemoveIcon from '@material-ui/icons/RemoveRounded';
 import axios from 'axios';
@@ -18,7 +20,8 @@ constructor(props) {
     this.state = {volumn: 100
 		,speed: '1'
 		,pitch: '1.0'
-		,text: ''};
+		,text: ''
+		,source: 'chula'};
   }
 rmVolume = () => {
   if(this.props.trackvolume!=0){
@@ -52,28 +55,22 @@ addSpeed = () => {
   }
 }
 handleText = (e) => {
-	this.setState({text: e})
+	this.setState({text: e});
+}
+handleSource = (e) => {
+	this.setState({source: e});
 }
 generateTTS = () => {
 	const text = this.state.text;
-	axios.get(`http://localhost:3001/tts/${text}`)
+	const source = this.state.source;
+	axios.get(`http://localhost:3001/tts/${source}/${text}`)
 	.then((response) => {
-		console.log("success.")
-		console.log(response)
+		const tts_audio = response.data.audio;
+		// continue
 	}).catch((response) => {
-		console.log("failed.")
-		console.log(response)
+		alert(`ERROR.\nFailed to generate TTS from ${source}`);
 	})
-}
-async downloadFile() {
-	const response = axios.get("http://localhost:3001/tts/ฉันเดินเข้าไปในห้อง");
-	// const bufferdecoded = Buffer.from((await response).data.audio, 'base64');
-	const decoded = "data:audio/mpeg;base64," + (await response).data.audio;
-	console.log("Playing");
-	var snd = new Audio(decoded);
-	snd.play();
-	console.log('Success!')
-}
+};
 render(){
 return (
     <div align="left" style={rootStyle} >
@@ -136,8 +133,9 @@ return (
   	justify="flex-start"
 	>
  		<div style={{marginRight:'12px'}}>
-			<div style={{marginRight:'10px',marginBottom:'12px'}} >Volume:</div>
-			<div style={{marginRight:'10px',marginBottom:'12px'}} >Speed:</div>
+			<div style={{marginRight:'10px',marginBottom:'20px'}} >Volume:</div>
+			<div style={{marginRight:'10px',marginBottom:'25px'}} >Speed:</div>
+			<div style={{marginRight:'10px',marginBottom:'12px'}} >Source:</div>
 		</div>
 		<div>
 			<Grid container direction="row" style={{marginBottom:'3px', alignItems: 'center'}} >
@@ -149,7 +147,7 @@ return (
 				<AddIcon style={{color : '#bababa'}}/>
 				</Button>
 			</Grid>
-			<Grid container direction="row" style={{marginBottom:'3px', alignItems: 'center'}} >
+			<Grid container direction="row" style={{marginBottom:'13px', alignItems: 'center'}} >
 
       				<Button onClick={this.rmSpeed}>
       				<RemoveIcon style={{color : '#bababa'}}/>
@@ -158,6 +156,16 @@ return (
       				<Button onClick={this.addSpeed}>
 				<AddIcon style={{color : '#bababa'}}/>
 				</Button>
+			</Grid>
+			<Grid container direction="row" style={{marginBottom:'13px', alignItems: 'center'}} >
+				<Select
+				value={this.state.source}
+				onChange={event => this.handleSource(event.target.value)}
+				style={{color: '#00', backgroundColor: '#bababa', padding: '0px 6px', marginLeft: '45px', borderRadius: '5px', width: '90px'}}
+				>
+				<MenuItem value={"chula"}>Chula</MenuItem>
+				<MenuItem value={"google"}>Google</MenuItem>
+				</Select>
 			</Grid>
 		</div>
 	</Grid>
@@ -168,6 +176,3 @@ return (
 }
 }
 export default ScriptBox;
-
-// total 33800
-// tax 1014
