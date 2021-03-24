@@ -8,10 +8,10 @@ export class TTSController {
     constructor(private readonly ttsService: TTSService) {}
 
     @ApiOperation({ summary: 'Get audio file mp3'})
-    @Get(':text')
-    async create(@Param('text') text: string, @Req() request, @Res() response) {
+    @Get('/:source/:text')
+    async create(@Param('text') text: string, @Param('source') source: string, @Req() request, @Res() response) {
         try {
-            await this.ttsService.saveAudio(text, request, response);
+            await this.ttsService.saveAudio(text, source, request, response);
         } catch (error) {
             console.log(error.message)
             return response.status(500).json(`Failed: ${error.message}`);

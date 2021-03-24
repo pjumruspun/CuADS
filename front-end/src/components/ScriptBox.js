@@ -18,7 +18,7 @@ constructor(props) {
     this.state = {volumn: 100
 		,speed: '1'
 		,pitch: '1.0'
-		,audio: ''};
+		,text: ''};
   }
 rmVolume = () => {
   if(this.props.trackvolume!=0){
@@ -52,10 +52,18 @@ addSpeed = () => {
   }
 }
 handleText = (e) => {
-	this.setState({text: e.target.value})
+	this.setState({text: e})
 }
 generateTTS = () => {
-	
+	const text = this.state.text;
+	axios.get(`http://localhost:3001/tts/${text}`)
+	.then((response) => {
+		console.log("success.")
+		console.log(response)
+	}).catch((response) => {
+		console.log("failed.")
+		console.log(response)
+	})
 }
 async downloadFile() {
 	const response = axios.get("http://localhost:3001/tts/ฉันเดินเข้าไปในห้อง");
@@ -82,7 +90,7 @@ return (
         multiline
         rows={3}
         inputProps={{ 'aria-label': 'naked' }}
-		onChange={this.handleText}
+		onChange={event => this.handleText(event.target.value)}
 	style={{
  	backgroundColor : '#bababa',
   	width: '38vw',
@@ -153,7 +161,7 @@ return (
 			</Grid>
 		</div>
 	</Grid>
-	<Button variant="contained" style={{ alignSelf: "flex-end" }} onClick={this.downloadFile}>Generate TTS</Button>
+	<Button variant="contained" style={{ alignSelf: "flex-end" }} onClick={this.generateTTS}>Generate TTS</Button>
 	</Grid>  
     </div>
   );

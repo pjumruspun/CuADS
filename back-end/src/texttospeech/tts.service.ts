@@ -1,41 +1,78 @@
-import { Injectable, Req, Res, Param, Inject } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { ITTS } from 'src/interface/tts.interface';
-import { TracksService } from 'src/tracks/tracks.service';
+import { Req, Res, Param } from '@nestjs/common';
+import { AudioClipSchema } from 'src/audio-clips/audio-clips.schema';
 import axios from 'axios';
+import * as gTTS from 'gtts';
+import * as mongoose from 'mongoose';
 
-@Injectable()
+function streamToString(stream, cb) {
+    const chunks = [];
+    stream.on('data', (chunk) => {
+        chunks.push(chunk.toString('base64'));
+    });
+    stream.on('end', () => {
+        cb(chunks.join(''));
+    });
+}
+
 export class TTSService {
-    constructor(
-        @Inject('TTS_MODEL') private ttsModel: Model<ITTS>
-    ) {}
-
-    async saveAudio(@Param('text') text: string, @Req() req, @Res() res): Promise<ITTS> {
-        try {
-            axios.post(
-                process.env.TTS_API_ENDPOINT,
-                {'data': text},
-                {
-                    headers: {
-                        'Content-Type': 'application/json'
+    async saveAudio(@Param('text') text: string, @Param('source') source: string, @Req() req, @Res() res) {
+        if (source === 'chula') {
+            try {
+                axios.post(
+                    process.env.TTS_API_ENDPOINT,
+                    {'data': text},
+                    {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
                     }
-                }
-            ).then((response) => {
-                const sound = response.data;
-                const responseAudio = new this.ttsModel({
-                    "project_id": 1,
-                    "tts_id": 2,
-                    "content": sound
+                ).then((response) => {
+                    const sound = response.data.data;
+                    const Model =  mongoose.model("AudioClip", AudioClipSchema, "audioclips");
+                    const responseAudio = new Model({
+                        content: 'data:audio/mpeg;base64,'+sound
+                    });
+                    responseAudio.save((err) => {
+                        if (err) return res.status(400).json({'msg': err})
+                        return res.status(200).json({'msg': 'success', 'audio': sound});
+                    });
+                }).catch((response) => {
+                    return res.status(400).json({'msg': response});
                 });
-                const save = responseAudio.save();
+            } catch (error) {
+                return res.status(500).json({'msg': error});
+            }
+        } else if (source === 'google') {
+            try {
+                const chunks = [];
+                const gtts = new gTTS(text, 'th');
                 
-                return res.status(200).json({'msg': 'success'})
-            }).catch((response) => {
-                return res.status(400).json({'msg': response})
-            });
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json(`Failed: ${error}`);
+                function getSound(buffer) {
+                    return new Promise((resolve, reject) => {
+                        streamToString(buffer, (data) => {
+                            let sound = data;
+                            resolve(sound);
+                        });
+                    });
+                };
+
+                getSound(gtts.stream()).then((value) => {
+                    const Model =  mongoose.model("AudioClip", AudioClipSchema, "audioclips");
+                    const responseAudio = new Model({
+                        content: 'data:audio/mpeg;base64,'+value
+                    });
+                    responseAudio.save((err) => {
+                        if (err) return res.status(400).json({'msg': err})
+                        return res.status(200).json({'msg': 'success', 'audio': value});
+                    });
+                }).catch((error) => {
+                    return res.status(400).json({'msg': error})
+                })
+            } catch (error) {
+                return res.status(500).json({'msg': error});
+            }
+        } else {
+            return res.status(400).json({'msg': 'invalid source.'})
         }
     }
 }

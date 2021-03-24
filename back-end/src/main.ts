@@ -4,7 +4,6 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  console.log(process.env)
   // Swagger Config
   const config = new DocumentBuilder()
   .setTitle('Projects Example')
