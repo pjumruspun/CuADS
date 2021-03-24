@@ -7,10 +7,10 @@ import * as mongoose from 'mongoose';
 function streamToString(stream, cb) {
     const chunks = [];
     stream.on('data', (chunk) => {
-        chunks.push(chunk.toString('base64'));
+        chunks.push(chunk);
     });
     stream.on('end', () => {
-        cb(chunks.join(''));
+        cb(Buffer.concat(chunks).toString('base64'));
     });
 }
 
