@@ -56,31 +56,30 @@ export default function SimpleMenu(props) {
     file = files.item(0);
     if (file) console.log(file.name);
 
-    props.onImport(file.name);
+    var formData = new FormData();
+    formData.append("file", file);
+    axios
+      .post(`http://localhost:3001/files`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        onUploadProgress: (ProgressEvent) => {
+          const { loaded, total } = ProgressEvent;
+          let progress = Math.floor((loaded / total) * 100);
+          console.log(`${loaded}kb of ${total}kb | ${progress}%`);
 
-    // var formData = new FormData();
-    // formData.append("upload", file);
-    // axios
-    //   .post(`http://localhost:3001/fileupload`, formData, {
-    //     headers: {
-    //       "Content-Type": "multipart/form-data",
-    //     },
-    //     onUploadProgress: (ProgressEvent) => {
-    //       const { loaded, total } = ProgressEvent;
-    //       let progress = Math.floor((loaded / total) * 100);
-    //       console.log(`${loaded}kb of ${total}kb | ${progress}%`);
+          setPercentage(progress);
+          props.onUploading(progress);
+        },
+      })
+      .then((res) => {
+        console.log(res.data[0].id);
+        const videoId = res.data[0].id;
+        props.onImport(videoId, file);
+        setProgress("finished");
 
-    //       setPercentage(progress);
-    //       props.onUploading(progress);
-    //     },
-    //   })
-    //   .then((res) => {
-    //     // res.data contains S3 video URL
-    //     props.onChange(res.data);
-    //     setProgress("finished");
-
-    //     props.onProgressChange("finished");
-    //   });
+        props.onProgressChange("finished");
+      });
 
     // deselect the file
     document.getElementById(classNames.videoInput).value = "";

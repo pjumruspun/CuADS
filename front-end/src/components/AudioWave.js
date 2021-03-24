@@ -23,14 +23,18 @@ export default function AudioWave(props) {
   //const [zoom, setZoom] = useState(50);
   // create new WaveSurfer instance
   // On component mount and when url changes
+ 
   useEffect(() => {
     //setPlay(false);
 
     const options = formWaveSurferOptions(waveformRef.current);
     wavesurfer.current = WaveSurfer.create(options);
-
-    wavesurfer.current.load(props.url);
-
+    if(props.url == undefined){
+    wavesurfer.current.load("https://reelcrafter-east.s3.amazonaws.com/aux/test.m4a");
+    
+    }else{
+     wavesurfer.current.load(props.url); 
+    }
     wavesurfer.current.on("ready", function() {
       // https://wavesurfer-js.org/docs/methods.html
       // wavesurfer.current.play();

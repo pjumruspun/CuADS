@@ -36,7 +36,7 @@ export default function SimpleMenu(props) {
           onSaveProject={() => props.onSaveProject()}
           onUploading={onUploading}
           onProgressChange={onProgressChange}
-          onImport={(fileName) => props.onImport(fileName)}
+          onImport={(videoId, videoFile) => props.onImport(videoId, videoFile)}
         />
         <SettingButton onChange={(value) => props.onVolumeChange(value)} />
         {progress === "in-progress" ? (

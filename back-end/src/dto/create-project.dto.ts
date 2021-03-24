@@ -10,13 +10,24 @@ export class CreateProjectDto {
 
     @ApiProperty({
         description: 'Passcode of the project, can be blank.',
+        default: "",
+        type: String
     })
     passcode: string;
 
     @ApiProperty({
-        description: 'Video URL of this project.'
+        description: 'Video URL of this project.',
+        default: "",
+        type: String
     })
     videoURL: string;
+
+    @ApiProperty({
+        description: 'Original audio URL of this project.',
+        default: "",
+        type: String
+    })
+    originalAudioURL: string;
 
     @ApiProperty({
         description: 'List of all tracks in this project.',
