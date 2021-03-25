@@ -2,7 +2,7 @@ import { Document, Types } from 'mongoose';
 
 export interface IAudioClip extends Document {
     content: string;
-    startTime: string;
+    startTime: number;
     volume: number;
     speed: number;
     pitch: number;

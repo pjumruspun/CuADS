@@ -17,7 +17,7 @@ import { FilesModule } from './files/files.module';
       isGlobal: true,
     }),
     ProjectsModule,
-    MongooseModule.forRoot(`mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_SERVICE_ENDPOINT}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE_NAME}`),
+    MongooseModule.forRoot(`mongodb://${process.env.MONGO_SERVICE_ENDPOINT}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE_NAME}`),
     TracksModule,
     AudioClipsModule,
     TTSModule,

@@ -39,6 +39,7 @@ class App extends Component {
     zoom: 50,
     projectId: "",
     topText: topTextEmptyProject,
+    playedSeconds: 0.0,
   };
 
   handleUrlChange = (url) => {
@@ -71,6 +72,7 @@ class App extends Component {
   handleProgress = (state) => {
     if (!this.state.seeking) {
       this.setState(state);
+      this.setState({ playedSeconds: state.playedSeconds });
     }
   };
 
@@ -161,7 +163,7 @@ class App extends Component {
       .then((res) => {
         console.log(`final res in handleImportProject: ${res.data}`);
         this.handleAudioURLChange(res.data.originalAudioURL);
-        });
+      });
 
     //
   };
@@ -187,7 +189,7 @@ class App extends Component {
       trackvolume,
       speed,
       zoom,
-      audioURL
+      audioURL,
     } = this.state;
 
     return (
@@ -215,6 +217,7 @@ class App extends Component {
               trackvolume={trackvolume}
               speed={speed}
               onChange={this.onChange.bind(this)}
+              playedSeconds={this.state.playedSeconds}
             />
           </div>
           <div>

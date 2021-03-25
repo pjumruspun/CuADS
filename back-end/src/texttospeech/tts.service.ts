@@ -1,8 +1,9 @@
-import { Req, Res, Param } from '@nestjs/common';
+import { Req, Res, Param, Body } from '@nestjs/common';
 import { AudioClipSchema } from 'src/audio-clips/audio-clips.schema';
 import axios from 'axios';
 import * as gTTS from 'gtts';
 import * as mongoose from 'mongoose';
+import { CreateTTSDto } from 'src/dto/create-tts.dto';
 
 function streamToString(stream, cb) {
     const chunks = [];
@@ -15,7 +16,10 @@ function streamToString(stream, cb) {
 }
 
 export class TTSService {
-    async saveAudio(@Param('text') text: string, @Param('source') source: string, @Req() req, @Res() res) {
+    async saveAudio(@Body() createTTSDto: CreateTTSDto, @Req() req, @Res() res) {
+        const source = createTTSDto.source;
+        const text = createTTSDto.text;
+        const startTime = createTTSDto.startTime;
         if (source === 'chula') {
             try {
                 axios.post(
@@ -30,7 +34,8 @@ export class TTSService {
                     const sound = response.data.data;
                     const Model =  mongoose.model("AudioClip", AudioClipSchema, "audioclips");
                     const responseAudio = new Model({
-                        content: sound
+                        content: sound,
+                        startTime: startTime,
                     });
                     responseAudio.save((err) => {
                         if (err) return res.status(400).json({'msg': err})
@@ -59,7 +64,8 @@ export class TTSService {
                 getSound(gtts.stream()).then((value) => {
                     const Model =  mongoose.model("AudioClip", AudioClipSchema, "audioclips");
                     const responseAudio = new Model({
-                        content: value
+                        content: value,
+                        startTime: startTime,
                     });
                     responseAudio.save((err) => {
                         if (err) return res.status(400).json({'msg': err})
