@@ -79,6 +79,7 @@ class ScriptBox extends Component {
       })
       .then((response) => {
         const tts_audio = response.data.audio;
+	this.props.onCreateTTS(tts_audio);
         // continue
       })
       .catch((response) => {

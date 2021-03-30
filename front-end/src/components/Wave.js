@@ -75,22 +75,23 @@ export default function Waveform(props) {
    }, [props.playing]);
   
  const handleSelected = () => {
-    if(!selected && !props.selecting){
-    setBorder('3px solid white');
-    props.onSelected(volume,speed); 
-    setSelected(true);
-    props.onSelecting(true);
-    }
-    if(selected){
-    setBorder('1px solid grey');
-    setSelected(false);
-    props.onSelecting(false);
-    }
+    //if(!selected && !props.selecting){
+    //setBorder('3px solid white');
+    //props.onSelected(volume,speed); 
+    //setSelected(true);
+    //props.onSelecting(true);
+    //}
+    //if(selected){
+    //setBorder('1px solid grey');
+    //setSelected(false);
+    //props.onSelecting(false);
+    //}
+    wavesurfer.current.playPause();
   };
 
   return (
     <div>
-      <div style={{border: border ,height: 80 }} onClick={handleSelected} id="waveform" ref={waveformRef} /> 
+      <div style={{border: border ,height: 80 ,width:50 }}  onClick={handleSelected} id="waveform" ref={waveformRef} /> 
   </div>
   );
 }

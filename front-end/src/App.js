@@ -10,7 +10,7 @@ import IconButton from "@material-ui/core/IconButton";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import axios from "axios";
-
+import Waveform from "./components//Wave";
 import TrackSection from "./components/TrackSection";
 
 var rootStyle = {
@@ -40,6 +40,8 @@ class App extends Component {
     projectId: "",
     topText: topTextEmptyProject,
     playedSeconds: 0.0,
+    ttstracks: [],
+    id: 0
   };
 
   handleUrlChange = (url) => {
@@ -129,7 +131,12 @@ class App extends Component {
         console.log(res);
       });
   };
-
+  
+  handleTTS = (tts) =>{
+    this.setState((prevState) => ({
+      ttstracks: [...prevState.ttstracks,tts]
+    }));
+  };
   handleImportProject = (videoId, videoFile) => {
     if (this.state.projectId == "") {
       alert(
@@ -190,6 +197,8 @@ class App extends Component {
       speed,
       zoom,
       audioURL,
+      ttstracks,
+	id
     } = this.state;
 
     return (
@@ -218,6 +227,7 @@ class App extends Component {
               speed={speed}
               onChange={this.onChange.bind(this)}
               playedSeconds={this.state.playedSeconds}
+	      onCreateTTS={(e)=>this.handleTTS(e)}
             />
           </div>
           <div>
@@ -281,8 +291,8 @@ class App extends Component {
           playing={playing}
           played={duration * played}
           onSelected={this.handleSelected}
+	  tts={ttstracks}
         />
-
         <div id="zoom">
           zoom
           <input

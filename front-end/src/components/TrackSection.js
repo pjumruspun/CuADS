@@ -73,6 +73,7 @@ class TrackSection extends Component{
 		playing={this.props.playing} 
 		played={this.props.played}
                 selecting={this.state.selecting}
+                tts={this.props.tts}
                 />
               ))}
         </Grid>
