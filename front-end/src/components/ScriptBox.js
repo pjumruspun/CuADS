@@ -87,7 +87,6 @@ class ScriptBox extends Component {
         console.log(
           `Generated TTS with sentence '${text}' at ${playedSeconds} seconds`
         );
-        this.props.onCreateTTS(tts_audio);
         // continue
       })
       .catch((response) => {

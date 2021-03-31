@@ -3,7 +3,7 @@ import { Grid, InputBase } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import Waveform from "./Wave";
-
+import HorizontalScroller from 'react-horizontal-scroll-container';
 class TrackItem extends Component {
   constructor(props) {
     super(props);
@@ -31,16 +31,11 @@ class TrackItem extends Component {
 
         </Grid>
  	<Grid item xs={9} direction="column" style={{ backgroundColor: "#333333",border:'solid',borderWidth:'thin',borderColor:'#4F4F4F', height:'12vh'}}>
-        <Grid
-          container
-          direction="row"
-          alignItems="flex-start"
-          justify="flex-start"
-        >
-         {this.props.tts.map((ttstrack) => (
-         <Waveform  url={ttstrack} selecting={false} onSelecting={null} onSelected={null}  trackvolume={50} speed={1.0} zoom={1} playing={false} played={0}/> 
+         <HorizontalScroller>
+         {this.props.ttsList.map((tts) => (
+	<Waveform url={tts} selecting={this.props.selecting} onSelecting={(e) => this.props.onSelecting(e)} onSelected={(volume,speed) => this.props.onSelected(volume,speed)} trackvolume={this.props.trackvolume} speed={this.props.speed} zoom={this.props.zoom} playing={false} played={0}/> 
          ))}
-	</Grid>
+	</HorizontalScroller>
 	</Grid>
       </Grid>
     );

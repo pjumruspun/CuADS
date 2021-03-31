@@ -12,6 +12,7 @@
     "downloadjs": "^1.4.7",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-horizontal-scroll-container": "^1.0.1",
     "react-player": "^2.7.2",
     "react-scripts": "4.0.1",
     "react-selectable-fast": "^3.4.0",

@@ -63,7 +63,6 @@ class App extends Component {
     topText: topTextEmptyProject,
     playedSeconds: 0.0,
     ttsList: [],
-    ttstracks: [],
     id: 0,
   };
 
@@ -187,11 +186,6 @@ class App extends Component {
       });
   };
 
-  handleTTS = (tts) => {
-    this.setState((prevState) => ({
-      ttstracks: [...prevState.ttstracks, tts],
-    }));
-  };
   handleImportProject = (videoId, videoFile) => {
     if (this.state.projectId == "") {
       alert(
@@ -252,8 +246,8 @@ class App extends Component {
       speed,
       zoom,
       audioURL,
-      ttstracks,
       id,
+      ttsList
     } = this.state;
 
     return (
@@ -347,7 +341,7 @@ class App extends Component {
           playing={playing}
           played={duration * played}
           onSelected={this.handleSelected}
-          tts={ttstracks}
+          tts={ttsList}
         />
         <div id="zoom">
           zoom

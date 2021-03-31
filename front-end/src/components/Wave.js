@@ -33,8 +33,7 @@ export default function Waveform(props) {
 
     const options = formWaveSurferOptions(waveformRef.current);
     wavesurfer.current = WaveSurfer.create(options);
-
-    wavesurfer.current.load(props.url);
+    wavesurfer.current.load("data:audio/wav;base64," +props.url.content);
 
     wavesurfer.current.on("ready", function() {
       // https://wavesurfer-js.org/docs/methods.html
@@ -75,18 +74,18 @@ export default function Waveform(props) {
    }, [props.playing]);
   
  const handleSelected = () => {
-    //if(!selected && !props.selecting){
-    //setBorder('3px solid white');
-    //props.onSelected(volume,speed); 
-    //setSelected(true);
-    //props.onSelecting(true);
-    //}
-    //if(selected){
-    //setBorder('1px solid grey');
-    //setSelected(false);
-    //props.onSelecting(false);
-    //}
+    if(!selected && !props.selecting){
+    setBorder('3px solid white');
+    props.onSelected(volume,speed); 
+    setSelected(true);
+    props.onSelecting(true);
     wavesurfer.current.playPause();
+    }
+    if(selected){
+    setBorder('1px solid grey');
+    setSelected(false);
+    props.onSelecting(false);
+    }
   };
 
   return (
