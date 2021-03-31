@@ -26,6 +26,28 @@ const ZOOM_RANGE = {
 var topTextEmptyProject =
   "No project opened, please create a new project or open an existing project from File menu.";
 
+var roundToOneDecimal = (number) => {
+  return Math.round(number * 10) / 10;
+};
+
+var canPlayTTS = true;
+var timeBetweenEachTTS = 300; // in milliseconds
+
+// To not play TTS too repeatedly, we allow playing TTS once every `timeBetweenEachTTS` ms
+var playTTS = (base64string) => {
+  if (!canPlayTTS) return; // Not ready to play sound
+  canPlayTTS = false;
+
+  // Play sound here
+  var snd = new Audio("data:audio/wav;base64," + base64string);
+  snd.play();
+
+  setTimeout(function () {
+    // Will be ready to play sound in `timeBetweenEachTTS` ms
+    canPlayTTS = true;
+  }, timeBetweenEachTTS);
+};
+
 class App extends Component {
   state = {
     playing: false,
@@ -40,6 +62,7 @@ class App extends Component {
     projectId: "",
     topText: topTextEmptyProject,
     playedSeconds: 0.0,
+    ttsList: [],
   };
 
   handleUrlChange = (url) => {
@@ -72,9 +95,28 @@ class App extends Component {
   handleProgress = (state) => {
     if (!this.state.seeking) {
       this.setState(state);
+      const roundedPlayedSeconds = roundToOneDecimal(state.playedSeconds);
+      this.handlePlayTTSOnTimeStamp(roundedPlayedSeconds);
       this.setState({ playedSeconds: state.playedSeconds });
     }
   };
+
+  handlePlayTTSOnTimeStamp = (roundedPlayedSeconds) => {
+    if (!this.state.playing) return;
+
+    this.state.ttsList.map((tts) => {
+      // Still not playing for some reason
+      // Time sometimes still skips, like from 0.2 then suddenly 0.5
+      const ttsRoundedStartTime = roundToOneDecimal(tts.startTime);
+
+      if (Math.abs(ttsRoundedStartTime - roundedPlayedSeconds) < 0.01) {
+        const base64string = tts.content;
+        playTTS(base64string);
+      }
+    });
+  };
+
+  findByStartTime = (roundedStartTime) => {};
 
   handlePlayButton = () => {
     this.setState({ playing: true });
@@ -108,6 +150,19 @@ class App extends Component {
     // Also need to update URL and other stuff
     this.handleUrlChange(project.videoURL);
     this.handleAudioURLChange(project.originalAudioURL);
+    this.fetchTTS();
+  };
+
+  fetchTTS = () => {
+    // Might need to deal with track later
+    // Currently get all TTS in backend into the project
+    axios.get(`http://localhost:3001/audio-clips`).then((res) => {
+      const ttsList = res.data;
+      // We keep the whole tts object in list
+      // This could be optimized with mapping
+      // For example, we wanna search tts content by time, so we map startTime -> content
+      this.setState({ ttsList: ttsList });
+    });
   };
 
   handleSaveProject = () => {
@@ -218,6 +273,7 @@ class App extends Component {
               speed={speed}
               onChange={this.onChange.bind(this)}
               playedSeconds={this.state.playedSeconds}
+              onTTSGenerated={this.fetchTTS}
             />
           </div>
           <div>

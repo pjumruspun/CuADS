@@ -25,6 +25,7 @@ class ScriptBox extends Component {
       source: "chula",
     };
   }
+
   rmVolume = () => {
     if (this.props.trackvolume != 0) {
       const fieldName = "trackvolume";
@@ -32,6 +33,7 @@ class ScriptBox extends Component {
       this.props.onChange(fieldName, fieldValue);
     }
   };
+
   addVolume = () => {
     if (this.props.trackvolume != 100) {
       const fieldName = "trackvolume";
@@ -39,6 +41,7 @@ class ScriptBox extends Component {
       this.props.onChange(fieldName, fieldValue);
     }
   };
+
   rmSpeed = () => {
     if (this.props.speed != 0.25) {
       const fieldName = "speed";
@@ -46,6 +49,7 @@ class ScriptBox extends Component {
       this.props.onChange(fieldName, fieldValue);
     }
   };
+
   addSpeed = () => {
     if (this.props.speed != 2.0) {
       const fieldName = "speed";
@@ -53,9 +57,11 @@ class ScriptBox extends Component {
       this.props.onChange(fieldName, fieldValue);
     }
   };
+
   handleText = (e) => {
     this.setState({ text: e });
   };
+
   handleSource = (e) => {
     this.setState({ source: e });
   };
@@ -71,21 +77,22 @@ class ScriptBox extends Component {
       startTime: playedSeconds,
     };
 
-    console.log(ttsFormData);
-
     axios
       .post(`http://localhost:3001/tts`, ttsFormData, {
         headers: { "Content-Type": "application/json" },
       })
       .then((response) => {
         const tts_audio = response.data.audio;
-        // continue
+        this.props.onTTSGenerated();
+        console.log(
+          `Generated TTS with sentence '${text}' at ${playedSeconds} seconds`
+        );
       })
       .catch((response) => {
         alert(`ERROR.\nFailed to generate TTS from ${source}`);
-        console.log(response.data);
       });
   };
+
   render() {
     return (
       <div align="left" style={rootStyle}>
