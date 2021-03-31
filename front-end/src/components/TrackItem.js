@@ -30,10 +30,18 @@ class TrackItem extends Component {
             </Button>
 
         </Grid>
-
-        <Grid item xs={9} direction="column" style={{ backgroundColor: "#333333",border:'solid',borderWidth:'thin',borderColor:'#4F4F4F', height:'12vh'}}>
-		<Waveform selecting={this.props.selecting} onSelecting={(e) => this.props.onSelecting(e)} onSelected={(volume,speed) => this.props.onSelected(volume,speed)} url={"https://reelcrafter-east.s3.amazonaws.com/aux/test.m4a"} trackvolume={this.props.trackvolume} speed={this.props.speed} zoom={this.props.zoom} playing={this.props.playing} played={this.props.played}/> 
-        </Grid>
+ 	<Grid item xs={9} direction="column" style={{ backgroundColor: "#333333",border:'solid',borderWidth:'thin',borderColor:'#4F4F4F', height:'12vh'}}>
+        <Grid
+          container
+          direction="row"
+          alignItems="flex-start"
+          justify="flex-start"
+        >
+         {this.props.tts.map((ttstrack) => (
+         <Waveform  url={ttstrack} selecting={false} onSelecting={null} onSelected={null}  trackvolume={50} speed={1.0} zoom={1} playing={false} played={0}/> 
+         ))}
+	</Grid>
+	</Grid>
       </Grid>
     );
   }
