@@ -33,7 +33,7 @@ class TrackItem extends Component {
  	<Grid item xs={9} direction="column" style={{ backgroundColor: "#333333",border:'solid',borderWidth:'thin',borderColor:'#4F4F4F', height:'12vh'}}>
          <HorizontalScroller>
          {this.props.ttsList.map((tts) => (
-	<Waveform url={tts} selecting={this.props.selecting} onSelecting={(e) => this.props.onSelecting(e)} onSelected={(volume,speed) => this.props.onSelected(volume,speed)} trackvolume={this.props.trackvolume} speed={this.props.speed} zoom={this.props.zoom} playing={false} played={0}/> 
+	<Waveform url={tts} selecting={this.props.selecting} onSelecting={(e) => this.props.onSelecting(e)} onSelected={(volume,speed,text) => this.props.onSelected(volume,speed,text)} trackvolume={this.props.trackvolume} speed={this.props.speed} text={this.props.text} zoom={this.props.zoom} playing={false} played={0}/> 
          ))}
 	</HorizontalScroller>
 	</Grid>

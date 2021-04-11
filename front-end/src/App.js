@@ -60,6 +60,7 @@ class App extends Component {
     speed: 1.0,
     zoom: 50,
     projectId: "",
+    text:"",
     topText: topTextEmptyProject,
     playedSeconds: 0.0,
     ttsList: [],
@@ -136,8 +137,8 @@ class App extends Component {
     this.setState({ volume: parseFloat(e) });
   };
 
-  handleSelected = (e, f) => {
-    this.setState({ trackvolume: e, speed: f });
+  handleSelected = (e, f,g) => {
+    this.setState({ trackvolume: e, speed: f, text:g });
   };
 
   handleProjectChange = (project) => {
@@ -245,6 +246,7 @@ class App extends Component {
       trackvolume,
       speed,
       zoom,
+      text,
       audioURL,
       id,
       ttsList
@@ -274,6 +276,7 @@ class App extends Component {
             <ScriptBox
               trackvolume={trackvolume}
               speed={speed}
+	      text={text}
               onChange={this.onChange.bind(this)}
               playedSeconds={this.state.playedSeconds}
               onTTSGenerated={this.fetchTTS}
@@ -338,6 +341,7 @@ class App extends Component {
           trackvolume={trackvolume}
           speed={speed}
           zoom={zoom}
+	  text={text}
           playing={playing}
           played={duration * played}
           onSelected={this.handleSelected}

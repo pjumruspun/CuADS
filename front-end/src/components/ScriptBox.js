@@ -22,6 +22,7 @@ class ScriptBox extends Component {
       speed: "1",
       pitch: "1.0",
       text: "",
+      starttime:"",
       source: "chula",
     };
   }
@@ -60,6 +61,9 @@ class ScriptBox extends Component {
 
   handleText = (e) => {
     this.setState({ text: e });
+    const fieldName = "text";
+    const fieldValue = e;
+    this.props.onChange(fieldName, fieldValue);
   };
 
   handleSource = (e) => {
@@ -110,6 +114,7 @@ class ScriptBox extends Component {
               multiline
               rows={3}
               inputProps={{ "aria-label": "naked" }}
+	      value={this.props.text}
               onChange={(event) => this.handleText(event.target.value)}
               style={{
                 backgroundColor: "#bababa",

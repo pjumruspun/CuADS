@@ -23,6 +23,7 @@ export default function Waveform(props) {
   //const [playing, setPlay] = useState(false);
   const [volume, setVolume] = useState(50);
   const [speed, setSpeed] = useState(1.0);
+  const [text, setText] = useState(props.text);
   const [border, setBorder] = useState('1px solid grey');
   const [selected, setSelected] = useState(false);
   //const [zoom, setZoom] = useState(50);
@@ -72,14 +73,19 @@ export default function Waveform(props) {
    useEffect(() => {
     wavesurfer.current.playPause();
    }, [props.playing]);
-  
+
+   useEffect(() => {
+    if(selected){
+    setText(props.text);
+     }
+   }, [props.text]);
+
  const handleSelected = () => {
     if(!selected && !props.selecting){
     setBorder('3px solid white');
-    props.onSelected(volume,speed); 
+    props.onSelected(volume,speed,text); 
     setSelected(true);
     props.onSelecting(true);
-    wavesurfer.current.playPause();
     }
     if(selected){
     setBorder('1px solid grey');

@@ -66,7 +66,7 @@ class TrackSection extends Component{
                 key={track}
                 id={track}
                 onDeleteTrack={this.onDeleteTrack}
-		onSelected={(volume,speed) => this.props.onSelected(volume,speed)}
+		onSelected={(volume,speed,text) => this.props.onSelected(volume,speed,text)}
                 onSelecting={(e) => this.handleSelecting(e)}
                 trackvolume={this.props.trackvolume} 
 		speed={this.props.speed}
@@ -74,6 +74,7 @@ class TrackSection extends Component{
 		played={this.props.played}
                 selecting={this.state.selecting}
                 ttsList={this.props.tts}
+	        text={this.props.text}
                 />
               ))}
         </Grid>
