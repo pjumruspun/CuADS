@@ -81,16 +81,16 @@ export default function Waveform(props) {
    }, [props.text]);
 
  const handleSelected = () => {
-    if(!selected && !props.selecting){
+    if(!selected && props.selecting==-1){
     setBorder('3px solid white');
     props.onSelected(volume,speed,text); 
     setSelected(true);
-    props.onSelecting(true);
+    props.onSelecting(props.url._id);
     }
     if(selected){
     setBorder('1px solid grey');
     setSelected(false);
-    props.onSelecting(false);
+    props.onSelecting(-1);
     }
   };
 

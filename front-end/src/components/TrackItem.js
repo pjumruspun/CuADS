@@ -10,14 +10,26 @@ class TrackItem extends Component {
     this.state = {
       id: this.props.id,
       name: "",
+      border :"thin solid #4F4F4F",
+      trackselected:false,
+      ttsid: 0
     };
   }
-
+  handleTrackSelected = () => {
+    if(!this.state.trackselected && this.props.trackselecting==99){
+    this.setState({ border: "5px solid white",trackselected: true});
+    this.props.onTrackSelecting(this.state.id);
+    }
+    if(this.state.trackselected){
+    this.setState({ border: "thin solid #4F4F4F",trackselected: false});
+    this.props.onTrackSelecting(99);
+    }
+  };
   render() {
     var onDeleteTrack = this.props.onDeleteTrack;
     return (
       <Grid container direction="row" style={{paddingLeft:'10px', height:'12vh'}}>
-        <Grid item xs={3} direction="column"style={{ backgroundColor: "#333333",border:'solid',borderWidth:'thin',borderColor:'#4F4F4F',paddingTop:'10px'}}>
+        <Grid item xs={3} direction="column" onClick={this.handleTrackSelected} style={{ backgroundColor: "#333333",border:this.state.border,paddingTop:'10px'}}>
           <InputBase
             inputProps={{ "aria-label": "naked" }}
             style={{
@@ -30,7 +42,7 @@ class TrackItem extends Component {
             </Button>
 
         </Grid>
- 	<Grid item xs={9} direction="column" style={{ backgroundColor: "#333333",border:'solid',borderWidth:'thin',borderColor:'#4F4F4F', height:'12vh'}}>
+ 	<Grid item xs={9} direction="column" style={{ backgroundColor: "#333333",border: this.state.border, height:'12vh'}}>
          <HorizontalScroller>
          {this.props.ttsList.map((tts) => (
 	<Waveform url={tts} selecting={this.props.selecting} onSelecting={(e) => this.props.onSelecting(e)} onSelected={(volume,speed,text) => this.props.onSelected(volume,speed,text)} trackvolume={this.props.trackvolume} speed={this.props.speed} text={this.props.text} zoom={this.props.zoom} playing={false} played={0}/> 

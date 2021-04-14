@@ -17,7 +17,8 @@ class TrackSection extends Component{
     this.state = {
       tracks: [],
       id: 0,
-      selecting:false
+      selecting:-1,
+      trackselecting:99
     };
   }
 
@@ -36,6 +37,9 @@ class TrackSection extends Component{
   
  handleSelecting = (e) =>{
  	this.setState({selecting:e});
+ }
+ handleTrackSelecting = (e) =>{
+ 	this.setState({trackselecting:e});
  }
   render() {
     return (
@@ -68,11 +72,13 @@ class TrackSection extends Component{
                 onDeleteTrack={this.onDeleteTrack}
 		onSelected={(volume,speed,text) => this.props.onSelected(volume,speed,text)}
                 onSelecting={(e) => this.handleSelecting(e)}
+                onTrackSelecting={(e) => this.handleTrackSelecting(e)}
                 trackvolume={this.props.trackvolume} 
 		speed={this.props.speed}
 		playing={this.props.playing} 
 		played={this.props.played}
                 selecting={this.state.selecting}
+		trackselecting={this.state.trackselecting}
                 ttsList={this.props.tts}
 	        text={this.props.text}
                 />
