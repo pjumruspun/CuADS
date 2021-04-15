@@ -1,21 +1,21 @@
-import React, { Component } from "react";
-import ReactPlayer from "react-player";
-import "./App.css";
-import Duration from "./components/Duration";
-import Bar from "./components/Bar";
+import React, { Component } from 'react';
+import ReactPlayer from 'react-player';
+import './App.css';
+import Duration from './components/Duration';
+import Bar from './components/Bar';
 
-import ScriptBox from "./components/ScriptBox";
-import { Grid } from "@material-ui/core";
-import IconButton from "@material-ui/core/IconButton";
-import PlayArrowIcon from "@material-ui/icons/PlayArrow";
-import PauseIcon from "@material-ui/icons/Pause";
-import axios from "axios";
-import Waveform from "./components//Wave";
-import TrackSection from "./components/TrackSection";
+import ScriptBox from './components/ScriptBox';
+import { Grid } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import PauseIcon from '@material-ui/icons/Pause';
+import axios from 'axios';
+import Waveform from './components//Wave';
+import TrackSection from './components/TrackSection';
 
 var rootStyle = {
-  backgroundColor: "#2e2d2d",
-  color: "white",
+  backgroundColor: '#2e2d2d',
+  color: 'white',
 };
 
 const ZOOM_RANGE = {
@@ -24,7 +24,7 @@ const ZOOM_RANGE = {
 };
 
 var topTextEmptyProject =
-  "No project opened, please create a new project or open an existing project from File menu.";
+  'No project opened, please create a new project or open an existing project from File menu.';
 
 var roundToOneDecimal = (number) => {
   return Math.round(number * 10) / 10;
@@ -39,7 +39,7 @@ var playTTS = (base64string) => {
   canPlayTTS = false;
 
   // Play sound here
-  var snd = new Audio("data:audio/wav;base64," + base64string);
+  var snd = new Audio('data:audio/wav;base64,' + base64string);
   snd.play();
 
   setTimeout(function () {
@@ -51,20 +51,26 @@ var playTTS = (base64string) => {
 class App extends Component {
   state = {
     playing: false,
-    url: "",
-    audioURL: "",
+    url: '',
+    audioURL: '',
     played: 0.5,
     duration: 0,
     volume: 0.8,
     trackvolume: 50,
     speed: 1.0,
     zoom: 50,
-    projectId: "",
-    text:"",
+    projectId: '',
+    text: '',
     topText: topTextEmptyProject,
     playedSeconds: 0.0,
     ttsList: [],
     id: 0,
+  };
+
+  handleTTSDelete = (id) => {
+    console.log('app.js: should delete', id);
+    const filteredTTSList = this.state.ttsList.filter((tts) => tts._id !== id);
+    this.setState({ ttsList: filteredTTSList });
   };
 
   handleUrlChange = (url) => {
@@ -133,18 +139,18 @@ class App extends Component {
   };
 
   handleVolumeChange = (e) => {
-    console.log("volume change " + e);
+    console.log('volume change ' + e);
     this.setState({ volume: parseFloat(e) });
   };
 
-  handleSelected = (e, f,g) => {
-    this.setState({ trackvolume: e, speed: f, text:g });
+  handleSelected = (e, f, g) => {
+    this.setState({ trackvolume: e, speed: f, text: g });
   };
 
   handleProjectChange = (project) => {
     console.log(`change project id to: ${project._id}`);
     var topTextToSet =
-      project._id == "" ? topTextEmptyProject : `Project Name: ${project.name}`;
+      project._id == '' ? topTextEmptyProject : `Project Name: ${project.name}`;
     this.setState({
       projectId: project._id,
       topText: topTextToSet,
@@ -168,7 +174,7 @@ class App extends Component {
   };
 
   handleSaveProject = () => {
-    if (this.state.projectId == "") {
+    if (this.state.projectId == '') {
       alert(
         `You have no currently active project, please create a new project or open an existing project.`
       );
@@ -188,7 +194,7 @@ class App extends Component {
   };
 
   handleImportProject = (videoId, videoFile) => {
-    if (this.state.projectId == "") {
+    if (this.state.projectId == '') {
       alert(
         `You have no currently active project, please create a new project or open an existing project.`
       );
@@ -209,12 +215,12 @@ class App extends Component {
         );
 
         var formData = new FormData();
-        formData.append("files", videoFile);
+        formData.append('files', videoFile);
 
         return axios.post(
           `http://localhost:3001/audio-utility/convert/${this.state.projectId}`,
           formData,
-          { headers: { ContentType: "multipart/formdata" } }
+          { headers: { ContentType: 'multipart/formdata' } }
         );
       })
       .then((res) => {
@@ -249,7 +255,7 @@ class App extends Component {
       text,
       audioURL,
       id,
-      ttsList
+      ttsList,
     } = this.state;
 
     return (
@@ -276,7 +282,7 @@ class App extends Component {
             <ScriptBox
               trackvolume={trackvolume}
               speed={speed}
-	      text={text}
+              text={text}
               onChange={this.onChange.bind(this)}
               playedSeconds={this.state.playedSeconds}
               onTTSGenerated={this.fetchTTS}
@@ -290,7 +296,7 @@ class App extends Component {
               url={url}
               playing={playing}
               volume={volume}
-              onSeek={(e) => console.log("onSeek", e)}
+              onSeek={(e) => console.log('onSeek', e)}
               onDuration={this.handleDuration}
               onProgress={this.handleProgress}
               progressInterval={10}
@@ -341,10 +347,11 @@ class App extends Component {
           trackvolume={trackvolume}
           speed={speed}
           zoom={zoom}
-	  text={text}
+          text={text}
           playing={playing}
           played={duration * played}
           onSelected={this.handleSelected}
+          handleTTSDelete={this.handleTTSDelete}
           tts={ttsList}
         />
         <div id="zoom">
