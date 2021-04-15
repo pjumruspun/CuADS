@@ -18,8 +18,10 @@ class TrackSection extends Component {
     this.state = {
       tracks: [],
       id: 0,
-      selecting: false,
+      selecting: -1,
+      trackselecting: 99,
     };
+    this.handleTTSDelete = props.handleTTSDelete;
   }
 
   onAddTrack = () => {
@@ -60,6 +62,9 @@ class TrackSection extends Component {
 
   handleSelecting = (e) => {
     this.setState({ selecting: e });
+  };
+  handleTrackSelecting = (e) => {
+    this.setState({ trackselecting: e });
   };
   render() {
     return (
@@ -132,7 +137,7 @@ class TrackSection extends Component {
               }}
             >
               <div>
-                {this.props.url != undefined && this.props.url != "" && (
+                {this.props.url !== undefined && this.props.url != "" && (
                   <AudioWave
                     url={this.props.url}
                     zoom={this.props.zoom}
@@ -148,15 +153,18 @@ class TrackSection extends Component {
               key={track}
               id={track}
               onDeleteTrack={this.onDeleteTrack}
+              handleTTSDelete={this.handleTTSDelete}
               onSelected={(volume, speed, text) =>
                 this.props.onSelected(volume, speed, text)
               }
               onSelecting={(e) => this.handleSelecting(e)}
+              onTrackSelecting={(e) => this.handleTrackSelecting(e)}
               trackvolume={this.props.trackvolume}
               speed={this.props.speed}
               playing={this.props.playing}
               played={this.props.played}
               selecting={this.state.selecting}
+              trackselecting={this.state.trackselecting}
               ttsList={this.props.tts}
               text={this.props.text}
             />

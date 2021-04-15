@@ -68,6 +68,12 @@ class App extends Component {
     id: 0,
   };
 
+  handleTTSDelete = (id) => {
+    console.log("app.js: should delete", id);
+    const filteredTTSList = this.state.ttsList.filter((tts) => tts._id !== id);
+    this.setState({ ttsList: filteredTTSList });
+  };
+
   handleUrlChange = (url) => {
     console.log(`New url: ${url}`);
     this.setState({ url: url });
@@ -365,6 +371,7 @@ class App extends Component {
           playing={playing}
           played={duration * played}
           onSelected={this.handleSelected}
+          handleTTSDelete={this.handleTTSDelete}
           tts={ttsList}
           projectId={this.state.projectId}
           updateTracks={this.updateTracks}
