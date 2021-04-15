@@ -60,10 +60,11 @@ class App extends Component {
     speed: 1.0,
     zoom: 50,
     projectId: "",
-    text:"",
+    text: "",
     topText: topTextEmptyProject,
     playedSeconds: 0.0,
     ttsList: [],
+    trackList: [],
     id: 0,
   };
 
@@ -137,8 +138,8 @@ class App extends Component {
     this.setState({ volume: parseFloat(e) });
   };
 
-  handleSelected = (e, f,g) => {
-    this.setState({ trackvolume: e, speed: f, text:g });
+  handleSelected = (e, f, g) => {
+    this.setState({ trackvolume: e, speed: f, text: g });
   };
 
   handleProjectChange = (project) => {
@@ -153,6 +154,7 @@ class App extends Component {
     this.handleUrlChange(project.videoURL);
     this.handleAudioURLChange(project.originalAudioURL);
     this.fetchTTS();
+    this.updateTracks();
   };
 
   fetchTTS = () => {
@@ -225,6 +227,24 @@ class App extends Component {
     //
   };
 
+  updateTracks = () => {
+    axios
+      .get(
+        `http://localhost:3001/projects/getalltracks/${this.state.projectId}`
+      )
+      .then((response) => {
+        const trackIdList = response.data;
+        this.setState({ trackList: [] });
+        trackIdList.map((trackId) => {
+          axios
+            .get(`http://localhost:3001/tracks/findbyid/${trackId}`)
+            .then((res) => {
+              this.state.trackList.push(res.data);
+            });
+        });
+      });
+  };
+
   ref = (player) => {
     this.player = player;
   };
@@ -249,7 +269,7 @@ class App extends Component {
       text,
       audioURL,
       id,
-      ttsList
+      ttsList,
     } = this.state;
 
     return (
@@ -276,7 +296,7 @@ class App extends Component {
             <ScriptBox
               trackvolume={trackvolume}
               speed={speed}
-	      text={text}
+              text={text}
               onChange={this.onChange.bind(this)}
               playedSeconds={this.state.playedSeconds}
               onTTSGenerated={this.fetchTTS}
@@ -341,11 +361,13 @@ class App extends Component {
           trackvolume={trackvolume}
           speed={speed}
           zoom={zoom}
-	  text={text}
+          text={text}
           playing={playing}
           played={duration * played}
           onSelected={this.handleSelected}
           tts={ttsList}
+          projectId={this.state.projectId}
+          updateTracks={this.updateTracks}
         />
         <div id="zoom">
           zoom

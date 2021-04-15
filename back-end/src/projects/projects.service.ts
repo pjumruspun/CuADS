@@ -23,7 +23,12 @@ export class ProjectsService {
     }
 
     async findAllTracks(projectId: string): Promise<Types.ObjectId[]> {
-        return (await this.projectModel.findById(projectId)).tracks;
+        const allProjects = await this.projectModel.findById(projectId)
+        if(allProjects)
+        {
+            return (await this.projectModel.findById(projectId)).tracks;
+        }
+        else return [];
     }
 
     async createNewProject(createProjectDto: CreateProjectDto): Promise<IProject> {
