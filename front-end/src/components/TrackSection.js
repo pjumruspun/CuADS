@@ -16,8 +16,8 @@ class TrackSection extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tracks: [],
-      id: 0,
+      tracks: this.props.tracks,
+      id: this.props.localTrackId,
       selecting: -1,
       trackselecting: 99,
     };
@@ -44,8 +44,12 @@ class TrackSection extends Component {
       )
       .then((response) => {
         const backendId = response.data._id;
+
         this.setState((prevState) => ({
-          tracks: [...prevState.tracks, prevState.id],
+          // tracks: [
+          //   ...prevState.tracks,
+          //   { id: prevState.id, backendId: backendId },
+          // ],
           id: prevState.id + 1,
         }));
 
@@ -64,7 +68,8 @@ class TrackSection extends Component {
     this.setState({ selecting: e });
   };
   handleTrackSelecting = (e) => {
-    this.setState({ trackselecting: e });
+    this.setState({ trackselecting: e.id });
+    this.props.onSelectTrack(e.backendId);
   };
   render() {
     return (
@@ -148,10 +153,11 @@ class TrackSection extends Component {
               </div>
             </Grid>
           </Grid>
-          {this.state.tracks.map((track) => (
+          {this.props.tracks.map((track) => (
             <TrackItem
-              key={track}
-              id={track}
+              key={track.id}
+              id={track.id}
+              backendId={track.backendId}
               onDeleteTrack={this.onDeleteTrack}
               handleTTSDelete={this.handleTTSDelete}
               onSelected={(volume, speed, text) =>

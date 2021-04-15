@@ -64,8 +64,10 @@ class App extends Component {
     topText: topTextEmptyProject,
     playedSeconds: 0.0,
     ttsList: [],
-    trackList: [],
+    tracks: [],
     id: 0,
+    localTrackId: 0,
+    selectedTrackId: undefined,
   };
 
   handleTTSDelete = (id) => {
@@ -163,6 +165,14 @@ class App extends Component {
     this.updateTracks();
   };
 
+  handleTrackSelection = (trackId) => {
+    if (trackId != 99) {
+      this.setState({ selectedTrackId: trackId });
+    } else {
+      this.setState({ selectedTrackId: undefined });
+    }
+  };
+
   fetchTTS = () => {
     // Might need to deal with track later
     // Currently get all TTS in backend into the project
@@ -240,14 +250,20 @@ class App extends Component {
       )
       .then((response) => {
         const trackIdList = response.data;
-        this.setState({ trackList: [] });
+        this.setState({ tracks: [] });
         trackIdList.map((trackId) => {
           axios
             .get(`http://localhost:3001/tracks/findbyid/${trackId}`)
             .then((res) => {
-              this.state.trackList.push(res.data);
+              this.state.tracks.push({
+                backendId: res.data._id,
+                id: this.state.localTrackId,
+              });
+              this.setState({ localTrackId: this.state.localTrackId + 1 });
             });
         });
+
+        return console.log(this.state.tracks);
       });
   };
 
@@ -305,6 +321,7 @@ class App extends Component {
               text={text}
               onChange={this.onChange.bind(this)}
               playedSeconds={this.state.playedSeconds}
+              selectedTrackId={this.state.selectedTrackId}
               onTTSGenerated={this.fetchTTS}
               onCreateTTS={(e) => this.handleTTS(e)}
             />
@@ -375,6 +392,9 @@ class App extends Component {
           tts={ttsList}
           projectId={this.state.projectId}
           updateTracks={this.updateTracks}
+          tracks={this.state.tracks}
+          onSelectTrack={this.handleTrackSelection}
+          localTrackId={this.state.localTrackId}
         />
         <div id="zoom">
           zoom

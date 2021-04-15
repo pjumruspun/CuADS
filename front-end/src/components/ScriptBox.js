@@ -22,7 +22,7 @@ class ScriptBox extends Component {
       speed: "1",
       pitch: "1.0",
       text: "",
-      starttime:"",
+      starttime: "",
       source: "chula",
     };
   }
@@ -74,11 +74,18 @@ class ScriptBox extends Component {
     const text = this.state.text;
     const source = this.state.source;
     const playedSeconds = this.props.playedSeconds; // value from App.js
+    const trackId = this.props.selectedTrackId; // value from App.js
+
+    if (trackId == undefined) {
+      alert("Please select a track to add TTS first.");
+      return;
+    }
 
     var ttsFormData = {
       text: text,
       source: source,
       startTime: playedSeconds,
+      trackId: trackId,
     };
 
     axios
@@ -114,7 +121,7 @@ class ScriptBox extends Component {
               multiline
               rows={3}
               inputProps={{ "aria-label": "naked" }}
-	      value={this.props.text}
+              value={this.props.text}
               onChange={(event) => this.handleText(event.target.value)}
               style={{
                 backgroundColor: "#bababa",
