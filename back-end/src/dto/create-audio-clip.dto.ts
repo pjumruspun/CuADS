@@ -19,6 +19,12 @@ export class CreateAudioClipDto {
     startTime: number;
 
     @ApiProperty({
+        description: 'Text of this TTS audio clip.',
+        required: true,
+    })
+    text: string;
+
+    @ApiProperty({
         description: 'Volume of this TTS audio clip.',
         required: true,
         default: 0.8,
