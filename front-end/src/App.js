@@ -73,6 +73,21 @@ class App extends Component {
     this.setState({ ttsList: filteredTTSList });
   };
 
+  handleScriptTextChange = (tts_id) => {
+    if (tts_id === -1) {
+      this.setState({ text: '' })
+    } else {
+      const currentTTS = this.state.ttsList.find(tts => {
+        return tts._id === tts_id;
+      })
+      if (currentTTS) {
+        this.setState({ text:  currentTTS.text});
+      } else {
+        this.setState({ text: '' });
+      }
+    }
+  };
+
   handleUrlChange = (url) => {
     console.log(`New url: ${url}`);
     this.setState({ url: url });
@@ -353,6 +368,7 @@ class App extends Component {
           onSelected={this.handleSelected}
           handleTTSDelete={this.handleTTSDelete}
           tts={ttsList}
+          setText={this.handleScriptTextChange}
         />
         <div id="zoom">
           zoom
