@@ -162,7 +162,7 @@ class App extends Component {
     this.handleUrlChange(project.videoURL);
     this.handleAudioURLChange(project.originalAudioURL);
     this.fetchTTS();
-    this.updateTracks();
+    this.fetchTracks();
   };
 
   handleTrackSelection = (trackId) => {
@@ -202,6 +202,7 @@ class App extends Component {
       })
       .then((res) => {
         console.log(res);
+        return this.saveTracks();
       });
   };
 
@@ -243,7 +244,82 @@ class App extends Component {
     //
   };
 
-  updateTracks = () => {
+  handleAddTrack = () => {
+    console.log("add track");
+    this.setState((prevState) => ({
+      tracks: [
+        ...prevState.tracks,
+        { localTrackId: prevState.localTrackId, name: "" },
+      ],
+      localTrackId: prevState.localTrackId + 1,
+    }));
+  };
+
+  handleTrackNameChange = (localTrackId, name) => {
+    console.log(`${localTrackId}, ${name}`);
+    this.state.tracks.map((track) => {
+      console.log(track);
+      if (localTrackId == track.localTrackId) {
+        console.log(`Found id=${localTrackId}`);
+        track.name = name;
+      }
+    });
+  };
+
+  saveTracks = () => {
+    console.log(`saving tracks...`);
+
+    // We do promises here to give backend some time to update its database one by one
+    // Otherwise some tracks might not be saved
+    const promises = this.state.tracks.map((track, i) => {
+      new Promise((resolve) => {
+        setTimeout(() => {
+          const backendId = track.backendId;
+          const name = track.name;
+
+          const trackFormData = {
+            name: name,
+          };
+
+          if (backendId == undefined) {
+            // not exist in database
+            // save new track
+            axios
+              .post(
+                `http://localhost:3001/tracks/${this.state.projectId}`,
+                trackFormData,
+                {
+                  headers: { "Content-Type": "application/json" },
+                }
+              )
+              .then((response) => {
+                const backendId = response.data._id;
+                // Update track's backendId
+                track.backendId = backendId;
+                console.log(
+                  `successfully save track localId: ${track.localTrackId} backendId: ${backendId}`
+                );
+              });
+          } else {
+            // exist in database
+            // try to update
+            axios
+              .put(`http://localhost:3001/tracks/${backendId}`, trackFormData)
+              .then((res) => {
+                console.log(
+                  `successfully update track ${track.localTrackId}:${backendId} with name ${track.name}`
+                );
+              });
+          }
+          resolve(); // mark as resolved
+        }, 300 * this.state.tracks.length - 300 * i); // total delay of saving in ms
+      });
+    });
+
+    Promise.all(promises).then(() => console.log("Saving done"));
+  };
+
+  fetchTracks = () => {
     axios
       .get(
         `http://localhost:3001/projects/getalltracks/${this.state.projectId}`
@@ -257,7 +333,8 @@ class App extends Component {
             .then((res) => {
               this.state.tracks.push({
                 backendId: res.data._id,
-                id: this.state.localTrackId,
+                name: res.data.name,
+                localTrackId: this.state.localTrackId,
               });
               this.setState({ localTrackId: this.state.localTrackId + 1 });
             });
@@ -391,10 +468,12 @@ class App extends Component {
           handleTTSDelete={this.handleTTSDelete}
           tts={ttsList}
           projectId={this.state.projectId}
-          updateTracks={this.updateTracks}
+          fetchTracks={this.fetchTracks}
           tracks={this.state.tracks}
           onSelectTrack={this.handleTrackSelection}
           localTrackId={this.state.localTrackId}
+          onAddTrack={this.handleAddTrack}
+          onNameChange={this.handleTrackNameChange}
         />
         <div id="zoom">
           zoom

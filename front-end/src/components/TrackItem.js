@@ -8,9 +8,9 @@ class TrackItem extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: this.props.id,
+      localTrackId: this.props.localTrackId,
       backendId: this.props.backendId,
-      name: "",
+      name: this.props.name,
       border: "thin solid #4F4F4F",
       trackselected: false,
       ttsid: 0,
@@ -20,16 +20,23 @@ class TrackItem extends Component {
   handleTrackSelected = () => {
     if (!this.state.trackselected && this.props.trackselecting == 99) {
       this.setState({ border: "5px solid white", trackselected: true });
-      console.log(`selecting: ${this.state.backendId}`);
+      console.log(
+        `selecting: ${this.state.backendId} name: ${this.state.name}`
+      );
       this.props.onTrackSelecting({
-        id: this.state.id,
+        localTrackId: this.state.localTrackId,
         backendId: this.state.backendId,
       });
     }
     if (this.state.trackselected) {
       this.setState({ border: "thin solid #4F4F4F", trackselected: false });
-      this.props.onTrackSelecting({ id: 99, backendId: 99 });
+      this.props.onTrackSelecting({ localTrackId: 99, backendId: 99 });
     }
+  };
+  handleNameChange = (e) => {
+    const name = e.target.value;
+    this.setState({ name: name });
+    this.props.onNameChange(this.state.localTrackId, name); // Change name in App.js track list
   };
   render() {
     var onDeleteTrack = this.props.onDeleteTrack;
@@ -55,10 +62,12 @@ class TrackItem extends Component {
             style={{
               backgroundColor: "#bababa",
             }}
+            onChange={this.handleNameChange}
+            value={this.state.name}
           />
-          <Button onClick={() => onDeleteTrack(this.props.id)}>
+          <Button onClick={() => onDeleteTrack(this.props.localTrackId)}>
             <DeleteOutlineIcon style={{ color: "EB5757" }} />
-            {this.props.id}
+            {`local id=${this.props.localTrackId} backendId=${this.props.backendId} name=${this.state.name}`}
           </Button>
         </Grid>
         <Grid

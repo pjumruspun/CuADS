@@ -17,7 +17,7 @@ class TrackSection extends Component {
     super(props);
     this.state = {
       tracks: this.props.tracks,
-      id: this.props.localTrackId,
+      localTrackId: this.props.localTrackId,
       selecting: -1,
       trackselecting: 99,
     };
@@ -30,37 +30,16 @@ class TrackSection extends Component {
       return;
     }
 
-    var trackFormData = {
-      name: `New Track`,
-    };
-
-    axios
-      .post(
-        `http://localhost:3001/tracks/${this.props.projectId}`,
-        trackFormData,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      )
-      .then((response) => {
-        const backendId = response.data._id;
-
-        this.setState((prevState) => ({
-          // tracks: [
-          //   ...prevState.tracks,
-          //   { id: prevState.id, backendId: backendId },
-          // ],
-          id: prevState.id + 1,
-        }));
-
-        // Update tracks
-        this.props.updateTracks();
-      });
+    this.props.onAddTrack();
   };
 
-  onDeleteTrack = (id) => {
+  onDeleteTrack = (localTrackId) => {
+    console.log(`Trying to delete ${localTrackId}`);
+
+    // The deletion code below is currently not working for some reason
+    // Maybe we need to delete it in App.js
     this.setState((prevState) => ({
-      tracks: prevState.tracks.filter((el) => el !== id),
+      tracks: prevState.tracks.filter((el) => el !== localTrackId),
     }));
   };
 
@@ -68,8 +47,8 @@ class TrackSection extends Component {
     this.setState({ selecting: e });
   };
   handleTrackSelecting = (e) => {
-    this.setState({ trackselecting: e.id });
-    this.props.onSelectTrack(e.backendId);
+    this.setState({ trackselecting: e.localTrackId });
+    this.props.onSelectTrack(e.localTrackId);
   };
   render() {
     return (
@@ -155,8 +134,9 @@ class TrackSection extends Component {
           </Grid>
           {this.props.tracks.map((track) => (
             <TrackItem
-              key={track.id}
-              id={track.id}
+              key={track.localTrackId}
+              localTrackId={track.localTrackId}
+              name={track.name}
               backendId={track.backendId}
               onDeleteTrack={this.onDeleteTrack}
               handleTTSDelete={this.handleTTSDelete}
@@ -173,6 +153,7 @@ class TrackSection extends Component {
               trackselecting={this.state.trackselecting}
               ttsList={this.props.tts}
               text={this.props.text}
+              onNameChange={this.props.onNameChange}
             />
           ))}
         </Grid>
