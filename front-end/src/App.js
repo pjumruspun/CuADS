@@ -65,6 +65,7 @@ class App extends Component {
     playedSeconds: 0.0,
     ttsList: [],
     id: 0,
+    selectedWaveId: -1
   };
 
   handleTTSDelete = (id) => {
@@ -74,6 +75,7 @@ class App extends Component {
   };
 
   handleScriptTextChange = (tts_id) => {
+    this.setState({ selectedWaveId: tts_id });
     if (tts_id === -1) {
       this.setState({ text: '' })
     } else {
@@ -298,6 +300,7 @@ class App extends Component {
               trackvolume={trackvolume}
               speed={speed}
               text={text}
+              selectedWaveId={this.state.selectedWaveId}
               onChange={this.onChange.bind(this)}
               playedSeconds={this.state.playedSeconds}
               onTTSGenerated={this.fetchTTS}
