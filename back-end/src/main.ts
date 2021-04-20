@@ -6,7 +6,6 @@ var bodyParser = require('body-parser');
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
   // Swagger Config
   const config = new DocumentBuilder()
   .setTitle('Projects Example')

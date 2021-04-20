@@ -6,6 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ProjectsModule } from './projects/projects.module';
 import { TracksModule } from './tracks/tracks.module';
 import { AudioClipsModule } from './audio-clips/audio-clips.module';
+import { TTSModule } from './texttospeech/tts.module';
 import { AudioUtilityModule } from './audio-utility/audio-utility.module';
 import { FilesModule } from './files/files.module';
 
@@ -19,6 +20,7 @@ import { FilesModule } from './files/files.module';
     MongooseModule.forRoot(`mongodb://${process.env.MONGO_SERVICE_ENDPOINT}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE_NAME}`),
     TracksModule,
     AudioClipsModule,
+    TTSModule,
     AudioUtilityModule,
     FilesModule,
   ],

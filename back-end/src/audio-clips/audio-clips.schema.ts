@@ -3,7 +3,7 @@ import { Document, Schema } from "mongoose";
 
 export const AudioClipSchema = new Schema({
     content: String,
-    startTime: String,
+    startTime: Number,
     volume: Number,
     speed: Number,
     pitch: Number,

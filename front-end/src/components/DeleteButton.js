@@ -18,7 +18,6 @@ export default function ProjectButton(props) {
       .delete(`http://localhost:3001/projects/${props.projectId}`)
       .then((res) => {
         const projectData = res.data;
-        // alert(`Successfully deleted project: ${projectData.name}`);
         const emptyProjectData = {
           _id: "",
           name: "",

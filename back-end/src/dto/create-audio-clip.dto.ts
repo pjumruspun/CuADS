@@ -12,11 +12,11 @@ export class CreateAudioClipDto {
     content: string;
 
     @ApiProperty({
-        description: 'Start time to play this TTS audio clip.',
+        description: 'Start time in second to play this TTS audio clip.',
         required: true,
-        default: '00:00:00:000',
+        default: '0',
     })
-    startTime: string;
+    startTime: number;
 
     @ApiProperty({
         description: 'Volume of this TTS audio clip.',

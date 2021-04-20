@@ -10,7 +10,7 @@ import IconButton from "@material-ui/core/IconButton";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import axios from "axios";
-
+import Waveform from "./components//Wave";
 import TrackSection from "./components/TrackSection";
 
 var rootStyle = {
@@ -26,6 +26,28 @@ const ZOOM_RANGE = {
 var topTextEmptyProject =
   "No project opened, please create a new project or open an existing project from File menu.";
 
+var roundToOneDecimal = (number) => {
+  return Math.round(number * 10) / 10;
+};
+
+var canPlayTTS = true;
+var timeBetweenEachTTS = 300; // in milliseconds
+
+// To not play TTS too repeatedly, we allow playing TTS once every `timeBetweenEachTTS` ms
+var playTTS = (base64string) => {
+  if (!canPlayTTS) return; // Not ready to play sound
+  canPlayTTS = false;
+
+  // Play sound here
+  var snd = new Audio("data:audio/wav;base64," + base64string);
+  snd.play();
+
+  setTimeout(function () {
+    // Will be ready to play sound in `timeBetweenEachTTS` ms
+    canPlayTTS = true;
+  }, timeBetweenEachTTS);
+};
+
 class App extends Component {
   state = {
     playing: false,
@@ -38,7 +60,21 @@ class App extends Component {
     speed: 1.0,
     zoom: 50,
     projectId: "",
+    text: "",
     topText: topTextEmptyProject,
+    playedSeconds: 0.0,
+    ttsList: [],
+    tracks: [],
+    tracksToDelete: [],
+    id: 0,
+    localTrackId: 0,
+    selectedTrackId: undefined,
+  };
+
+  handleTTSDelete = (id) => {
+    console.log("app.js: should delete", id);
+    const filteredTTSList = this.state.ttsList.filter((tts) => tts._id !== id);
+    this.setState({ ttsList: filteredTTSList });
   };
 
   handleUrlChange = (url) => {
@@ -71,8 +107,28 @@ class App extends Component {
   handleProgress = (state) => {
     if (!this.state.seeking) {
       this.setState(state);
+      const roundedPlayedSeconds = roundToOneDecimal(state.playedSeconds);
+      this.handlePlayTTSOnTimeStamp(roundedPlayedSeconds);
+      this.setState({ playedSeconds: state.playedSeconds });
     }
   };
+
+  handlePlayTTSOnTimeStamp = (roundedPlayedSeconds) => {
+    if (!this.state.playing) return;
+
+    this.state.ttsList.map((tts) => {
+      // Still not playing for some reason
+      // Time sometimes still skips, like from 0.2 then suddenly 0.5
+      const ttsRoundedStartTime = roundToOneDecimal(tts.startTime);
+
+      if (Math.abs(ttsRoundedStartTime - roundedPlayedSeconds) < 0.01) {
+        const base64string = tts.content;
+        playTTS(base64string);
+      }
+    });
+  };
+
+  findByStartTime = (roundedStartTime) => {};
 
   handlePlayButton = () => {
     this.setState({ playing: true });
@@ -91,8 +147,8 @@ class App extends Component {
     this.setState({ volume: parseFloat(e) });
   };
 
-  handleSelected = (e, f) => {
-    this.setState({ trackvolume: e, speed: f });
+  handleSelected = (e, f, g) => {
+    this.setState({ trackvolume: e, speed: f, text: g });
   };
 
   handleProjectChange = (project) => {
@@ -106,6 +162,31 @@ class App extends Component {
     // Also need to update URL and other stuff
     this.handleUrlChange(project.videoURL);
     this.handleAudioURLChange(project.originalAudioURL);
+    this.fetchTTS();
+    this.fetchTracks();
+
+    // Clear track deletion flags
+    this.setState({ tracksToDelete: [] });
+  };
+
+  handleTrackSelection = (trackId) => {
+    if (trackId != 99) {
+      this.setState({ selectedTrackId: trackId });
+    } else {
+      this.setState({ selectedTrackId: undefined });
+    }
+  };
+
+  fetchTTS = () => {
+    // Might need to deal with track later
+    // Currently get all TTS in backend into the project
+    axios.get(`http://localhost:3001/audio-clips`).then((res) => {
+      const ttsList = res.data;
+      // We keep the whole tts object in list
+      // This could be optimized with mapping
+      // For example, we wanna search tts content by time, so we map startTime -> content
+      this.setState({ ttsList: ttsList });
+    });
   };
 
   handleSaveProject = () => {
@@ -125,6 +206,7 @@ class App extends Component {
       })
       .then((res) => {
         console.log(res);
+        return this.saveTracks();
       });
   };
 
@@ -161,9 +243,151 @@ class App extends Component {
       .then((res) => {
         console.log(`final res in handleImportProject: ${res.data}`);
         this.handleAudioURLChange(res.data.originalAudioURL);
-        });
+      });
 
     //
+  };
+
+  handleAddTrack = () => {
+    console.log("add track");
+    this.setState((prevState) => ({
+      tracks: [
+        ...prevState.tracks,
+        { localTrackId: prevState.localTrackId, name: "" },
+      ],
+      localTrackId: prevState.localTrackId + 1,
+    }));
+  };
+
+  handleDeleteTrack = (localTrackId) => {
+    console.log(`Trying to delete ${localTrackId}`);
+    // mark track for delete
+    this.state.tracks.map((track) => {
+      if (track.localTrackId == localTrackId) {
+        // push backendId for deletion if user saves project
+        // but the track must have backendId (exist in database)
+        if (track.backendId != undefined) {
+          this.state.tracksToDelete.push(track.backendId);
+        }
+      }
+    });
+
+    this.setState((prevState) => ({
+      tracks: prevState.tracks.filter((el) => el.localTrackId !== localTrackId),
+    }));
+  };
+
+  handleTrackNameChange = (localTrackId, name) => {
+    console.log(`${localTrackId}, ${name}`);
+    this.state.tracks.map((track) => {
+      console.log(track);
+      if (localTrackId == track.localTrackId) {
+        console.log(`Found id=${localTrackId}`);
+        track.name = name;
+      }
+    });
+  };
+
+  saveTracks = () => {
+    console.log(`saving tracks...`);
+
+    // We do promises here to give backend some time to update its database one by one
+    // Otherwise some tracks might not be saved
+    const savePromises = this.state.tracks.map((track, i) => {
+      new Promise((resolve) => {
+        setTimeout(() => {
+          const backendId = track.backendId;
+          const name = track.name;
+
+          const trackFormData = {
+            name: name,
+          };
+
+          if (backendId == undefined) {
+            // not exist in database
+            // save new track
+            axios
+              .post(
+                `http://localhost:3001/tracks/${this.state.projectId}`,
+                trackFormData,
+                {
+                  headers: { "Content-Type": "application/json" },
+                }
+              )
+              .then((response) => {
+                const backendId = response.data._id;
+                // Update track's backendId
+                track.backendId = backendId;
+                console.log(
+                  `successfully save track localId: ${track.localTrackId} backendId: ${backendId}`
+                );
+              });
+          } else {
+            // exist in database
+            // try to update
+            axios
+              .put(`http://localhost:3001/tracks/${backendId}`, trackFormData)
+              .then((res) => {
+                console.log(
+                  `successfully update track ${track.localTrackId}:${backendId} with name ${track.name}`
+                );
+              });
+          }
+          resolve(); // mark as resolved
+        }, 300 * this.state.tracks.length - 300 * i); // total delay of saving in ms
+      });
+    });
+
+    const deletePromises = this.state.tracksToDelete.map((backendId, i) => {
+      new Promise((resolve) => {
+        setTimeout(() => {
+          // Delete tracks
+          axios
+            .delete(`http://localhost:3001/tracks/${backendId}`)
+            .then((res) => {
+              console.log(res.data);
+              console.log(`successfully delete track ${backendId}`);
+            });
+          resolve(); // mark as resolved
+        }, 300 * this.state.tracksToDelete.length - 300 * i); // total delay of deleting in ms
+      });
+    });
+
+    Promise.all(savePromises)
+      .then(() => {
+        console.log("Saving done");
+      })
+      .then(() => {
+        return Promise.all(deletePromises);
+      })
+      .then(() => {
+        return console.log("Deleting done");
+      });
+  };
+
+  fetchTracks = () => {
+    axios
+      .get(
+        `http://localhost:3001/projects/getalltracks/${this.state.projectId}`
+      )
+      .then((response) => {
+        const trackIdList = response.data;
+        this.setState({ tracks: [] });
+        trackIdList.map((trackId) => {
+          axios
+            .get(`http://localhost:3001/tracks/findbyid/${trackId}`)
+            .then((res) => {
+              this.state.tracks.push({
+                backendId: res.data._id,
+                name: res.data.name,
+                localTrackId: this.state.localTrackId,
+              });
+              this.setState({ localTrackId: this.state.localTrackId + 1 });
+            });
+        });
+
+        return console.log(this.state.tracks);
+      });
   };
 
   ref = (player) => {
@@ -187,7 +411,10 @@ class App extends Component {
       trackvolume,
       speed,
       zoom,
-      audioURL
+      text,
+      audioURL,
+      id,
+      ttsList,
     } = this.state;
 
     return (
@@ -214,7 +441,12 @@ class App extends Component {
             <ScriptBox
               trackvolume={trackvolume}
               speed={speed}
+              text={text}
               onChange={this.onChange.bind(this)}
+              playedSeconds={this.state.playedSeconds}
+              selectedTrackId={this.state.selectedTrackId}
+              onTTSGenerated={this.fetchTTS}
+              onCreateTTS={(e) => this.handleTTS(e)}
             />
           </div>
           <div>
@@ -275,11 +507,21 @@ class App extends Component {
           trackvolume={trackvolume}
           speed={speed}
           zoom={zoom}
+          text={text}
           playing={playing}
           played={duration * played}
           onSelected={this.handleSelected}
+          handleTTSDelete={this.handleTTSDelete}
+          tts={ttsList}
+          projectId={this.state.projectId}
+          fetchTracks={this.fetchTracks}
+          tracks={this.state.tracks}
+          onSelectTrack={this.handleTrackSelection}
+          localTrackId={this.state.localTrackId}
+          onAddTrack={this.handleAddTrack}
+          onNameChange={this.handleTrackNameChange}
+          onDeleteTrack={this.handleDeleteTrack}
         />
-
         <div id="zoom">
           zoom
           <input
