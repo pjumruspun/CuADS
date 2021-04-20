@@ -1,21 +1,21 @@
-import React, { Component } from 'react';
-import ReactPlayer from 'react-player';
-import './App.css';
-import Duration from './components/Duration';
-import Bar from './components/Bar';
+import React, { Component } from "react";
+import ReactPlayer from "react-player";
+import "./App.css";
+import Duration from "./components/Duration";
+import Bar from "./components/Bar";
 
-import ScriptBox from './components/ScriptBox';
-import { Grid } from '@material-ui/core';
-import IconButton from '@material-ui/core/IconButton';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import PauseIcon from '@material-ui/icons/Pause';
-import axios from 'axios';
-import Waveform from './components//Wave';
-import TrackSection from './components/TrackSection';
+import ScriptBox from "./components/ScriptBox";
+import { Grid } from "@material-ui/core";
+import IconButton from "@material-ui/core/IconButton";
+import PlayArrowIcon from "@material-ui/icons/PlayArrow";
+import PauseIcon from "@material-ui/icons/Pause";
+import axios from "axios";
+import Waveform from "./components//Wave";
+import TrackSection from "./components/TrackSection";
 
 var rootStyle = {
-  backgroundColor: '#2e2d2d',
-  color: 'white',
+  backgroundColor: "#2e2d2d",
+  color: "white",
 };
 
 const ZOOM_RANGE = {
@@ -24,7 +24,7 @@ const ZOOM_RANGE = {
 };
 
 var topTextEmptyProject =
-  'No project opened, please create a new project or open an existing project from File menu.';
+  "No project opened, please create a new project or open an existing project from File menu.";
 
 var roundToOneDecimal = (number) => {
   return Math.round(number * 10) / 10;
@@ -39,7 +39,7 @@ var playTTS = (base64string) => {
   canPlayTTS = false;
 
   // Play sound here
-  var snd = new Audio('data:audio/wav;base64,' + base64string);
+  var snd = new Audio("data:audio/wav;base64," + base64string);
   snd.play();
 
   setTimeout(function () {
@@ -51,25 +51,29 @@ var playTTS = (base64string) => {
 class App extends Component {
   state = {
     playing: false,
-    url: '',
-    audioURL: '',
+    url: "",
+    audioURL: "",
     played: 0.5,
     duration: 0,
     volume: 0.8,
     trackvolume: 50,
     speed: 1.0,
     zoom: 50,
-    projectId: '',
-    text: '',
+    projectId: "",
+    text: "",
     topText: topTextEmptyProject,
     playedSeconds: 0.0,
     ttsList: [],
+    tracks: [],
+    tracksToDelete: [],
     id: 0,
     selectedWaveId: -1
+    localTrackId: 0,
+    selectedTrackId: undefined,
   };
 
   handleTTSDelete = (id) => {
-    console.log('app.js: should delete', id);
+    console.log("app.js: should delete", id);
     const filteredTTSList = this.state.ttsList.filter((tts) => tts._id !== id);
     this.setState({ ttsList: filteredTTSList });
   };
@@ -156,7 +160,7 @@ class App extends Component {
   };
 
   handleVolumeChange = (e) => {
-    console.log('volume change ' + e);
+    console.log("volume change " + e);
     this.setState({ volume: parseFloat(e) });
   };
 
@@ -167,7 +171,7 @@ class App extends Component {
   handleProjectChange = (project) => {
     console.log(`change project id to: ${project._id}`);
     var topTextToSet =
-      project._id == '' ? topTextEmptyProject : `Project Name: ${project.name}`;
+      project._id == "" ? topTextEmptyProject : `Project Name: ${project.name}`;
     this.setState({
       projectId: project._id,
       topText: topTextToSet,
@@ -176,6 +180,18 @@ class App extends Component {
     this.handleUrlChange(project.videoURL);
     this.handleAudioURLChange(project.originalAudioURL);
     this.fetchTTS();
+    this.fetchTracks();
+
+    // Clear track deletion flags
+    this.setState({ tracksToDelete: [] });
+  };
+
+  handleTrackSelection = (trackId) => {
+    if (trackId != 99) {
+      this.setState({ selectedTrackId: trackId });
+    } else {
+      this.setState({ selectedTrackId: undefined });
+    }
   };
 
   fetchTTS = () => {
@@ -191,7 +207,7 @@ class App extends Component {
   };
 
   handleSaveProject = () => {
-    if (this.state.projectId == '') {
+    if (this.state.projectId == "") {
       alert(
         `You have no currently active project, please create a new project or open an existing project.`
       );
@@ -207,11 +223,12 @@ class App extends Component {
       })
       .then((res) => {
         console.log(res);
+        return this.saveTracks();
       });
   };
 
   handleImportProject = (videoId, videoFile) => {
-    if (this.state.projectId == '') {
+    if (this.state.projectId == "") {
       alert(
         `You have no currently active project, please create a new project or open an existing project.`
       );
@@ -232,12 +249,12 @@ class App extends Component {
         );
 
         var formData = new FormData();
-        formData.append('files', videoFile);
+        formData.append("files", videoFile);
 
         return axios.post(
           `http://localhost:3001/audio-utility/convert/${this.state.projectId}`,
           formData,
-          { headers: { ContentType: 'multipart/formdata' } }
+          { headers: { ContentType: "multipart/formdata" } }
         );
       })
       .then((res) => {
@@ -246,6 +263,148 @@ class App extends Component {
       });
 
     //
+  };
+
+  handleAddTrack = () => {
+    console.log("add track");
+    this.setState((prevState) => ({
+      tracks: [
+        ...prevState.tracks,
+        { localTrackId: prevState.localTrackId, name: "" },
+      ],
+      localTrackId: prevState.localTrackId + 1,
+    }));
+  };
+
+  handleDeleteTrack = (localTrackId) => {
+    console.log(`Trying to delete ${localTrackId}`);
+    // mark track for delete
+    this.state.tracks.map((track) => {
+      if (track.localTrackId == localTrackId) {
+        // push backendId for deletion if user saves project
+        // but the track must have backendId (exist in database)
+        if (track.backendId != undefined) {
+          this.state.tracksToDelete.push(track.backendId);
+        }
+      }
+    });
+
+    this.setState((prevState) => ({
+      tracks: prevState.tracks.filter((el) => el.localTrackId !== localTrackId),
+    }));
+  };
+
+  handleTrackNameChange = (localTrackId, name) => {
+    console.log(`${localTrackId}, ${name}`);
+    this.state.tracks.map((track) => {
+      console.log(track);
+      if (localTrackId == track.localTrackId) {
+        console.log(`Found id=${localTrackId}`);
+        track.name = name;
+      }
+    });
+  };
+
+  saveTracks = () => {
+    console.log(`saving tracks...`);
+
+    // We do promises here to give backend some time to update its database one by one
+    // Otherwise some tracks might not be saved
+    const savePromises = this.state.tracks.map((track, i) => {
+      new Promise((resolve) => {
+        setTimeout(() => {
+          const backendId = track.backendId;
+          const name = track.name;
+
+          const trackFormData = {
+            name: name,
+          };
+
+          if (backendId == undefined) {
+            // not exist in database
+            // save new track
+            axios
+              .post(
+                `http://localhost:3001/tracks/${this.state.projectId}`,
+                trackFormData,
+                {
+                  headers: { "Content-Type": "application/json" },
+                }
+              )
+              .then((response) => {
+                const backendId = response.data._id;
+                // Update track's backendId
+                track.backendId = backendId;
+                console.log(
+                  `successfully save track localId: ${track.localTrackId} backendId: ${backendId}`
+                );
+              });
+          } else {
+            // exist in database
+            // try to update
+            axios
+              .put(`http://localhost:3001/tracks/${backendId}`, trackFormData)
+              .then((res) => {
+                console.log(
+                  `successfully update track ${track.localTrackId}:${backendId} with name ${track.name}`
+                );
+              });
+          }
+          resolve(); // mark as resolved
+        }, 300 * this.state.tracks.length - 300 * i); // total delay of saving in ms
+      });
+    });
+
+    const deletePromises = this.state.tracksToDelete.map((backendId, i) => {
+      new Promise((resolve) => {
+        setTimeout(() => {
+          // Delete tracks
+          axios
+            .delete(`http://localhost:3001/tracks/${backendId}`)
+            .then((res) => {
+              console.log(res.data);
+              console.log(`successfully delete track ${backendId}`);
+            });
+          resolve(); // mark as resolved
+        }, 300 * this.state.tracksToDelete.length - 300 * i); // total delay of deleting in ms
+      });
+    });
+
+    Promise.all(savePromises)
+      .then(() => {
+        console.log("Saving done");
+      })
+      .then(() => {
+        return Promise.all(deletePromises);
+      })
+      .then(() => {
+        return console.log("Deleting done");
+      });
+  };
+
+  fetchTracks = () => {
+    axios
+      .get(
+        `http://localhost:3001/projects/getalltracks/${this.state.projectId}`
+      )
+      .then((response) => {
+        const trackIdList = response.data;
+        this.setState({ tracks: [] });
+        trackIdList.map((trackId) => {
+          axios
+            .get(`http://localhost:3001/tracks/findbyid/${trackId}`)
+            .then((res) => {
+              this.state.tracks.push({
+                backendId: res.data._id,
+                name: res.data.name,
+                localTrackId: this.state.localTrackId,
+              });
+              this.setState({ localTrackId: this.state.localTrackId + 1 });
+            });
+        });
+
+        return console.log(this.state.tracks);
+      });
   };
 
   ref = (player) => {
@@ -303,6 +462,7 @@ class App extends Component {
               selectedWaveId={this.state.selectedWaveId}
               onChange={this.onChange.bind(this)}
               playedSeconds={this.state.playedSeconds}
+              selectedTrackId={this.state.selectedTrackId}
               onTTSGenerated={this.fetchTTS}
               onCreateTTS={(e) => this.handleTTS(e)}
             />
@@ -314,7 +474,7 @@ class App extends Component {
               url={url}
               playing={playing}
               volume={volume}
-              onSeek={(e) => console.log('onSeek', e)}
+              onSeek={(e) => console.log("onSeek", e)}
               onDuration={this.handleDuration}
               onProgress={this.handleProgress}
               progressInterval={10}
@@ -372,6 +532,14 @@ class App extends Component {
           handleTTSDelete={this.handleTTSDelete}
           tts={ttsList}
           setText={this.handleScriptTextChange}
+          projectId={this.state.projectId}
+          fetchTracks={this.fetchTracks}
+          tracks={this.state.tracks}
+          onSelectTrack={this.handleTrackSelection}
+          localTrackId={this.state.localTrackId}
+          onAddTrack={this.handleAddTrack}
+          onNameChange={this.handleTrackNameChange}
+          onDeleteTrack={this.handleDeleteTrack}
         />
         <div id="zoom">
           zoom

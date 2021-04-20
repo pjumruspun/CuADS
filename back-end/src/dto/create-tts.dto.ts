@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { Types } from 'mongoose';
 
 export class CreateTTSDto {
     @ApiProperty({
@@ -19,4 +20,10 @@ export class CreateTTSDto {
         default: '0',
     })
     startTime: number;
+
+    @ApiProperty({
+        description: 'Track ID of this TTS.',
+        required: true,
+    })
+    trackId: Types.ObjectId;
 }

@@ -1,16 +1,17 @@
-import React, { Component, useState } from 'react';
-import { Grid, InputBase } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
-import Waveform from './Wave';
-import HorizontalScroller from 'react-horizontal-scroll-container';
+import React, { Component, useState } from "react";
+import { Grid, InputBase } from "@material-ui/core";
+import Button from "@material-ui/core/Button";
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
+import Waveform from "./Wave";
+import HorizontalScroller from "react-horizontal-scroll-container";
 class TrackItem extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: this.props.id,
-      name: '',
-      border: 'thin solid #4F4F4F',
+      localTrackId: this.props.localTrackId,
+      backendId: this.props.backendId,
+      name: this.props.name,
+      border: "thin solid #4F4F4F",
       trackselected: false,
       ttsid: 0,
     };
@@ -18,13 +19,24 @@ class TrackItem extends Component {
   }
   handleTrackSelected = () => {
     if (!this.state.trackselected && this.props.trackselecting == 99) {
-      this.setState({ border: '5px solid white', trackselected: true });
-      this.props.onTrackSelecting(this.state.id);
+      this.setState({ border: "5px solid white", trackselected: true });
+      console.log(
+        `selecting: ${this.state.backendId} name: ${this.state.name}`
+      );
+      this.props.onTrackSelecting({
+        localTrackId: this.state.localTrackId,
+        backendId: this.state.backendId,
+      });
     }
     if (this.state.trackselected) {
-      this.setState({ border: 'thin solid #4F4F4F', trackselected: false });
-      this.props.onTrackSelecting(99);
+      this.setState({ border: "thin solid #4F4F4F", trackselected: false });
+      this.props.onTrackSelecting({ localTrackId: 99, backendId: 99 });
     }
+  };
+  handleNameChange = (e) => {
+    const name = e.target.value;
+    this.setState({ name: name });
+    this.props.onNameChange(this.state.localTrackId, name); // Change name in App.js track list
   };
   render() {
     var onDeleteTrack = this.props.onDeleteTrack;
@@ -32,7 +44,7 @@ class TrackItem extends Component {
       <Grid
         container
         direction="row"
-        style={{ paddingLeft: '10px', height: '12vh' }}
+        style={{ paddingLeft: "10px", height: "12vh" }}
       >
         <Grid
           item
@@ -40,20 +52,22 @@ class TrackItem extends Component {
           direction="column"
           onClick={this.handleTrackSelected}
           style={{
-            backgroundColor: '#333333',
+            backgroundColor: "#333333",
             border: this.state.border,
-            paddingTop: '10px',
+            paddingTop: "10px",
           }}
         >
           <InputBase
-            inputProps={{ 'aria-label': 'naked' }}
+            inputProps={{ "aria-label": "naked" }}
             style={{
-              backgroundColor: '#bababa',
+              backgroundColor: "#bababa",
             }}
+            onChange={this.handleNameChange}
+            value={this.state.name}
           />
-          <Button onClick={() => onDeleteTrack(this.props.id)}>
-            <DeleteOutlineIcon style={{ color: 'EB5757' }} />
-            {this.props.id}
+          <Button onClick={() => onDeleteTrack(this.props.localTrackId)}>
+            <DeleteOutlineIcon style={{ color: "EB5757" }} />
+            {`local id=${this.props.localTrackId} backendId=${this.props.backendId} name=${this.state.name}`}
           </Button>
         </Grid>
         <Grid
@@ -61,9 +75,9 @@ class TrackItem extends Component {
           xs={9}
           direction="column"
           style={{
-            backgroundColor: '#333333',
+            backgroundColor: "#333333",
             border: this.state.border,
-            height: '12vh',
+            height: "12vh",
           }}
         >
           <HorizontalScroller>

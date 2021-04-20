@@ -1,22 +1,23 @@
-import React, { Component, useEffect, useState } from 'react';
-import { Grid } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import TrackItem from './TrackItem';
-import AudioWave from './AudioWave';
+import React, { Component, useEffect, useState } from "react";
+import { Grid } from "@material-ui/core";
+import Button from "@material-ui/core/Button";
+import TrackItem from "./TrackItem";
+import AudioWave from "./AudioWave";
+import axios from "axios";
 
 var rootStyle = {
-  backgroundColor: '#2e2d2d',
-  height: 'auto',
-  width: '98vw',
-  align: 'bottom',
-  marginBottom: '10vh',
+  backgroundColor: "#2e2d2d",
+  height: "auto",
+  width: "98vw",
+  align: "bottom",
+  marginBottom: "10vh",
 };
 class TrackSection extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      tracks: [],
-      id: 0,
+      tracks: this.props.tracks,
+      localTrackId: this.props.localTrackId,
       selecting: -1,
       trackselecting: 99,
     };
@@ -24,16 +25,18 @@ class TrackSection extends Component {
   }
 
   onAddTrack = () => {
-    this.setState((prevState) => ({
-      tracks: [...prevState.tracks, prevState.id],
-      id: prevState.id + 1,
-    }));
+    if (this.props.projectId.length == 0) {
+      alert("Please create or open a new project before creating a new track.");
+      return;
+    }
+
+    this.props.onAddTrack();
   };
 
-  onDeleteTrack = (id) => {
-    this.setState((prevState) => ({
-      tracks: prevState.tracks.filter((el) => el !== id),
-    }));
+  onDeleteTrack = (localTrackId) => {
+    // The deletion code below is currently not working for some reason
+    // Maybe we need to delete it in App.js
+    this.props.onDeleteTrack(localTrackId);
   };
 
   handleSelecting = (e) => {
@@ -41,30 +44,31 @@ class TrackSection extends Component {
     this.props.setText(e);
   };
   handleTrackSelecting = (e) => {
-    this.setState({ trackselecting: e });
+    this.setState({ trackselecting: e.localTrackId });
+    this.props.onSelectTrack(e.localTrackId);
   };
   render() {
     return (
       <div style={rootStyle}>
         <Grid container>
-          <Grid container direction="row" style={{ paddingLeft: '10px' }}>
+          <Grid container direction="row" style={{ paddingLeft: "10px" }}>
             <Grid
               item
               xs={3}
               direction="column"
               style={{
-                alignContent: 'left',
-                backgroundColor: '#333333',
-                height: '10vh',
-                width: '10vw',
-                border: 'solid',
-                borderWidth: 'thin',
-                borderColor: '#4F4F4F',
+                alignContent: "left",
+                backgroundColor: "#333333",
+                height: "10vh",
+                width: "10vw",
+                border: "solid",
+                borderWidth: "thin",
+                borderColor: "#4F4F4F",
               }}
             >
               <Button
                 onClick={this.onAddTrack}
-                style={{ textTransform: 'none', color: '#E0E0E0' }}
+                style={{ textTransform: "none", color: "#E0E0E0" }}
               >
                 +new track
               </Button>
@@ -74,28 +78,28 @@ class TrackSection extends Component {
               xs={9}
               direction="column"
               style={{
-                backgroundColor: '#333333',
-                height: '10vh',
-                border: 'solid',
-                borderWidth: 'thin',
-                borderColor: '#4F4F4F',
+                backgroundColor: "#333333",
+                height: "10vh",
+                border: "solid",
+                borderWidth: "thin",
+                borderColor: "#4F4F4F",
               }}
             >
               time ruler section
             </Grid>
           </Grid>
-          <Grid container direction="row" style={{ paddingLeft: '10px' }}>
+          <Grid container direction="row" style={{ paddingLeft: "10px" }}>
             <Grid
               item
               xs={3}
               direction="column"
               style={{
-                backgroundColor: '#333333',
-                height: '12vh',
-                width: '10vw',
-                border: 'solid',
-                borderWidth: 'thin',
-                borderColor: '#4F4F4F',
+                backgroundColor: "#333333",
+                height: "12vh",
+                width: "10vw",
+                border: "solid",
+                borderWidth: "thin",
+                borderColor: "#4F4F4F",
               }}
             >
               audio track
@@ -105,16 +109,16 @@ class TrackSection extends Component {
               xs={9}
               direction="column"
               style={{
-                backgroundColor: '#333333',
-                height: '12vh',
-                width: '10vw',
-                border: 'solid',
-                borderWidth: 'thin',
-                borderColor: '#4F4F4F',
+                backgroundColor: "#333333",
+                height: "12vh",
+                width: "10vw",
+                border: "solid",
+                borderWidth: "thin",
+                borderColor: "#4F4F4F",
               }}
             >
               <div>
-                {this.props.url !== undefined && this.props.url != '' && (
+                {this.props.url !== undefined && this.props.url != "" && (
                   <AudioWave
                     url={this.props.url}
                     zoom={this.props.zoom}
@@ -125,10 +129,12 @@ class TrackSection extends Component {
               </div>
             </Grid>
           </Grid>
-          {this.state.tracks.map((track) => (
+          {this.props.tracks.map((track) => (
             <TrackItem
-              key={track}
-              id={track}
+              key={track.localTrackId}
+              localTrackId={track.localTrackId}
+              name={track.name}
+              backendId={track.backendId}
               onDeleteTrack={this.onDeleteTrack}
               handleTTSDelete={this.handleTTSDelete}
               onSelected={(volume, speed, text) =>
@@ -144,6 +150,7 @@ class TrackSection extends Component {
               trackselecting={this.state.trackselecting}
               ttsList={this.props.tts}
               text={this.props.text}
+              onNameChange={this.props.onNameChange}
             />
           ))}
         </Grid>

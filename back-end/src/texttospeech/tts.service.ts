@@ -7,6 +7,7 @@ import { CreateTTSDto } from 'src/dto/create-tts.dto';
 import { UpdateTTSDto } from 'src/dto/update-tts.dto';
 import { UpdateAudioClipDto } from 'src/dto/update-audio-clip.dto';
 import { IAudioClip } from 'src/interface/audio-clip.interface';
+import { TrackSchema } from 'src/tracks/tracks.schema';
 
 function streamToString(stream, cb) {
     const chunks = [];
