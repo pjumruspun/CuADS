@@ -67,7 +67,7 @@ class App extends Component {
     tracks: [],
     tracksToDelete: [],
     id: 0,
-    selectedWaveId: -1
+    selectedWaveId: -1,
     localTrackId: 0,
     selectedTrackId: undefined,
   };
