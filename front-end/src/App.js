@@ -65,6 +65,7 @@ class App extends Component {
     playedSeconds: 0.0,
     ttsList: [],
     tracks: [],
+    tracksToDelete: [],
     id: 0,
     localTrackId: 0,
     selectedTrackId: undefined,
@@ -163,6 +164,9 @@ class App extends Component {
     this.handleAudioURLChange(project.originalAudioURL);
     this.fetchTTS();
     this.fetchTracks();
+
+    // Clear track deletion flags
+    this.setState({ tracksToDelete: [] });
   };
 
   handleTrackSelection = (trackId) => {
@@ -255,6 +259,24 @@ class App extends Component {
     }));
   };
 
+  handleDeleteTrack = (localTrackId) => {
+    console.log(`Trying to delete ${localTrackId}`);
+    // mark track for delete
+    this.state.tracks.map((track) => {
+      if (track.localTrackId == localTrackId) {
+        // push backendId for deletion if user saves project
+        // but the track must have backendId (exist in database)
+        if (track.backendId != undefined) {
+          this.state.tracksToDelete.push(track.backendId);
+        }
+      }
+    });
+
+    this.setState((prevState) => ({
+      tracks: prevState.tracks.filter((el) => el.localTrackId !== localTrackId),
+    }));
+  };
+
   handleTrackNameChange = (localTrackId, name) => {
     console.log(`${localTrackId}, ${name}`);
     this.state.tracks.map((track) => {
@@ -271,7 +293,7 @@ class App extends Component {
 
     // We do promises here to give backend some time to update its database one by one
     // Otherwise some tracks might not be saved
-    const promises = this.state.tracks.map((track, i) => {
+    const savePromises = this.state.tracks.map((track, i) => {
       new Promise((resolve) => {
         setTimeout(() => {
           const backendId = track.backendId;
@@ -316,7 +338,31 @@ class App extends Component {
       });
     });
 
-    Promise.all(promises).then(() => console.log("Saving done"));
+    const deletePromises = this.state.tracksToDelete.map((backendId, i) => {
+      new Promise((resolve) => {
+        setTimeout(() => {
+          // Delete tracks
+          axios
+            .delete(`http://localhost:3001/tracks/${backendId}`)
+            .then((res) => {
+              console.log(res.data);
+              console.log(`successfully delete track ${backendId}`);
+            });
+          resolve(); // mark as resolved
+        }, 300 * this.state.tracksToDelete.length - 300 * i); // total delay of deleting in ms
+      });
+    });
+
+    Promise.all(savePromises)
+      .then(() => {
+        console.log("Saving done");
+      })
+      .then(() => {
+        return Promise.all(deletePromises);
+      })
+      .then(() => {
+        return console.log("Deleting done");
+      });
   };
 
   fetchTracks = () => {
@@ -474,6 +520,7 @@ class App extends Component {
           localTrackId={this.state.localTrackId}
           onAddTrack={this.handleAddTrack}
           onNameChange={this.handleTrackNameChange}
+          onDeleteTrack={this.handleDeleteTrack}
         />
         <div id="zoom">
           zoom

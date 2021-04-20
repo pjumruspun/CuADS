@@ -34,13 +34,9 @@ class TrackSection extends Component {
   };
 
   onDeleteTrack = (localTrackId) => {
-    console.log(`Trying to delete ${localTrackId}`);
-
     // The deletion code below is currently not working for some reason
     // Maybe we need to delete it in App.js
-    this.setState((prevState) => ({
-      tracks: prevState.tracks.filter((el) => el !== localTrackId),
-    }));
+    this.props.onDeleteTrack(localTrackId);
   };
 
   handleSelecting = (e) => {
