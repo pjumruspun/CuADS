@@ -1,7 +1,9 @@
-import { Controller, Post, Req, Res, Param, Body } from '@nestjs/common';
+import { Controller, Post, Req, Res, Param, Body, Put, Patch } from '@nestjs/common';
 import { TTSService } from './tts.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateTTSDto } from '../dto/create-tts.dto';
+import { UpdateTTSDto } from '../dto/update-tts.dto';
+import { IAudioClip } from '../interface/audio-clip.interface';
 
 @ApiTags('tts')
 @Controller('tts')
@@ -17,5 +19,11 @@ export class TTSController {
             console.log(error.message)
             return response.status(500).json(`Failed: ${error.message}`);
         }
+    }
+
+    @ApiOperation({ summary: 'Update existed TTS audio with specified parameters.' })
+    @Patch(':id')
+    async update(@Param('id') id: string, @Body() UpdateTTSDto: UpdateTTSDto): Promise<IAudioClip> {
+        return this.ttsService.update(id, UpdateTTSDto);
     }
 }

@@ -67,6 +67,7 @@ class App extends Component {
     tracks: [],
     tracksToDelete: [],
     id: 0,
+    selectedWaveId: -1
     localTrackId: 0,
     selectedTrackId: undefined,
   };
@@ -75,6 +76,22 @@ class App extends Component {
     console.log("app.js: should delete", id);
     const filteredTTSList = this.state.ttsList.filter((tts) => tts._id !== id);
     this.setState({ ttsList: filteredTTSList });
+  };
+
+  handleScriptTextChange = (tts_id) => {
+    this.setState({ selectedWaveId: tts_id });
+    if (tts_id === -1) {
+      this.setState({ text: '' })
+    } else {
+      const currentTTS = this.state.ttsList.find(tts => {
+        return tts._id === tts_id;
+      })
+      if (currentTTS) {
+        this.setState({ text:  currentTTS.text});
+      } else {
+        this.setState({ text: '' });
+      }
+    }
   };
 
   handleUrlChange = (url) => {
@@ -442,6 +459,7 @@ class App extends Component {
               trackvolume={trackvolume}
               speed={speed}
               text={text}
+              selectedWaveId={this.state.selectedWaveId}
               onChange={this.onChange.bind(this)}
               playedSeconds={this.state.playedSeconds}
               selectedTrackId={this.state.selectedTrackId}
@@ -513,6 +531,7 @@ class App extends Component {
           onSelected={this.handleSelected}
           handleTTSDelete={this.handleTTSDelete}
           tts={ttsList}
+          setText={this.handleScriptTextChange}
           projectId={this.state.projectId}
           fetchTracks={this.fetchTracks}
           tracks={this.state.tracks}

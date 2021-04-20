@@ -41,6 +41,7 @@ class TrackSection extends Component {
 
   handleSelecting = (e) => {
     this.setState({ selecting: e });
+    this.props.setText(e);
   };
   handleTrackSelecting = (e) => {
     this.setState({ trackselecting: e.localTrackId });

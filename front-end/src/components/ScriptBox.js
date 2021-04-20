@@ -74,6 +74,7 @@ class ScriptBox extends Component {
     const text = this.state.text;
     const source = this.state.source;
     const playedSeconds = this.props.playedSeconds; // value from App.js
+    const tts_id = this.props.selectedWaveId;
     const trackId = this.props.selectedTrackId; // value from App.js
 
     if (trackId == undefined) {
@@ -84,25 +85,41 @@ class ScriptBox extends Component {
     var ttsFormData = {
       text: text,
       source: source,
-      startTime: playedSeconds,
       trackId: trackId,
     };
 
-    axios
-      .post(`http://localhost:3001/tts`, ttsFormData, {
-        headers: { "Content-Type": "application/json" },
-      })
-      .then((response) => {
-        const tts_audio = response.data.audio;
-        this.props.onTTSGenerated();
-        console.log(
-          `Generated TTS with sentence '${text}' at ${playedSeconds} seconds`
-        );
-        // continue
-      })
-      .catch((response) => {
-        alert(`ERROR.\nFailed to generate TTS from ${source}`);
-      });
+    if (tts_id === -1) {
+      ttsFormData.startTime = playedSeconds;      
+      axios
+        .post(`http://localhost:3001/tts`, ttsFormData, {
+          headers: { "Content-Type": "application/json" },
+        })
+        .then((response) => {
+          const tts_audio = response.data.audio;
+          this.props.onTTSGenerated();
+          console.log(
+            `Generated TTS with sentence '${text}' at ${playedSeconds} seconds`
+          );
+          // continue
+        })
+        .catch((response) => {
+          alert(`ERROR.\nFailed to generate TTS from ${source}`);
+        });
+    } else {
+      axios
+        .patch(`http://localhost:3001/tts/${tts_id}/`, ttsFormData, {
+          headers: { "Content-Type": "application/json" },
+        })
+        .then((response) => {
+          this.props.onTTSGenerated();
+          console.log(
+            `Updated TTS with sentence ${text} with source ${source}`
+          );
+        })
+        .catch((response) => {
+          alert(`ERROR.\nFailed to update TTS.`);
+        });
+    }
   };
 
   render() {
