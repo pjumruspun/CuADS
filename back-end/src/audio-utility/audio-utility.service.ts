@@ -26,10 +26,10 @@ export class AudioUtilityService {
         var file = request.files[0]
 
         // We will delete this file later
-        const tmpFilePath = `tmp/${file.originalname}`;
+        const tmpFilePath = path.join(__dirname, `../${file.originalname}`)
 
         // Write file to temp folder
-        await fs.writeFile(tmpFilePath, file.buffer, function (err) {
+        fs.writeFileSync(tmpFilePath, file.buffer, function (err) {
             if (err) console.log(`ERROR: ${err}`);
         })
 
@@ -43,11 +43,12 @@ export class AudioUtilityService {
         const fileName = originalFileName.slice(0, -4)
 
         // We will modify temp file and export the result into ffmpegOutPath
-        var ffmpegInPath = path.join(__dirname, `../../${tmpFilePath}`) // backend/tmp/original_file_name
+        // var ffmpegInPath = path.join(__dirname, `../../${tmpFilePath}`) // backend/tmp/original_file_name
+        var ffmpegInPath = tmpFilePath
         // var ffmpegOutPath = path.join(__dirname, `../../../front-end/public/original-soundtracks/${fileName}.mp3`)
         
-        var ffmpegOutPath = path.join(__dirname, `../../tmp/${fileName}.mp3`) // backend/tmp/new_file_name.mp3
-
+        var ffmpegOutPath = path.join(__dirname, `../${fileName}.mp3`) // backend/tmp/new_file_name.mp3
+ 
         // Audio filters
         var volumeFilter;
         if (modifyAudioDto)
@@ -57,14 +58,14 @@ export class AudioUtilityService {
         else
         {
             volumeFilter = `volume=1`
-        }
+        }   
 
         // FFMPEG operations
         await ffmpeg(ffmpegInPath)
         .format('mp3') // convert to mp3
         .on("end", function () {
             // Callback when done
-
+            console.log('should reach')
             // Delete temp input file
             fs.unlink(tmpFilePath, (err) => { if (err) throw err; })
 
