@@ -13,7 +13,7 @@ const formWaveSurferOptions = (ref) => ({
   height: 80,
   normalize: true,
   // Use the PeakCache to improve rendering speed of large waveforms.
-  //partialRender: true
+  partialRender: true
 });
 
 export default function AudioWave(props) {

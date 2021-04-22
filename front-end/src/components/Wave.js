@@ -15,6 +15,7 @@ const formWaveSurferOptions = (ref) => ({
   height: 80,
   normalize: true,
   interact: false,
+  fillParent:true
   // Use the PeakCache to improve rendering speed of large waveforms.
   //partialRender: true
 });
