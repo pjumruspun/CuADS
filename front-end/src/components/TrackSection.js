@@ -19,7 +19,7 @@ class TrackSection extends Component {
       tracks: this.props.tracks,
       localTrackId: this.props.localTrackId,
       selecting: -1,
-      trackselecting: 99,
+      trackselecting: false,
     };
     this.handleTTSDelete = props.handleTTSDelete;
   }
@@ -33,10 +33,13 @@ class TrackSection extends Component {
     this.props.onAddTrack();
   };
 
-  onDeleteTrack = (localTrackId) => {
+  onDeleteTrack = (localTrackId,trackselected) => {
     // The deletion code below is currently not working for some reason
     // Maybe we need to delete it in App.js
     this.props.onDeleteTrack(localTrackId);
+    if(trackselected){
+    this.setState({ trackselecting: false});
+    }
   };
 
   handleSelecting = (e) => {
@@ -44,7 +47,7 @@ class TrackSection extends Component {
     this.props.setText(e);
   };
   handleTrackSelecting = (e) => {
-    this.setState({ trackselecting: e.localTrackId });
+    this.setState({ trackselecting: e.trackselecting});
     this.props.onSelectTrack(e.localTrackId);
   };
   render() {
@@ -135,7 +138,7 @@ class TrackSection extends Component {
               localTrackId={track.localTrackId}
               name={track.name}
               backendId={track.backendId}
-              onDeleteTrack={this.onDeleteTrack}
+              onDeleteTrack={(e,f) =>this.onDeleteTrack(e,f)}
               handleTTSDelete={this.handleTTSDelete}
               onSelected={(volume, speed, text) =>
                 this.props.onSelected(volume, speed, text)
