@@ -99,6 +99,11 @@ export default function Waveform(props) {
   };
 
   const deleteTTS = async (id) => {
+    if (
+      window.confirm(
+        'Are you sure you want to delete this tts ?'
+      )
+    ) {
     const response = await axios.delete(
       `http://localhost:3001/audio-clips/${id}`
     );
@@ -110,7 +115,7 @@ export default function Waveform(props) {
       props.onSelecting(-1);
     } else {
       alert('something is wrong with the server');
-    }
+    }}
   };
 
   return (
