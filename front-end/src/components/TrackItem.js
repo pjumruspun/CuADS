@@ -19,7 +19,7 @@ class TrackItem extends Component {
     this.handleTTSDelete = props.handleTTSDelete;
   }
   handleTrackSelected = () => {
-    if (!this.state.trackselected && this.props.trackselecting == false) {
+    if (!this.state.trackselected && (this.props.trackselecting ==undefined)) {
       this.setState({ border: "5px solid white", trackselected: true });
       console.log(
         `selecting: ${this.state.backendId} name: ${this.state.name}`
@@ -27,12 +27,11 @@ class TrackItem extends Component {
       this.props.onTrackSelecting({
         localTrackId: this.state.localTrackId,
         backendId: this.state.backendId,
-        trackselecting:true
       });
     }
     if (this.state.trackselected) {
       this.setState({ border: "thin solid #4F4F4F", trackselected: false });
-      this.props.onTrackSelecting({ trackselecting:false,localTrackId: 99, backendId: 99 });
+      this.props.onTrackSelecting({ localTrackId: 99, backendId: 99 });
     }
   };
   handleNameChange = (e) => {
@@ -71,7 +70,7 @@ class TrackItem extends Component {
           <Button onClick={() => this.props.onDeleteTrack(this.props.localTrackId,this.state.trackslected)} style={{minWidth:0, padding:0, marginLeft:"15px"}}>
             <DeleteIcon style={{ color: "EB5757" }} />
           </Button>
-	<div>{`local id=${this.props.localTrackId} backendId=${this.props.backendId} name=${this.state.name}`}</div>
+	<div>{`local id=${this.props.localTrackId} backendId=${this.props.backendId} name=${this.state.name} test=${this.props.test}`}</div>
         </Grid>
         <Grid
           item
@@ -88,7 +87,7 @@ class TrackItem extends Component {
               <Waveform
                 id={tts._id}
                 url={tts}
-                selecting={this.props.selecting}
+                selecting={this.props.selectedWaveId}
                 onSelecting={(e) => this.props.onSelecting(e)}
                 onSelected={(volume, speed, text) =>
                   this.props.onSelected(volume, speed, text)

@@ -8,6 +8,11 @@ export class CreateTrackDto {
     })
     name: string;
 
+   @ApiProperty({
+        description: 'test',
+    })
+    test: string;
+
     @ApiProperty({
         description: 'List of all audio clips in this track.',
         default: [],

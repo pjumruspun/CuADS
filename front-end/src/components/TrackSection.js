@@ -19,8 +19,6 @@ class TrackSection extends Component {
     this.state = {
       tracks: this.props.tracks,
       localTrackId: this.props.localTrackId,
-      selecting: -1,
-      trackselecting: false,
     };
     this.handleTTSDelete = props.handleTTSDelete;
   }
@@ -38,17 +36,12 @@ class TrackSection extends Component {
     // The deletion code below is currently not working for some reason
     // Maybe we need to delete it in App.js
     this.props.onDeleteTrack(localTrackId);
-    if(trackselected){
-    this.setState({ trackselecting: false});
-    }
   };
 
   handleSelecting = (e) => {
-    this.setState({ selecting: e });
     this.props.setText(e);
   };
   handleTrackSelecting = (e) => {
-    this.setState({ trackselecting: e.trackselecting});
     this.props.onSelectTrack(e.localTrackId);
   };
   render() {
@@ -144,6 +137,7 @@ class TrackSection extends Component {
           {this.props.tracks.map((track) => (
             <TrackItem
               key={track.localTrackId}
+	      test={track.test}
               localTrackId={track.localTrackId}
               name={track.name}
               backendId={track.backendId}
@@ -158,11 +152,11 @@ class TrackSection extends Component {
               speed={this.props.speed}
               playing={this.props.playing}
               played={this.props.played}
-              selecting={this.state.selecting}
-              trackselecting={this.state.trackselecting}
+              trackselecting={this.props.selectedTrackId}
               ttsList={this.props.tts}
               text={this.props.text}
               onNameChange={this.props.onNameChange}
+	      selectedWaveId={this.props.selectedWaveId}
             />
           ))}
         </Grid>

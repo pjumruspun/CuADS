@@ -184,7 +184,7 @@ class App extends Component {
     this.fetchTracks();
 
     // Clear track deletion flags
-    this.setState({ tracksToDelete: [] });
+    this.setState({ tracksToDelete: [],selectedTrackId: undefined,selectedWaveId: -1 });
   };
 
   handleTrackSelection = (trackId) => {
@@ -319,6 +319,7 @@ class App extends Component {
 
           const trackFormData = {
             name: name,
+            test:"test"
           };
 
           if (backendId === undefined) {
@@ -395,9 +396,11 @@ class App extends Component {
           axios
             .get(`http://localhost:3001/tracks/findbyid/${trackId}`)
             .then((res) => {
+	      
               this.state.tracks.push({
                 backendId: res.data._id,
                 name: res.data.name,
+		test:res.data.test,
                 localTrackId: this.state.localTrackId,
               });
               this.setState({ localTrackId: this.state.localTrackId + 1 });
@@ -543,6 +546,8 @@ class App extends Component {
           onAddTrack={this.handleAddTrack}
           onNameChange={this.handleTrackNameChange}
           onDeleteTrack={this.handleDeleteTrack}
+	  selectedTrackId={this.state.selectedTrackId}
+          selectedWaveId={this.state.selectedWaveId}
         />
         <div id="zoom" style={{textAlign: "right", padding: "10px 40px 10px 0px"}}>
           zoom &nbsp;
