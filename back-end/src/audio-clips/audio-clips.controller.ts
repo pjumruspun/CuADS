@@ -40,4 +40,12 @@ export class AudioClipsController {
     async delete(@Param('audioClipId') audioClipId: string): Promise<IAudioClip> {
         return this.audioClipsService.delete(audioClipId);
     }
+
+    @ApiOperation({ summary: 'Export mp3 file by trackId or projectId'})
+    @Get('export/mp3')
+    async export(@Param('projectId') projectId: string, @Param('trackId') trackId: string) {
+        console.log(`projectId: ${projectId}`);
+        console.log(`trackId: ${trackId}`);
+        return this.audioClipsService.exportMp3(projectId, trackId);
+    }
 }
