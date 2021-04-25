@@ -106,15 +106,14 @@ export class AudioUtilityService {
         .saveToFile(ffmpegOutPath)
     }
 
-    async export(audioClips: IAudioClip[])
+    async export(audioClips: IAudioClip[], @Res() response)
     {
-        console.log(`audioClip length: ${audioClips.length}`);
-
         // Write temp file to back-end/tmp/${idx}.mp3
         // Where idx is index of audioClip array
         const paths = []
-        const createTTSFilesPromise = new Promise((resolve, reject) => {
-            
+        const ffmpegOutPath = path.join(__dirname, `../../tmp/result.mp3`)
+
+        let createTTSFiles = new Promise((resolve, reject) => {
             audioClips.map((audioClip, idx) => {
                 const base64Data = audioClip.content
                 var dir = `tmp`
@@ -127,76 +126,89 @@ export class AudioUtilityService {
 
                 const tmpFilePath = path.join(__dirname, `../../tmp/${idx}.mp3`)
                 paths.push(tmpFilePath)
-                // console.log(`saved at ${tmpFilePath}`)
                 fs.writeFileSync(tmpFilePath, Buffer.from(base64Data.replace('data:audio/mp3; codecs=opus;base64,', ''), 'base64'));
 
                 if(idx == audioClips.length - 1)
                 {
-                    resolve(undefined);
+                    resolve(null);
                 }
             })
         });
-        
 
-        const ffmpegOutPath = path.join(__dirname, `../../tmp/result.mp3`)
-
-        console.log(`Start merging files`)
-
-        // Create a new instance of ffmpeg command
+        // New instance of command
         const command = ffmpeg()
-
-        // Add all input audio files into the command
-        paths.forEach((path) => {
-            command.input(path)
-        })
-
-        // Create complexFilter filter instance
         const filters = []
         const outputs = []
-        audioClips.map((audioClip, idx) => {
-            const startTimeMs = Math.round(audioClip.startTime * 1000)
-            const output = `out${idx}`
-            console.log(startTimeMs)
-            const filter = {
-                filter: 'adelay',
-                options: startTimeMs,
-                inputs: idx,
-                outputs: output,
+
+        let addInputs = (() => {
+            // Add all input audio files into the command
+            paths.forEach((path, idx) => {
+                command.input(path)
+            })
+
+            return
+        })
+        
+        let addFilters = (() => {
+            // Create complexFilter filter instance
+            audioClips.map((audioClip, idx) => {
+                const startTimeMs = Math.round(audioClip.startTime * 1000)
+                const output = `out${idx}`
+                const filter = {
+                    filter: 'adelay',
+                    options: startTimeMs,
+                    inputs: idx,
+                    outputs: output,
+                }
+                
+                outputs.push(output)
+                filters.push(filter);
+            })
+        })
+
+        let mixAudio = (() => {
+            filters.push({
+                filter: 'amix',
+                options: audioClips.length,
+                inputs: outputs
+            })
+        })
+
+        let deleteTmpFiles = (() => {
+            // Delete temp file once ended
+            for(var i = 0; i < audioClips.length; ++i)
+            {
+                const tmpFilePath = path.join(__dirname, `../../tmp/${i}.mp3`)
+                fs.unlinkSync(tmpFilePath, (err) => console.log(err));                
             }
+        })
+
+        let execute = (() => {
+            command
+            .complexFilter(filters)
+            .saveToFile(ffmpegOutPath)
+            .on('end', () => {
+                try {
+                    deleteTmpFiles();
+                } catch(e) {
+                    // ENOENT error for some reason
+                    // console.log(e.message)
+                }
+                return response.download(ffmpegOutPath)
+            })
+            .on('error', (error) => {
+                // When error occurs when concatenating mp3 files
+                console.log(`Error occurred when trying to merge files: ${error.message}`);
+            })
             
-            outputs.push(output)
-            filters.push(filter);
+            command.run()
         })
 
-        filters.push({
-            filter: 'amix',
-            options: audioClips.length,
-            inputs: outputs
-        })
-
-        command
-        .complexFilter(filters)
-        .saveToFile(ffmpegOutPath)
-        .on('end', () => {
-            console.log('merging finished!')
-        })
-        .on('progress', (progress) => {
-            console.log(`Merging... ${progress}% done`);
-        })
-        .on('error', (error) => {
-            // When error occurs when concatenating mp3 files
-            console.log(`Error occurred when trying to merge files: ${error.message}`);
-        })
-        
-        command.run()
-
-        // Delete temp file once ended
-        // for(var i = 0; i < audioClips.length; ++i)
-        // {
-        //     const tmpFilePath = path.join(__dirname, `../../tmp/${i}.mp3`)
-        //     fs.unlink(tmpFilePath, (err) => console.log(err));
-        // }
-        
-        return 'it works!';
+        createTTSFiles
+        .then(addInputs)
+        .then(addFilters)
+        .then(mixAudio)
+        .then(execute)
+        .catch((err) => console.log(err.message));
     }
 }

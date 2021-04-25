@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, Res } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { CreateAudioClipDto } from 'src/dto/create-audio-clip.dto';
 import { UpdateAudioClipDto } from 'src/dto/update-audio-clip.dto';
@@ -50,11 +50,11 @@ export class AudioClipsService {
         return await this.audioClipModel.findByIdAndRemove(audioClipId);
     }
 
-    async exportMp3(projectId: string=undefined, trackId:string = undefined) {
+    async exportMp3(projectId: string=undefined, trackId:string = undefined, @Res() response) {
         // Add tts filter by trackId here once TTS front and back is connected
         // Right now will try to send from all TTS in the database
         
         const audioClips = await this.audioClipModel.find().exec();
-        return this.audioUtilityService.export(audioClips);
+        return this.audioUtilityService.export(audioClips, response);
     }
 }
