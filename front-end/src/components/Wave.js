@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Grid } from '@material-ui/core';
 import WaveSurfer from 'wavesurfer.js';
-import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import DeleteIcon from '@material-ui/icons/Delete';
 import axios from 'axios';
 
 const formWaveSurferOptions = (ref) => ({
@@ -127,7 +127,7 @@ export default function Waveform(props) {
             deleteTTS(id);
           }}
         >
-          <DeleteOutlineIcon style={{ color: 'EB5757' }} />
+          <DeleteIcon style={{ color: 'EB5757' }} />
         </div>
       )}
       <div
@@ -146,8 +146,8 @@ const styles = {
   },
   deleteButton: {
     position: 'absolute',
-    top: '0',
-    right: '0',
+    top: '2px',
+    right: '0px',
     cursor: 'pointer',
     zIndex: '5',
   },

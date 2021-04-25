@@ -6,8 +6,19 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 
 export default function SimpleMenu(props) {
   var rootStyle = {
-    backgroundColor: "#141414",
+    backgroundColor: "#4F4F4F",
+    position: "sticky",
+    top:0,
+    zIndex:5
   };
+
+  var logoStyle = {
+    width: '5%',
+    height: '5%',
+    position: 'relative',
+    padding: '10px',
+    marginRight: '10px'
+  }
 
   var ButtonStyle = {
     color: "white",
@@ -29,7 +40,8 @@ export default function SimpleMenu(props) {
 
   return (
     <div align="left" style={rootStyle}>
-      <Grid container direction="row">
+      <Grid container direction="row" alignItems="center">
+        <img src="ADlogo.svg" style={logoStyle} alt="logo" />
         <FileButton
           onChange={(url) => props.onURLChange(url)}
           onProjectChange={(project) => props.onProjectChange(project)}

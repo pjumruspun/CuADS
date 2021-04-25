@@ -89,6 +89,9 @@ export default function SimpleMenu(props) {
 
   var ButtonStyle = {
     color: "white",
+    textTransform: "initial",
+    fontSize: "medium",
+    padding: "0 10px 0 10px"
   };
 
   return (
@@ -103,6 +106,7 @@ export default function SimpleMenu(props) {
       </Button>
       <Menu
         id="simple-menu1"
+        style={{top: '24px'}}
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
@@ -127,10 +131,10 @@ export default function SimpleMenu(props) {
               accept="video/mp4, video/webm"
               onChange={handleImport}
             />{" "}
-            <i className="fa fa-cloud-upload" /> Import{" "}
+            <i className="fa fa-cloud-upload" /> Import...{" "}
           </label>
         </MenuItem>
-        <MenuItem onClick={handleClose}>Export</MenuItem>
+        <MenuItem onClick={handleClose}>Export...</MenuItem>
       </Menu>
     </div>
   );

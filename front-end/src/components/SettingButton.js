@@ -22,6 +22,9 @@ export default function SimpleMenu(props) {
 
   var ButtonStyle = {
     color: "white",
+    textTransform: "initial",
+    fontSize: "medium",
+    padding: "0 10px 0 10px"
   };
 
   return (
@@ -36,6 +39,7 @@ export default function SimpleMenu(props) {
       </Button>
       <Menu
         id="simple-menu1"
+        style={{top: '24px'}}
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}

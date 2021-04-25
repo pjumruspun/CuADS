@@ -4,14 +4,15 @@ import Button from "@material-ui/core/Button";
 import TrackItem from "./TrackItem";
 import AudioWave from "./AudioWave";
 import axios from "axios";
+import AddCircleIcon from '@material-ui/icons/AddCircle';
+import GridList from '@material-ui/core/GridList';
 
 var rootStyle = {
-  backgroundColor: "#2e2d2d",
   height: "auto",
-  width: "98vw",
+  width: "100%",
   align: "bottom",
-  marginBottom: "10vh",
 };
+
 class TrackSection extends Component {
   constructor(props) {
     super(props);
@@ -52,9 +53,9 @@ class TrackSection extends Component {
   };
   render() {
     return (
-      <div style={rootStyle}>
+      <center><div style={rootStyle}>
         <Grid container>
-          <Grid container direction="row" style={{ paddingLeft: "10px" }}>
+          <Grid container direction="row" style={{ marginLeft: "40px", marginRight:'40px' }}>
             <Grid
               item
               xs={3}
@@ -62,18 +63,20 @@ class TrackSection extends Component {
               style={{
                 alignContent: "left",
                 backgroundColor: "#333333",
-                height: "10vh",
+                height: "5vh",
                 width: "10vw",
                 border: "solid",
                 borderWidth: "thin",
                 borderColor: "#4F4F4F",
+                fontSize: "medium",
+                textAlign: "left",
               }}
             >
               <Button
                 onClick={this.onAddTrack}
-                style={{ textTransform: "none", color: "#E0E0E0" }}
+                style={{ textTransform: "none", color: "#FFFFFF", fontSize: "medium" }}
               >
-                +new track
+                <AddCircleIcon style={{color:"#6FCF97"}}/> &nbsp;New track
               </Button>
             </Grid>
             <Grid
@@ -82,38 +85,44 @@ class TrackSection extends Component {
               direction="column"
               style={{
                 backgroundColor: "#333333",
-                height: "10vh",
+                height: "5vh",
                 border: "solid",
                 borderWidth: "thin",
                 borderColor: "#4F4F4F",
+                padding: "10px 8px",
+                fontSize: "medium",
+                textAlign: "left",
               }}
             >
-              time ruler section
+              Time ruler section
             </Grid>
           </Grid>
-          <Grid container direction="row" style={{ paddingLeft: "10px" }}>
+          <Grid container direction="row" style={{ marginLeft: "40px", marginRight:'40px' }}>
             <Grid
               item
               xs={3}
               direction="column"
               style={{
                 backgroundColor: "#333333",
-                height: "12vh",
+                height: "10vh",
                 width: "10vw",
                 border: "solid",
                 borderWidth: "thin",
                 borderColor: "#4F4F4F",
+                textAlign: "left",
+                fontSize: "medium",
+                padding: "10px 8px",
               }}
             >
-              audio track
+              Audio track
             </Grid>
             <Grid
               item
               xs={9}
               direction="column"
               style={{
-                backgroundColor: "#333333",
-                height: "12vh",
+                backgroundColor: "#222222",
+                height: "10vh",
                 width: "10vw",
                 border: "solid",
                 borderWidth: "thin",
@@ -157,7 +166,7 @@ class TrackSection extends Component {
             />
           ))}
         </Grid>
-      </div>
+      </div></center>
     );
   }
 }

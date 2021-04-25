@@ -12,13 +12,10 @@ function rand() {
 }
 
 function getModalStyle() {
-  const top = 50 + rand();
-  const left = 50 + rand();
-
   return {
-    top: `${top}%`,
-    left: `${left}%`,
-    transform: `translate(-${top}%, -${left}%)`,
+    top: `50%`,
+      left: `50%`,
+      transform: `translate(-50%, -50%)`,
   };
 }
 
@@ -29,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
     border: "2px solid #000",
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
+    width: "30vw"
   },
 }));
 
@@ -66,7 +64,7 @@ const NameModal = (props) => {
 
   return (
     <div>
-      <MenuItem onClick={handleNew}>New</MenuItem>
+      <MenuItem onClick={handleNew}>New...</MenuItem>
       <Modal
         // aria-labelledby="simple-modal-title"
         // aria-describedby="simple-modal-description"
@@ -74,16 +72,17 @@ const NameModal = (props) => {
         onClose={handleClose}
       >
         <div style={modalStyle} className={classes.paper}>
-          <h2 id="simple-modal-title">Input new project name</h2>
+          <center><h2 id="simple-modal-title">Input new project name</h2></center>
           <p id="simple-modal-description">
             <TextField
               label="Your new project name"
               fullWidth="true"
               onChange={(e) => setText(e.target.value)}
+              style={{marginBottom:'32px'}}
             ></TextField>
             <Box textAlign="center">
-              <Button onClick={handleCreate} variant="contained">
-                Create
+              <Button onClick={handleCreate} variant="contained" style={{textTransform: "initial", borderRadius:0, fontSize: "medium"}}>
+                <b>Create</b>
               </Button>
             </Box>
           </p>

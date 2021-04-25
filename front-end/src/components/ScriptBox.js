@@ -9,9 +9,10 @@ import RemoveIcon from "@material-ui/icons/RemoveRounded";
 import axios from "axios";
 
 var rootStyle = {
-  backgroundColor: "#141414",
-  height: "52vh",
-  width: "40vw",
+  backgroundColor: "#333333",
+  height: "49vh",
+  display: "flex",
+  width:"100%"
 };
 
 class ScriptBox extends Component {
@@ -132,8 +133,8 @@ class ScriptBox extends Component {
           alignItems="flex-start"
           style={{ padding: "12px" }}
         >
-          <div>
-            <div style={{ marginBottom: "12px" }}>Script:</div>
+          <div style={{width:'100%' }}>
+            <div style={{ marginBottom: "12px"}}><b>Script:</b></div>
             <InputBase
               multiline
               rows={3}
@@ -141,13 +142,14 @@ class ScriptBox extends Component {
               value={this.props.text}
               onChange={(event) => this.handleText(event.target.value)}
               style={{
-                backgroundColor: "#bababa",
-                width: "38vw",
+                backgroundColor: "#F2F2F2",
+                width: "100%",
                 marginBottom: "12px",
+                fontFamily: "'Sarabun', san-serif",
               }}
             />
           </div>
-          <div style={{ marginBottom: "12px" }}>Time:</div>
+          <div style={{ marginBottom: "12px" }}><b>Time:</b></div>
           <Grid
             container
             direction="row"
@@ -160,7 +162,7 @@ class ScriptBox extends Component {
             <InputBase
               inputProps={{ "aria-label": "naked" }}
               style={{
-                backgroundColor: "#bababa",
+                backgroundColor: "#F2F2F2",
                 height: "2vh",
                 width: "7vw",
                 marginRight: "10px",
@@ -172,7 +174,7 @@ class ScriptBox extends Component {
             <InputBase
               inputProps={{ "aria-label": "naked" }}
               style={{
-                backgroundColor: "#bababa",
+                backgroundColor: "#F2F2F2",
                 height: "2vh",
                 width: "7vw",
                 marginRight: "10px",
@@ -181,7 +183,7 @@ class ScriptBox extends Component {
             />
           </Grid>
           <div style={{ marginBottom: "8px", direction: "row" }}>
-            Adjustment:
+            <b>Adjustment:</b>
           </div>
           <Grid
             container
@@ -207,17 +209,17 @@ class ScriptBox extends Component {
                 style={{ marginBottom: "3px", alignItems: "center" }}
               >
                 <Button onClick={this.rmVolume}>
-                  <RemoveIcon style={{ color: "#bababa" }} />
+                  <RemoveIcon style={{ color: "#F2F2F2" }} />
                 </Button>
                 <input
                   type="text"
                   placeholder="Volume"
                   value={this.props.trackvolume + "%"}
                   class="input-box"
-                  style={{ backgroundColor: "#bababa", width: "3vw" }}
+                  style={{ backgroundColor: "#F2F2F2", width: "3vw" }}
                 />
                 <Button onClick={this.addVolume}>
-                  <AddIcon style={{ color: "#bababa" }} />
+                  <AddIcon style={{ color: "#F2F2F2" }} />
                 </Button>
               </Grid>
               <Grid
@@ -226,17 +228,17 @@ class ScriptBox extends Component {
                 style={{ marginBottom: "13px", alignItems: "center" }}
               >
                 <Button onClick={this.rmSpeed}>
-                  <RemoveIcon style={{ color: "#bababa" }} />
+                  <RemoveIcon style={{ color: "#F2F2F2" }} />
                 </Button>
                 <input
                   type="text"
                   placeholder="Speed"
                   value={"x" + this.props.speed}
                   class="input-box"
-                  style={{ backgroundColor: "#bababa", width: "3vw" }}
+                  style={{ backgroundColor: "#F2F2F2", width: "3vw" }}
                 />
                 <Button onClick={this.addSpeed}>
-                  <AddIcon style={{ color: "#bababa" }} />
+                  <AddIcon style={{ color: "#F2F2F2" }} />
                 </Button>
               </Grid>
               <Grid
@@ -249,10 +251,9 @@ class ScriptBox extends Component {
                   onChange={(event) => this.handleSource(event.target.value)}
                   style={{
                     color: "#00",
-                    backgroundColor: "#bababa",
+                    backgroundColor: "#F2F2F2",
                     padding: "0px 6px",
                     marginLeft: "45px",
-                    borderRadius: "5px",
                     width: "90px",
                   }}
                 >
@@ -264,10 +265,10 @@ class ScriptBox extends Component {
           </Grid>
           <Button
             variant="contained"
-            style={{ alignSelf: "flex-end" }}
+            style={{ alignSelf: "flex-end", textTransform: "initial", borderRadius: 0, fontSize: "medium"}}
             onClick={this.generateTTS}
           >
-            Generate TTS
+            <b>Generate TTS</b>
           </Button>
         </Grid>
       </div>

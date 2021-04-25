@@ -14,12 +14,13 @@ import Waveform from "./components//Wave";
 import TrackSection from "./components/TrackSection";
 
 var rootStyle = {
-  backgroundColor: "#2e2d2d",
+  backgroundColor: "#222222",
   color: "white",
+  height: "100%",
 };
 
 const ZOOM_RANGE = {
-  min: 20,
+  min: 0,
   max: 200,
 };
 
@@ -58,7 +59,7 @@ class App extends Component {
     volume: 0.8,
     trackvolume: 50,
     speed: 1.0,
-    zoom: 50,
+    zoom: 0,
     projectId: "",
     text: "",
     topText: topTextEmptyProject,
@@ -171,7 +172,7 @@ class App extends Component {
   handleProjectChange = (project) => {
     console.log(`change project id to: ${project._id}`);
     var topTextToSet =
-      project._id == "" ? topTextEmptyProject : `Project Name: ${project.name}`;
+      project._id === "" ? topTextEmptyProject : `Project Name: ${project.name}`;
     this.setState({
       projectId: project._id,
       topText: topTextToSet,
@@ -187,7 +188,7 @@ class App extends Component {
   };
 
   handleTrackSelection = (trackId) => {
-    if (trackId != 99) {
+    if (trackId !== 99) {
       this.setState({ selectedTrackId: trackId });
     } else {
       this.setState({ selectedTrackId: undefined });
@@ -207,7 +208,7 @@ class App extends Component {
   };
 
   handleSaveProject = () => {
-    if (this.state.projectId == "") {
+    if (this.state.projectId === "") {
       alert(
         `You have no currently active project, please create a new project or open an existing project.`
       );
@@ -228,7 +229,7 @@ class App extends Component {
   };
 
   handleImportProject = (videoId, videoFile) => {
-    if (this.state.projectId == "") {
+    if (this.state.projectId === "") {
       alert(
         `You have no currently active project, please create a new project or open an existing project.`
       );
@@ -280,10 +281,10 @@ class App extends Component {
     console.log(`Trying to delete ${localTrackId}`);
     // mark track for delete
     this.state.tracks.map((track) => {
-      if (track.localTrackId == localTrackId) {
+      if (track.localTrackId === localTrackId) {
         // push backendId for deletion if user saves project
         // but the track must have backendId (exist in database)
-        if (track.backendId != undefined) {
+        if (track.backendId !== undefined) {
           this.state.tracksToDelete.push(track.backendId);
         }
       }
@@ -298,7 +299,7 @@ class App extends Component {
     console.log(`${localTrackId}, ${name}`);
     this.state.tracks.map((track) => {
       console.log(track);
-      if (localTrackId == track.localTrackId) {
+      if (localTrackId === track.localTrackId) {
         console.log(`Found id=${localTrackId}`);
         track.name = name;
       }
@@ -320,7 +321,7 @@ class App extends Component {
             name: name,
           };
 
-          if (backendId == undefined) {
+          if (backendId === undefined) {
             // not exist in database
             // save new track
             axios
@@ -446,15 +447,17 @@ class App extends Component {
           }
         />
         <header>
-          <p>{topText}</p>
+          {topText === topTextEmptyProject ? <p>{topText}</p> : <b><p>{topText}</p></b>}
         </header>
         <Grid
           container
           direction="row"
-          alignItems="flex-start"
+          alignItems="flex"
           justify="space-around"
+          xs={12}
+          style={{padding:"20px", display:"flex"}}
         >
-          <div>
+          <div style={{width: '48%', margin: '10px'}}>
             <ScriptBox
               trackvolume={trackvolume}
               speed={speed}
@@ -467,7 +470,7 @@ class App extends Component {
               onCreateTTS={(e) => this.handleTTS(e)}
             />
           </div>
-          <div>
+          <div className="Video-block" style={{backgroundColor: 'black', width: '48%', margin: '10px'}}>
             <ReactPlayer
               ref={this.ref}
               className="react-player"
@@ -479,9 +482,21 @@ class App extends Component {
               onProgress={this.handleProgress}
               progressInterval={10}
             />
-
+            <input
+              className="Input-slider"
+              margin="center"
+              type="range"
+              min={0}
+              max={0.99999}
+              step="any"
+              value={played}
+              onMouseDown={this.handleSeekMouseDown}
+              onChange={this.handleSeekChange}
+              onInput={this.handleSeekChange}
+              onMouseUp={this.handleSeekMouseUp}
+            />
             <table className="Table-center">
-              <tbody>
+              <center><tbody className="Table-body">
                 <tr>
                   <th>Duration</th>
                   <td>
@@ -492,33 +507,21 @@ class App extends Component {
                     <Duration seconds={duration * played} />
                   </td>
                 </tr>
-              </tbody>
+              </tbody></center>
             </table>
 
             <table className="Table-center">
-              <tbody>
+              <center><tbody className="Table-body">
                 <tr>
-                  <IconButton onClick={this.handlePauseButton}>
+                  <IconButton onClick={this.handlePauseButton} style={{color: 'white'}}>
                     {playing ? <PauseIcon /> : <PlayArrowIcon />}
                   </IconButton>
                 </tr>
-              </tbody>
+              </tbody></center>
             </table>
           </div>
         </Grid>
-        <input
-          className="Input-slider"
-          margin="center"
-          type="range"
-          min={0}
-          max={0.99999}
-          step="any"
-          value={played}
-          onMouseDown={this.handleSeekMouseDown}
-          onChange={this.handleSeekChange}
-          onInput={this.handleSeekChange}
-          onMouseUp={this.handleSeekMouseUp}
-        />
+
 
         <TrackSection
           url={audioURL}
@@ -541,8 +544,8 @@ class App extends Component {
           onNameChange={this.handleTrackNameChange}
           onDeleteTrack={this.handleDeleteTrack}
         />
-        <div id="zoom">
-          zoom
+        <div id="zoom" style={{textAlign: "right", padding: "10px 40px 10px 0px"}}>
+          zoom &nbsp;
           <input
             type="range"
             value={zoom}
