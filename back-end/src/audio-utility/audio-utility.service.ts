@@ -194,7 +194,16 @@ export class AudioUtilityService {
                     // ENOENT error for some reason
                     // console.log(e.message)
                 }
-                return response.download(ffmpegOutPath)
+
+                return response.download(ffmpegOutPath, `export.mp3`, () => {
+                    try {
+                        fs.unlinkSync(ffmpegOutPath);
+                    }
+                    catch
+                    {
+
+                    }
+                });
             })
             .on('error', (error) => {
                 // When error occurs when concatenating mp3 files
