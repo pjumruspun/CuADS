@@ -4,7 +4,7 @@ import Button from "@material-ui/core/Button";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Waveform from "./Wave";
 import HorizontalScroller from "react-horizontal-scroll-container";
-
+import axios from "axios";
 class TrackItem extends Component {
   constructor(props) {
     super(props);
@@ -15,9 +15,20 @@ class TrackItem extends Component {
       border: "thin solid #4F4F4F",
       trackselected: false,
       ttsid: 0,
+      ttsList:[]
     };
     this.handleTTSDelete = props.handleTTSDelete;
-  }
+    this.handlefetchTTS(this.props.ttsList)
+  };
+
+  handlefetchTTS =(e) => {
+	e.map((id) => {
+		axios.get(`http://localhost:3001/audio-clips/findbyid/${id}`).then((res) => {
+     			 const tts = res.data;
+      			 this.setState((prevState) => ({ttsList: [...prevState.ttsList, tts]}));
+		});
+	});
+  };
   handleTrackSelected = () => {
     if (!this.state.trackselected && (this.props.trackselecting ==undefined)) {
       this.setState({ border: "5px solid white", trackselected: true });
@@ -83,7 +94,7 @@ class TrackItem extends Component {
           }}
         >
           <HorizontalScroller>
-            {this.props.ttsList.map((tts) => (
+            {this.state.ttsList.map((tts) => (
               <Waveform
                 id={tts._id}
                 url={tts}

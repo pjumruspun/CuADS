@@ -271,7 +271,7 @@ class App extends Component {
     this.setState((prevState) => ({
       tracks: [
         ...prevState.tracks,
-        { localTrackId: prevState.localTrackId, name: "" },
+        { localTrackId: prevState.localTrackId, name: "" ,audioClips:[]},
       ],
       localTrackId: prevState.localTrackId + 1,
     }));
@@ -306,6 +306,26 @@ class App extends Component {
     });
   };
 
+ handleAddingTTS = (e) => {
+     const trackFormData = {
+            _id:e._id
+          };
+    axios
+      .post(
+       `http://localhost:3001/audio-clips/${this.state.selectedTrackId}`,
+        trackFormData,
+         {
+            headers: { "Content-Type": "application/json" },
+          }
+         )
+      .then((response) => {
+        console.log(
+         `successfully add tts ${e._id} to track ${this.state.selectedTrackId}`
+         );
+	 this.fetchTracks();
+       });
+  };
+
   saveTracks = () => {
     console.log(`saving tracks...`);
 
@@ -316,10 +336,11 @@ class App extends Component {
         setTimeout(() => {
           const backendId = track.backendId;
           const name = track.name;
-
+	  const audioClips = track.audioClips;
           const trackFormData = {
             name: name,
-            test:"test"
+            test:"test",
+	    audioClips:audioClips
           };
 
           if (backendId === undefined) {
@@ -402,6 +423,7 @@ class App extends Component {
                 name: res.data.name,
 		test:res.data.test,
                 localTrackId: this.state.localTrackId,
+		audioClips: res.data.audioClips
               });
               this.setState({ localTrackId: this.state.localTrackId + 1 });
             });
@@ -470,7 +492,7 @@ class App extends Component {
               playedSeconds={this.state.playedSeconds}
               selectedTrackId={this.state.selectedTrackId}
               onTTSGenerated={this.fetchTTS}
-              onCreateTTS={(e) => this.handleTTS(e)}
+              onAddingTTS={(e) => this.handleAddingTTS(e)}
             />
           </div>
           <div className="Video-block" style={{backgroundColor: 'black', width: '48%', margin: '10px'}}>

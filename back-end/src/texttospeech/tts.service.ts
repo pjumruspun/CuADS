@@ -86,7 +86,7 @@ export class TTSService {
         });
         responseAudio.save((err) => {
             if (err) return res.status(400).json({'msg': err})
-            return res.status(200).json({'msg': 'success', 'audio': 'data:audio/mpeg;base64,'+sound});
+            return res.status(200).json({'msg': 'success', 'audio': 'data:audio/mpeg;base64,'+sound ,'tts':responseAudio});
         });
     }
 

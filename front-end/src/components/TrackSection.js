@@ -42,7 +42,7 @@ class TrackSection extends Component {
     this.props.setText(e);
   };
   handleTrackSelecting = (e) => {
-    this.props.onSelectTrack(e.localTrackId);
+    this.props.onSelectTrack(e.backendId);
   };
   render() {
     return (
@@ -153,7 +153,7 @@ class TrackSection extends Component {
               playing={this.props.playing}
               played={this.props.played}
               trackselecting={this.props.selectedTrackId}
-              ttsList={this.props.tts}
+              ttsList={track.audioClips}
               text={this.props.text}
               onNameChange={this.props.onNameChange}
 	      selectedWaveId={this.props.selectedWaveId}
