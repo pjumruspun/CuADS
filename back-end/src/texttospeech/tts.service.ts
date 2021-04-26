@@ -70,6 +70,7 @@ export class TTSService {
         const source = createTTSDto.source;
         const text = createTTSDto.text;
         const startTime = createTTSDto.startTime;
+        const trackId = createTTSDto.trackId;
 
         const [result, statusCode] = await generateAudio(source, text);
 
@@ -77,17 +78,32 @@ export class TTSService {
             return res.status(statusCode).json({'msg': result});
         }
 
-        const sound = result;
-        const Model =  mongoose.model("AudioClip", AudioClipSchema, "audioclips");
-        const responseAudio = new Model({
-            content: sound,
+        // const sound = result;
+        // const Model =  mongoose.model("AudioClip", AudioClipSchema, "audioclips");
+        // const responseAudio = new Model({
+        //     content: sound,
+        //     startTime: startTime,
+        //     text: text,
+        // });
+        // responseAudio.save((err) => {
+        //     if (err) return res.status(400).json({'msg': err})
+        //     return res.status(200).json({'msg': 'success', 'audio': 'data:audio/mpeg;base64,'+sound});
+        // });
+
+        const formData = {
+            content: result,
             startTime: startTime,
             text: text,
-        });
-        responseAudio.save((err) => {
-            if (err) return res.status(400).json({'msg': err})
-            return res.status(200).json({'msg': 'success', 'audio': 'data:audio/mpeg;base64,'+sound});
-        });
+        }
+
+        try {
+            axios.post(`http://localhost:3001/audio-clips/${trackId}`, formData).then((response) => {
+                return res.status(201).json({'msg': 'success', 'audio': 'data:audio/mpeg;base64,'+result});
+            })
+        } catch(e) {
+            return res.status(500).json({ 'msg': e.message });
+        }
+        
     }
 
     async update(id: string, UpdateTTSDto: UpdateTTSDto) {
