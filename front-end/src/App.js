@@ -67,6 +67,7 @@ class App extends Component {
     ttsList: [],
     tracks: [],
     tracksToDelete: [],
+    selectedttsList:[],
     id: 0,
     selectedWaveId: -1,
     localTrackId: 0,
@@ -135,7 +136,7 @@ class App extends Component {
   handlePlayTTSOnTimeStamp = (roundedPlayedSeconds) => {
     if (!this.state.playing) return;
 
-    this.state.ttsList.map((tts) => {
+    this.state.selectedttsList.map((tts) => {
       // Still not playing for some reason
       // Time sometimes still skips, like from 0.2 then suddenly 0.5
       const ttsRoundedStartTime = roundToOneDecimal(tts.startTime);
@@ -166,7 +167,7 @@ class App extends Component {
     this.setState({ volume: parseFloat(e) });
   };
 
-  handleSelected = (e, f, g) => {
+  handleSelected = (e, f, g) => { 
     this.setState({ trackvolume: e, speed: f, text: g });
   };
 
@@ -200,15 +201,16 @@ class App extends Component {
     // Might need to deal with track later
     // Currently get all TTS in backend into the project
     axios.get(`http://localhost:3001/audio-clips`).then((res) => {
-      const ttsList = res.data;
+    const ttsList = res.data;
       // We keep the whole tts object in list
       // This could be optimized with mapping
       // For example, we wanna search tts content by time, so we map startTime -> content
       this.setState({ ttsList: ttsList });
-    });
-    //this.fetchTracks();
+      });
   };
-
+  handleselectedTTS = (e) =>{
+     this.setState({ selectedttsList: e });
+  };
   handleSaveProject = () => {
     if (this.state.projectId === "") {
       alert(
@@ -441,6 +443,7 @@ class App extends Component {
       audioURL,
       id,
       ttsList,
+      selectedttsList
     } = this.state;
 
     return (
@@ -538,7 +541,7 @@ class App extends Component {
           text={text}
           playing={playing}
           played={duration * played}
-          onSelected={this.handleSelected}
+          onSelected={(e,f,g)=>this.handleSelected(e,f,g)}
           handleTTSDelete={this.handleTTSDelete}
           tts={ttsList}
           setText={this.handleScriptTextChange}
@@ -552,6 +555,7 @@ class App extends Component {
           onDeleteTrack={this.handleDeleteTrack}
 	  selectedTrackId={this.state.selectedTrackId}
           selectedWaveId={this.state.selectedWaveId}
+	  setTTS={(e)=>this.handleselectedTTS(e)}
         />
         <div id="zoom" style={{textAlign: "right", padding: "10px 40px 10px 0px"}}>
           zoom &nbsp;
