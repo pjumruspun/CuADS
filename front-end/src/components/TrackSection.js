@@ -147,32 +147,6 @@ class TrackSection extends Component {
                 </div>
               </Grid>
             </Grid>
-            {this.props.tracks.map((track) => (
-              <TrackItem
-                key={track.localTrackId}
-                localTrackId={track.localTrackId}
-                name={track.name}
-                backendId={track.backendId}
-                onDeleteTrack={(e, f) => this.onDeleteTrack(e, f)}
-                handleTTSDelete={this.handleTTSDelete}
-                onSelected={(volume, speed, text) =>
-                  this.props.onSelected(volume, speed, text)
-                }
-                onSelecting={(e) => this.handleSelecting(e)}
-                onTrackSelecting={(e) => this.handleTrackSelecting(e)}
-                trackvolume={this.props.trackvolume}
-                speed={this.props.speed}
-                playing={this.props.playing}
-                played={this.props.played}
-                selecting={this.state.selecting}
-                trackselecting={this.state.trackselecting}
-                ttsList={this.props.tts}
-                text={this.props.text}
-                onNameChange={this.props.onNameChange}
-              />
-            ))}
-          </Grid>
-<<<<<<< HEAD
           {this.props.tracks.map((track) => (
             <TrackItem
               key={track.localTrackId}

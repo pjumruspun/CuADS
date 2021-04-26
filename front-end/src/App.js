@@ -77,6 +77,7 @@ class App extends Component {
     console.log("app.js: should delete", id);
     const filteredTTSList = this.state.ttsList.filter((tts) => tts._id !== id);
     this.setState({ ttsList: filteredTTSList });
+    this.fetchTracks();
   };
 
   handleScriptTextChange = (tts_id) => {
@@ -180,7 +181,7 @@ class App extends Component {
     // Also need to update URL and other stuff
     this.handleUrlChange(project.videoURL);
     this.handleAudioURLChange(project.originalAudioURL);
-    this.fetchTTS();
+    //this.fetchTTS();
     this.fetchTracks();
 
     // Clear track deletion flags
@@ -205,6 +206,7 @@ class App extends Component {
       // For example, we wanna search tts content by time, so we map startTime -> content
       this.setState({ ttsList: ttsList });
     });
+    //this.fetchTracks();
   };
 
   handleSaveProject = () => {
@@ -306,26 +308,6 @@ class App extends Component {
     });
   };
 
- handleAddingTTS = (e) => {
-     const trackFormData = {
-            _id:e._id
-          };
-    axios
-      .post(
-       `http://localhost:3001/audio-clips/${this.state.selectedTrackId}`,
-        trackFormData,
-         {
-            headers: { "Content-Type": "application/json" },
-          }
-         )
-      .then((response) => {
-        console.log(
-         `successfully add tts ${e._id} to track ${this.state.selectedTrackId}`
-         );
-	 this.fetchTracks();
-       });
-  };
-
   saveTracks = () => {
     console.log(`saving tracks...`);
 
@@ -417,7 +399,7 @@ class App extends Component {
           axios
             .get(`http://localhost:3001/tracks/findbyid/${trackId}`)
             .then((res) => {
-	      
+	   
               this.state.tracks.push({
                 backendId: res.data._id,
                 name: res.data.name,
@@ -428,7 +410,8 @@ class App extends Component {
               this.setState({ localTrackId: this.state.localTrackId + 1 });
             });
         });
-
+	this.setState({ tracksToDelete: [],selectedTrackId: undefined,selectedWaveId: -1 });
+	this.fetchTTS();
         return console.log(this.state.tracks);
       });
   };
@@ -491,8 +474,7 @@ class App extends Component {
               onChange={this.onChange.bind(this)}
               playedSeconds={this.state.playedSeconds}
               selectedTrackId={this.state.selectedTrackId}
-              onTTSGenerated={this.fetchTTS}
-              onAddingTTS={(e) => this.handleAddingTTS(e)}
+              onTTSGenerated={this.fetchTracks}
             />
           </div>
           <div className="Video-block" style={{backgroundColor: 'black', width: '48%', margin: '10px'}}>

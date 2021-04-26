@@ -98,7 +98,8 @@ export class TTSService {
 
         try {
             axios.post(`http://localhost:3001/audio-clips/${trackId}`, formData).then((response) => {
-                return res.status(201).json({'msg': 'success', 'audio': 'data:audio/mpeg;base64,'+result});
+                console.log("success");
+		return res.status(201).json({'msg': 'success', 'audio': 'data:audio/mpeg;base64,'+result});
             })
         } catch(e) {
             return res.status(500).json({ 'msg': e.message });
