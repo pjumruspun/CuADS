@@ -10,8 +10,8 @@ import axios from "axios";
 
 var rootStyle = {
   backgroundColor: "#333333",
-  height: "49vh",
-  display: "flex",
+  display: 'flex',
+  height: "100%",
   width:"100%"
 };
 
