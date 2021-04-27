@@ -67,6 +67,7 @@ class App extends Component {
     ttsList: [],
     tracks: [],
     tracksToDelete: [],
+    selectedttsList:[],
     id: 0,
     selectedWaveId: -1,
     localTrackId: 0,
@@ -77,20 +78,21 @@ class App extends Component {
     console.log("app.js: should delete", id);
     const filteredTTSList = this.state.ttsList.filter((tts) => tts._id !== id);
     this.setState({ ttsList: filteredTTSList });
+    this.fetchTracks();
   };
 
   handleScriptTextChange = (tts_id) => {
     this.setState({ selectedWaveId: tts_id });
     if (tts_id === -1) {
-      this.setState({ text: '' })
+      this.setState({ text: "" });
     } else {
-      const currentTTS = this.state.ttsList.find(tts => {
+      const currentTTS = this.state.ttsList.find((tts) => {
         return tts._id === tts_id;
-      })
+      });
       if (currentTTS) {
-        this.setState({ text:  currentTTS.text});
+        this.setState({ text: currentTTS.text });
       } else {
-        this.setState({ text: '' });
+        this.setState({ text: "" });
       }
     }
   };
@@ -134,7 +136,7 @@ class App extends Component {
   handlePlayTTSOnTimeStamp = (roundedPlayedSeconds) => {
     if (!this.state.playing) return;
 
-    this.state.ttsList.map((tts) => {
+    this.state.selectedttsList.map((tts) => {
       // Still not playing for some reason
       // Time sometimes still skips, like from 0.2 then suddenly 0.5
       const ttsRoundedStartTime = roundToOneDecimal(tts.startTime);
@@ -165,7 +167,7 @@ class App extends Component {
     this.setState({ volume: parseFloat(e) });
   };
 
-  handleSelected = (e, f, g) => {
+  handleSelected = (e, f, g) => { 
     this.setState({ trackvolume: e, speed: f, text: g });
   };
 
@@ -180,11 +182,11 @@ class App extends Component {
     // Also need to update URL and other stuff
     this.handleUrlChange(project.videoURL);
     this.handleAudioURLChange(project.originalAudioURL);
-    this.fetchTTS();
+    //this.fetchTTS();
     this.fetchTracks();
 
     // Clear track deletion flags
-    this.setState({ tracksToDelete: [] });
+    this.setState({ tracksToDelete: [],selectedTrackId: undefined,selectedWaveId: -1 });
   };
 
   handleTrackSelection = (trackId) => {
@@ -199,14 +201,16 @@ class App extends Component {
     // Might need to deal with track later
     // Currently get all TTS in backend into the project
     axios.get(`http://localhost:3001/audio-clips`).then((res) => {
-      const ttsList = res.data;
+    const ttsList = res.data;
       // We keep the whole tts object in list
       // This could be optimized with mapping
       // For example, we wanna search tts content by time, so we map startTime -> content
       this.setState({ ttsList: ttsList });
-    });
+      });
   };
-
+  handleselectedTTS = (e) =>{
+     this.setState({ selectedttsList: e });
+  };
   handleSaveProject = () => {
     if (this.state.projectId === "") {
       alert(
@@ -267,14 +271,27 @@ class App extends Component {
   };
 
   handleAddTrack = () => {
-    console.log("add track");
-    this.setState((prevState) => ({
-      tracks: [
-        ...prevState.tracks,
-        { localTrackId: prevState.localTrackId, name: "" },
-      ],
-      localTrackId: prevState.localTrackId + 1,
-    }));
+    let addTrackPromise = new Promise((resolve) => {
+      this.setState((prevState) => ({
+        tracks: [
+          ...prevState.tracks,
+          {
+            localTrackId: prevState.localTrackId,
+            name: "New Track",
+            backendId: undefined,
+          },
+        ],
+        localTrackId: prevState.localTrackId + 1,
+      }));
+
+      resolve();
+    });
+
+    addTrackPromise.then(() => {
+      this.saveTracks();
+      console.log("Added track");
+      console.log(this.state.tracks);
+    });
   };
 
   handleDeleteTrack = (localTrackId) => {
@@ -293,6 +310,8 @@ class App extends Component {
     this.setState((prevState) => ({
       tracks: prevState.tracks.filter((el) => el.localTrackId !== localTrackId),
     }));
+
+    this.saveTracks();
   };
 
   handleTrackNameChange = (localTrackId, name) => {
@@ -304,6 +323,8 @@ class App extends Component {
         track.name = name;
       }
     });
+
+    this.saveTracks();
   };
 
   saveTracks = () => {
@@ -316,9 +337,10 @@ class App extends Component {
         setTimeout(() => {
           const backendId = track.backendId;
           const name = track.name;
-
+	  const audioClips = track.audioClips;
           const trackFormData = {
             name: name,
+	    audioClips:audioClips
           };
 
           if (backendId === undefined) {
@@ -352,7 +374,7 @@ class App extends Component {
               });
           }
           resolve(); // mark as resolved
-        }, 300 * this.state.tracks.length - 300 * i); // total delay of saving in ms
+        }, 20 * this.state.tracks.length - 20 * i); // total delay of saving in ms
       });
     });
 
@@ -367,7 +389,7 @@ class App extends Component {
               console.log(`successfully delete track ${backendId}`);
             });
           resolve(); // mark as resolved
-        }, 300 * this.state.tracksToDelete.length - 300 * i); // total delay of deleting in ms
+        }, 20 * this.state.tracksToDelete.length - 20 * i); // total delay of deleting in ms
       });
     });
 
@@ -395,16 +417,19 @@ class App extends Component {
           axios
             .get(`http://localhost:3001/tracks/findbyid/${trackId}`)
             .then((res) => {
+	   
               this.state.tracks.push({
                 backendId: res.data._id,
                 name: res.data.name,
                 localTrackId: this.state.localTrackId,
+		audioClips: res.data.audioClips
               });
               this.setState({ localTrackId: this.state.localTrackId + 1 });
             });
         });
-
-        return console.log(this.state.tracks);
+	this.setState({selectedTrackId: undefined,selectedWaveId: -1 });
+	this.fetchTTS();
+        // return console.log(this.state.tracks);
       });
   };
 
@@ -433,6 +458,7 @@ class App extends Component {
       audioURL,
       id,
       ttsList,
+      selectedttsList
     } = this.state;
 
     return (
@@ -466,8 +492,7 @@ class App extends Component {
               onChange={this.onChange.bind(this)}
               playedSeconds={this.state.playedSeconds}
               selectedTrackId={this.state.selectedTrackId}
-              onTTSGenerated={this.fetchTTS}
-              onCreateTTS={(e) => this.handleTTS(e)}
+              onTTSGenerated={this.fetchTracks}
             />
           </div>
           <div className="Video-block" style={{backgroundColor: 'black', width: '48%', margin: '10px'}}>
@@ -531,7 +556,7 @@ class App extends Component {
           text={text}
           playing={playing}
           played={duration * played}
-          onSelected={this.handleSelected}
+          onSelected={(e,f,g)=>this.handleSelected(e,f,g)}
           handleTTSDelete={this.handleTTSDelete}
           tts={ttsList}
           setText={this.handleScriptTextChange}
@@ -543,6 +568,9 @@ class App extends Component {
           onAddTrack={this.handleAddTrack}
           onNameChange={this.handleTrackNameChange}
           onDeleteTrack={this.handleDeleteTrack}
+	  selectedTrackId={this.state.selectedTrackId}
+          selectedWaveId={this.state.selectedWaveId}
+	  setTTS={(e)=>this.handleselectedTTS(e)}
         />
         <div id="zoom" style={{textAlign: "right", padding: "10px 40px 10px 0px"}}>
           zoom &nbsp;

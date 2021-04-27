@@ -38,7 +38,8 @@ export default function Waveform(props) {
 
     const options = formWaveSurferOptions(waveformRef.current);
     wavesurfer.current = WaveSurfer.create(options);
-    wavesurfer.current.load('data:audio/wav;base64,' + props.url.content);
+    
+    wavesurfer.current.load('data:audio/wav;base64,'+props.url.content);
 
     wavesurfer.current.on('ready', function () {
       // https://wavesurfer-js.org/docs/methods.html

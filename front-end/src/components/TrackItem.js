@@ -4,7 +4,7 @@ import Button from "@material-ui/core/Button";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Waveform from "./Wave";
 import HorizontalScroller from "react-horizontal-scroll-container";
-
+import axios from "axios";
 class TrackItem extends Component {
   constructor(props) {
     super(props);
@@ -15,24 +15,36 @@ class TrackItem extends Component {
       border: "thin solid #4F4F4F",
       trackselected: false,
       ttsid: 0,
+      ttsList:[]
     };
     this.handleTTSDelete = props.handleTTSDelete;
-  }
+    this.handlefetchTTS(this.props.ttsList)
+  };
+
+  handlefetchTTS =(e) => {
+	e.map((id) => {
+		axios.get(`http://localhost:3001/audio-clips/findbyid/${id}`).then((res) => {
+     			 const tts = res.data;
+      			 this.setState((prevState) => ({ttsList: [...prevState.ttsList, tts]}));
+		});
+	});
+  };
   handleTrackSelected = () => {
-    if (!this.state.trackselected && this.props.trackselecting == false) {
+    if (!this.state.trackselected && (this.props.trackselecting ==undefined)) {
       this.setState({ border: "5px solid white", trackselected: true });
       console.log(
-        `selecting: ${this.state.backendId} name: ${this.state.name}`
+        `selecting: ${this.state.backendId} localId: ${this.state.localTrackId} name: ${this.state.name}`
       );
       this.props.onTrackSelecting({
         localTrackId: this.state.localTrackId,
         backendId: this.state.backendId,
-        trackselecting:true
+	ttsList: this.state.ttsList
       });
     }
     if (this.state.trackselected) {
       this.setState({ border: "thin solid #4F4F4F", trackselected: false });
-      this.props.onTrackSelecting({ trackselecting:false,localTrackId: 99, backendId: 99 });
+      this.props.onTrackSelecting({ localTrackId: 99, backendId: 99 ,ttsList:[] });
+
     }
   };
   handleNameChange = (e) => {
@@ -69,9 +81,9 @@ class TrackItem extends Component {
             value={this.state.name}
           />
           <Button onClick={() => this.props.onDeleteTrack(this.props.localTrackId,this.state.trackslected)} style={{minWidth:0, padding:0, marginLeft:"15px"}}>
-            <DeleteIcon style={{ color: "EB5757" }} />
+          <DeleteIcon style={{ color: "EB5757" }} />
           </Button>
-	<div>{`local id=${this.props.localTrackId} backendId=${this.props.backendId} name=${this.state.name}`}</div>
+          <div>{`${this.state.name}`}</div>
         </Grid>
         <Grid
           item
@@ -84,11 +96,11 @@ class TrackItem extends Component {
           }}
         >
           <HorizontalScroller>
-            {this.props.ttsList.map((tts) => (
+            {this.state.ttsList.map((tts) => (
               <Waveform
                 id={tts._id}
                 url={tts}
-                selecting={this.props.selecting}
+                selecting={this.props.selectedWaveId}
                 onSelecting={(e) => this.props.onSelecting(e)}
                 onSelected={(volume, speed, text) =>
                   this.props.onSelected(volume, speed, text)
