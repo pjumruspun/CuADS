@@ -25,8 +25,18 @@
 }
 
 .Table-center {
-  margin-left: auto;
-  margin-right: auto;
+  display: block;
+  background-color: #333333;
+  max-width: inherit;
+}
+
+.Table-body {
+  text-align: center;
+}
+
+.Video-block {
+  display: block;
+  align-content: center;
 }
 
 .Input-slider {
@@ -50,3 +60,4 @@
     transform: rotate(360deg);
   }
 }
+

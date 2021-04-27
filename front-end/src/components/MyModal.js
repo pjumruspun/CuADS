@@ -6,19 +6,17 @@ import ProjectButton from "./ProjectButton.js";
 import axios from "axios";
 import DeleteButton from "./DeleteButton.js";
 import Delete from "@material-ui/icons/Delete";
+import Button from "@material-ui/core/Button";
 
 function rand() {
   return Math.round(Math.random() * 20) - 10;
 }
 
 function getModalStyle() {
-  const top = 50 + rand();
-  const left = 50 + rand();
-
   return {
-    top: `${top}%`,
-    left: `${left}%`,
-    transform: `translate(-${top}%, -${left}%)`,
+    top: `50%`,
+      left: `50%`,
+      transform: `translate(-50%, -50%)`,
   };
 }
 
@@ -29,6 +27,8 @@ const useStyles = makeStyles((theme) => ({
     border: "2px solid #000",
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
+    width: "20vw",
+    textAlign: 'center'
   },
 }));
 
@@ -55,8 +55,8 @@ const MyModal = (props) => {
 
   const createProjectButtons = (pair) => {
     return (
-      <tr>
-        <td>
+      <tr style={{verticalAlign: "middle"}}>
+        <td >
           {React.createElement(ProjectButton, {
             text: pair.name,
             projectId: pair.projectId,
@@ -64,14 +64,14 @@ const MyModal = (props) => {
             onProjectButtonClick: handleClose,
           })}
         </td>
-        <td>
+        <td><Button>
           {React.createElement(DeleteButton, {
             text: pair.name,
             projectId: pair.projectId,
             onProjectChange: (project) => props.onProjectChange(project),
             onProjectButtonClick: handleClose,
           })}
-        </td>
+        </Button></td>
       </tr>
     );
   };
@@ -82,7 +82,7 @@ const MyModal = (props) => {
 
   return (
     <div>
-      <MenuItem onClick={handleOpen}>Open</MenuItem>
+      <MenuItem onClick={handleOpen}>Open...</MenuItem>
       <Modal
         // aria-labelledby="simple-modal-title"
         // aria-describedby="simple-modal-description"
@@ -92,9 +92,9 @@ const MyModal = (props) => {
       >
         <div style={modalStyle} className={classes.paper}>
           <h2 id="simple-modal-title">Select Project</h2>
-          <p id="simple-modal-description">
+          <center><p id="simple-modal-description">
             {nameIdPairs.map((pair) => createProjectButtons(pair))}
-          </p>
+          </p></center>
         </div>
       </Modal>
     </div>

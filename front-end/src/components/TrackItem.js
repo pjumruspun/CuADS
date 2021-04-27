@@ -1,9 +1,10 @@
 import React, { Component, useState } from "react";
 import { Grid, InputBase } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
-import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
+import DeleteIcon from "@material-ui/icons/Delete";
 import Waveform from "./Wave";
 import HorizontalScroller from "react-horizontal-scroll-container";
+
 class TrackItem extends Component {
   constructor(props) {
     super(props);
@@ -49,7 +50,7 @@ class TrackItem extends Component {
       <Grid
         container
         direction="row"
-        style={{ paddingLeft: "10px", height: "12vh" }}
+        style={{ height: "12vh", width: "100%", marginLeft:"40px", marginRight:'40px'}}
       >
         <Grid
           item
@@ -60,6 +61,7 @@ class TrackItem extends Component {
             backgroundColor: "#333333",
             border: this.state.border,
             paddingTop: "10px",
+            alignItems: 'left'
           }}
         >
           <InputBase
@@ -70,15 +72,8 @@ class TrackItem extends Component {
             onChange={this.handleNameChange}
             value={this.state.name}
           />
-          <Button
-            onClick={() =>
-              this.props.onDeleteTrack(
-                this.props.localTrackId,
-                this.state.trackslected
-              )
-            }
-          >
-            <DeleteOutlineIcon style={{ color: "EB5757" }} />
+          <Button onClick={() => this.props.onDeleteTrack(this.props.localTrackId,this.state.trackslected)} style={{minWidth:0, padding:0, marginLeft:"15px"}}>
+          <DeleteIcon style={{ color: "EB5757" }} />
           </Button>
           <div>{`${this.state.name}`}</div>
         </Grid>
@@ -87,7 +82,7 @@ class TrackItem extends Component {
           xs={9}
           direction="column"
           style={{
-            backgroundColor: "#333333",
+            backgroundColor: "#222222",
             border: this.state.border,
             height: "12vh",
           }}
