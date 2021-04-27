@@ -340,7 +340,6 @@ class App extends Component {
 	  const audioClips = track.audioClips;
           const trackFormData = {
             name: name,
-            test:"test",
 	    audioClips:audioClips
           };
 
@@ -422,7 +421,6 @@ class App extends Component {
               this.state.tracks.push({
                 backendId: res.data._id,
                 name: res.data.name,
-		test:res.data.test,
                 localTrackId: this.state.localTrackId,
 		audioClips: res.data.audioClips
               });
