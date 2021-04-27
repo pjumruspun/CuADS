@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Res } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateAudioClipDto } from 'src/dto/create-audio-clip.dto';
 import { UpdateAudioClipDto } from 'src/dto/update-audio-clip.dto';
@@ -39,5 +39,13 @@ export class AudioClipsController {
     @Delete(':audioClipId')
     async delete(@Param('audioClipId') audioClipId: string): Promise<IAudioClip> {
         return this.audioClipsService.delete(audioClipId);
+    }
+
+    @ApiOperation({ summary: 'Export mp3 file by trackId or projectId'})
+    @Get('export/mp3')
+    async export(@Param('projectId') projectId: string, @Param('trackId') trackId: string, @Res() response) {
+        // console.log(`projectId: ${projectId}`);
+        // console.log(`trackId: ${trackId}`);
+        return this.audioClipsService.exportMp3(projectId, trackId, response);
     }
 }

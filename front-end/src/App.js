@@ -84,15 +84,15 @@ class App extends Component {
   handleScriptTextChange = (tts_id) => {
     this.setState({ selectedWaveId: tts_id });
     if (tts_id === -1) {
-      this.setState({ text: '' })
+      this.setState({ text: "" });
     } else {
-      const currentTTS = this.state.ttsList.find(tts => {
+      const currentTTS = this.state.ttsList.find((tts) => {
         return tts._id === tts_id;
-      })
+      });
       if (currentTTS) {
-        this.setState({ text:  currentTTS.text});
+        this.setState({ text: currentTTS.text });
       } else {
-        this.setState({ text: '' });
+        this.setState({ text: "" });
       }
     }
   };
@@ -271,14 +271,27 @@ class App extends Component {
   };
 
   handleAddTrack = () => {
-    console.log("add track");
-    this.setState((prevState) => ({
-      tracks: [
-        ...prevState.tracks,
-        { localTrackId: prevState.localTrackId, name: "" ,audioClips:[]},
-      ],
-      localTrackId: prevState.localTrackId + 1,
-    }));
+    let addTrackPromise = new Promise((resolve) => {
+      this.setState((prevState) => ({
+        tracks: [
+          ...prevState.tracks,
+          {
+            localTrackId: prevState.localTrackId,
+            name: "New Track",
+            backendId: undefined,
+          },
+        ],
+        localTrackId: prevState.localTrackId + 1,
+      }));
+
+      resolve();
+    });
+
+    addTrackPromise.then(() => {
+      this.saveTracks();
+      console.log("Added track");
+      console.log(this.state.tracks);
+    });
   };
 
   handleDeleteTrack = (localTrackId) => {
@@ -297,6 +310,8 @@ class App extends Component {
     this.setState((prevState) => ({
       tracks: prevState.tracks.filter((el) => el.localTrackId !== localTrackId),
     }));
+
+    this.saveTracks();
   };
 
   handleTrackNameChange = (localTrackId, name) => {
@@ -308,6 +323,8 @@ class App extends Component {
         track.name = name;
       }
     });
+
+    this.saveTracks();
   };
 
   saveTracks = () => {
@@ -358,7 +375,7 @@ class App extends Component {
               });
           }
           resolve(); // mark as resolved
-        }, 300 * this.state.tracks.length - 300 * i); // total delay of saving in ms
+        }, 20 * this.state.tracks.length - 20 * i); // total delay of saving in ms
       });
     });
 
@@ -373,7 +390,7 @@ class App extends Component {
               console.log(`successfully delete track ${backendId}`);
             });
           resolve(); // mark as resolved
-        }, 300 * this.state.tracksToDelete.length - 300 * i); // total delay of deleting in ms
+        }, 20 * this.state.tracksToDelete.length - 20 * i); // total delay of deleting in ms
       });
     });
 
@@ -412,9 +429,9 @@ class App extends Component {
               this.setState({ localTrackId: this.state.localTrackId + 1 });
             });
         });
-	this.setState({ tracksToDelete: [],selectedTrackId: undefined,selectedWaveId: -1 });
+	this.setState({selectedTrackId: undefined,selectedWaveId: -1 });
 	this.fetchTTS();
-        return console.log(this.state.tracks);
+        // return console.log(this.state.tracks);
       });
   };
 

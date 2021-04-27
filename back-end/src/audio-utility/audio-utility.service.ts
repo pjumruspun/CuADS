@@ -1,6 +1,7 @@
 import { Body, Injectable, Req, Res } from '@nestjs/common';
 import { ModifyAudioDto } from 'src/dto/modify-audio.dto';
 import axios from 'axios';
+import { IAudioClip } from 'src/interface/audio-clip.interface';
 
 var path = require('path')
 var ffmpeg = require('fluent-ffmpeg')
@@ -16,15 +17,15 @@ ffmpeg.setFfmpegPath(pathToFfmpeg);
 @Injectable()
 export class AudioUtilityService {
     async modifyAudioFromReq(@Req() request, @Res() response, @Body() modifyAudioDto: ModifyAudioDto=undefined, projectId: string=undefined) {
-        if (!request.files[0]) {
+        if (!request.files || !request.files[0]) {
             const errMessage = "No file found in the request body";
             console.log(errMessage);
-            return response.status(404).json(`Failed to test in service: ${errMessage}`);
+            return response.status(404).json(`Failed to modify in service: ${errMessage}`);
         }
-
+        
         // File that has been uploaded in the request
         var file = request.files[0]
-
+        
         // We will delete this file later
         const tmpFilePath = path.join(__dirname, `../${file.originalname}`)
 
@@ -35,8 +36,6 @@ export class AudioUtilityService {
 
         await this.modifyAudio(file, tmpFilePath, file.originalname, response, modifyAudioDto, projectId);
     }
-
-
 
     async modifyAudio(file, tmpFilePath, originalFileName, @Res() response, @Body() modifyAudioDto: ModifyAudioDto=undefined, projectId: string=undefined) {
         // Cut the old file type from the name
@@ -65,7 +64,6 @@ export class AudioUtilityService {
         .format('mp3') // convert to mp3
         .on("end", function () {
             // Callback when done
-            console.log('should reach')
             // Delete temp input file
             fs.unlink(tmpFilePath, (err) => { if (err) throw err; })
 
@@ -87,20 +85,13 @@ export class AudioUtilityService {
                     return response.status(201).json(res.data)
                 }
 
-                console.log(res.data);
-                
-
                 // If projectId is not undefined, try to update projects document
                 const audioURL = `http://localhost:3001/files/${res.data[0].id}`;
                 const putURL = `http://localhost:3001/projects/${projectId}`;
-
-                console.log(audioURL);
-                console.log(putURL);
                 return axios.put(putURL, { 'originalAudioURL': audioURL });
             })
             .then((res) => {
                 // Return update results
-                console.log(res.data);
                 return response.status(201).json(res.data)
             });
         })
@@ -109,9 +100,124 @@ export class AudioUtilityService {
             return response.status(500).json(`An error happened: ${err}`);
         })
         .on('progress', function(progress) {
-            console.log(`Processing: ${progress.percent}% done.`)
+            // console.log(`Processing: ${progress.percent}% done.`)
         })
         .audioFilters(volumeFilter) // could chain more modification later
         .saveToFile(ffmpegOutPath)
+    }
+
+    async export(audioClips: IAudioClip[], @Res() response)
+    {
+        // Write temp file to back-end/tmp/${idx}.mp3
+        // Where idx is index of audioClip array
+        const paths = []
+        const ffmpegOutPath = path.join(__dirname, `../../tmp/result.mp3`)
+
+        let createTTSFiles = new Promise((resolve, reject) => {
+            audioClips.map((audioClip, idx) => {
+                const base64Data = audioClip.content
+                var dir = `tmp`
+
+                if (!fs.existsSync(dir))
+                {
+                    console.log(`${dir} directory does not exist.. creating one`)
+                    fs.mkdirSync(dir);
+                }
+
+                const tmpFilePath = path.join(__dirname, `../../tmp/${idx}.mp3`)
+                paths.push(tmpFilePath)
+                fs.writeFileSync(tmpFilePath, Buffer.from(base64Data.replace('data:audio/mp3; codecs=opus;base64,', ''), 'base64'));
+
+                if(idx == audioClips.length - 1)
+                {
+                    resolve(null);
+                }
+            })
+        });
+
+        // New instance of command
+        const command = ffmpeg()
+        const filters = []
+        const outputs = []
+
+        let addInputs = (() => {
+            // Add all input audio files into the command
+            paths.forEach((path, idx) => {
+                command.input(path)
+            })
+
+            return
+        })
+        
+        let addFilters = (() => {
+            // Create complexFilter filter instance
+            audioClips.map((audioClip, idx) => {
+                const startTimeMs = Math.round(audioClip.startTime * 1000)
+                const output = `out${idx}`
+                const filter = {
+                    filter: 'adelay',
+                    options: startTimeMs,
+                    inputs: idx,
+                    outputs: output,
+                }
+                
+                outputs.push(output)
+                filters.push(filter);
+            })
+        })
+
+        let mixAudio = (() => {
+            filters.push({
+                filter: 'amix',
+                options: audioClips.length,
+                inputs: outputs
+            })
+        })
+
+        let deleteTmpFiles = (() => {
+            // Delete temp file once ended
+            for(var i = 0; i < audioClips.length; ++i)
+            {
+                const tmpFilePath = path.join(__dirname, `../../tmp/${i}.mp3`)
+                fs.unlinkSync(tmpFilePath, (err) => console.log(err));                
+            }
+        })
+
+        let execute = (() => {
+            command
+            .complexFilter(filters)
+            .saveToFile(ffmpegOutPath)
+            .on('end', () => {
+                try {
+                    deleteTmpFiles();
+                } catch(e) {
+                    // ENOENT error for some reason
+                    // console.log(e.message)
+                }
+
+                return response.download(ffmpegOutPath, `export.mp3`, () => {
+                    try {
+                        fs.unlinkSync(ffmpegOutPath);
+                    }
+                    catch
+                    {
+
+                    }
+                });
+            })
+            .on('error', (error) => {
+                // When error occurs when concatenating mp3 files
+                console.log(`Error occurred when trying to merge files: ${error.message}`);
+            })
+            
+            command.run()
+        })
+
+        createTTSFiles
+        .then(addInputs)
+        .then(addFilters)
+        .then(mixAudio)
+        .then(execute)
+        .catch((err) => console.log(err.message));
     }
 }

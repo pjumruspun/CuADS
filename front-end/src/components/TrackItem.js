@@ -33,7 +33,7 @@ class TrackItem extends Component {
     if (!this.state.trackselected && (this.props.trackselecting ==undefined)) {
       this.setState({ border: "5px solid white", trackselected: true });
       console.log(
-        `selecting: ${this.state.backendId} name: ${this.state.name}`
+        `selecting: ${this.state.backendId} localId: ${this.state.localTrackId} name: ${this.state.name}`
       );
       this.props.onTrackSelecting({
         localTrackId: this.state.localTrackId,
@@ -44,6 +44,7 @@ class TrackItem extends Component {
     if (this.state.trackselected) {
       this.setState({ border: "thin solid #4F4F4F", trackselected: false });
       this.props.onTrackSelecting({ localTrackId: 99, backendId: 99 ,ttsList:[] });
+
     }
   };
   handleNameChange = (e) => {
@@ -80,9 +81,9 @@ class TrackItem extends Component {
             value={this.state.name}
           />
           <Button onClick={() => this.props.onDeleteTrack(this.props.localTrackId,this.state.trackslected)} style={{minWidth:0, padding:0, marginLeft:"15px"}}>
-            <DeleteIcon style={{ color: "EB5757" }} />
+          <DeleteIcon style={{ color: "EB5757" }} />
           </Button>
-	<div>{`local id=${this.props.localTrackId} backendId=${this.props.backendId} name=${this.state.name} test=${this.props.test}`}</div>
+          <div>{`${this.state.name}`}</div>
         </Grid>
         <Grid
           item

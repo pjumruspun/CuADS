@@ -9,6 +9,7 @@ import { TracksService } from 'src/tracks/tracks.service';
 import { trackProviders } from 'src/tracks/tracks.providers';
 import { ProjectsService } from 'src/projects/projects.service';
 import { projectProviders } from 'src/projects/projects.providers';
+import { AudioUtilityService } from 'src/audio-utility/audio-utility.service';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { projectProviders } from 'src/projects/projects.providers';
     ProjectsService,
     AudioClipsService,
     TracksService,
+    AudioUtilityService,
     ...projectProviders,
     ...trackProviders,
     ...audioClipsProviders,

@@ -87,6 +87,11 @@ export default function SimpleMenu(props) {
     setAnchorEl(null);
   };
 
+  const handleExport = () => {
+    window.open(`http://localhost:3001/audio-clips/export/mp3`);
+    setAnchorEl(null);
+  };
+
   var ButtonStyle = {
     color: "white",
     textTransform: "initial",
@@ -134,7 +139,7 @@ export default function SimpleMenu(props) {
             <i className="fa fa-cloud-upload" /> Import...{" "}
           </label>
         </MenuItem>
-        <MenuItem onClick={handleClose}>Export...</MenuItem>
+        <MenuItem onClick={handleExport}>Export</MenuItem>
       </Menu>
     </div>
   );
