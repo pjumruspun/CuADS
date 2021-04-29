@@ -7,7 +7,7 @@ export default function TrackExportButton(props) {
     // axios.get export
     console.log(`exporting track ${props.trackId}`);
     window.open(
-      `http://localhost:3001/audio-clips/export/mp3?trackId=${props.trackId}`
+      `http://localhost:3001/audio-clips/export/mp3/${props.trackId}`
     );
   };
   return <MenuItem onClick={handleClick}>{props.text}</MenuItem>;
