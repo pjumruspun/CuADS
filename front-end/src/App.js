@@ -579,7 +579,7 @@ class App extends Component {
           played={duration * played}
           onSelected={(e, f, g) => this.handleSelected(e, f, g)}
           handleTTSDelete={this.handleTTSDelete}
-          tts={ttsList}
+          tts={this.state.ttsList}
           setText={this.handleScriptTextChange}
           projectId={this.state.projectId}
           fetchTracks={this.fetchTracks}
