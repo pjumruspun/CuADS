@@ -12,6 +12,7 @@ import PauseIcon from "@material-ui/icons/Pause";
 import axios from "axios";
 import Waveform from "./components//Wave";
 import TrackSection from "./components/TrackSection";
+import * as Tone from 'tone';
 
 var rootStyle = {
   backgroundColor: "#222222",
@@ -27,27 +28,13 @@ const ZOOM_RANGE = {
 var topTextEmptyProject =
   "No project opened, please create a new project or open an existing project from File menu.";
 
-var roundToOneDecimal = (number) => {
-  return Math.round(number * 10) / 10;
-};
+var normalizeSpeed = (speed) => {
+  return ((speed/2)*0.5) + 0.85;
+}
 
-var canPlayTTS = true;
-var timeBetweenEachTTS = 300; // in milliseconds
-
-// To not play TTS too repeatedly, we allow playing TTS once every `timeBetweenEachTTS` ms
-var playTTS = (base64string) => {
-  if (!canPlayTTS) return; // Not ready to play sound
-  canPlayTTS = false;
-
-  // Play sound here
-  var snd = new Audio("data:audio/wav;base64," + base64string);
-  snd.play();
-
-  setTimeout(function () {
-    // Will be ready to play sound in `timeBetweenEachTTS` ms
-    canPlayTTS = true;
-  }, timeBetweenEachTTS);
-};
+var normalizeVolume = (volume) => {
+  return parseInt((volume/5)-10);
+}
 
 class App extends Component {
   state = {
@@ -64,6 +51,9 @@ class App extends Component {
     text: "",
     topText: topTextEmptyProject,
     playedSeconds: 0.0,
+    ttsStartTime: 0,
+    ttsDuration: 0,
+    ttsSource: "chula",
     ttsList: [],
     tracks: [],
     tracksToDelete: [],
@@ -71,26 +61,81 @@ class App extends Component {
     selectedWaveId: -1,
     localTrackId: 0,
     selectedTrackId: undefined,
+    ttsTransportMap: {}
   };
+
+  loadTransportTTS = (ttsList = this.state.ttsList) => {
+    ttsList.forEach((ttsItem) => {
+      if (!(ttsItem._id in this.state.ttsTransportMap)) {
+        const player = new Tone.Player("data:audio/wav;base64," + ttsItem.content);
+        player.playbackRate = normalizeSpeed(ttsItem.speed);
+        player.volume.value = normalizeVolume(ttsItem.volume);
+        player.toDestination();
+        player.sync().start(ttsItem.startTime);
+        this.setState(prevState => ({
+          ttsTransportMap: {
+            ...prevState.ttsTransportMap,
+            [ttsItem._id]: player
+          }
+        }));
+      }
+    });
+  }
+
+  createOrUpdateTransportTTS = async (mode, ttsItem, tts_id) => {
+    await this.fetchTTS(false);
+    switch(mode) {
+      case "create":
+        this.loadTransportTTS();
+        break;
+      case "update":
+        (this.state.ttsTransportMap)[tts_id].dispose();
+        const response = await axios.get(`http://localhost:3001/audio-clips/findbyid/${tts_id}/`)
+        const newPlayer = new Tone.Player("data:audio/wav;base64," + response.data.content);
+        newPlayer.playbackRate = normalizeSpeed(response.data.speed);
+        newPlayer.volume.value = normalizeVolume(response.data.volume);
+        newPlayer.toDestination();
+        newPlayer.sync().start(response.data.startTime);
+        this.setState(prevState => ({
+          ttsTransportMap: {
+            ...prevState.ttsTransportMap,
+            [tts_id]: newPlayer
+          }
+        }));
+        break;
+      default:
+        break;
+    }
+  }
+
+  getTTSDuration = (id) => {
+    const thisPlayer = (this.state.ttsTransportMap)[id]
+    return thisPlayer.buffer.duration / thisPlayer.playbackRate;
+  }
 
   handleTTSDelete = (id) => {
     console.log("app.js: should delete", id);
     const filteredTTSList = this.state.ttsList.filter((tts) => tts._id !== id);
+    (this.state.ttsTransportMap)[id].dispose();
+    let newTTSTransportMap = this.state.ttsTransportMap;
+    delete newTTSTransportMap[id];
+    this.setState({ ttsTransportMap: newTTSTransportMap });
     this.setState({ ttsList: filteredTTSList });
   };
 
   handleScriptTextChange = (tts_id) => {
     this.setState({ selectedWaveId: tts_id });
     if (tts_id === -1) {
-      this.setState({ text: '' })
+      this.setState({ text: '', speed: 1, trackvolume: 50 });
     } else {
       const currentTTS = this.state.ttsList.find(tts => {
         return tts._id === tts_id;
       })
       if (currentTTS) {
-        this.setState({ text:  currentTTS.text});
+        const duration = this.getTTSDuration(tts_id);
+        this.setState({ text: currentTTS.text, ttsStartTime: currentTTS.startTime, ttsDuration: duration, speed: currentTTS.speed, trackvolume: currentTTS.volume, ttsSource: currentTTS.source });
       } else {
-        this.setState({ text: '' });
+        this.setState({ text: '', speed: 1, trackvolume: 50 });
       }
     }
   };
@@ -120,30 +165,15 @@ class App extends Component {
     console.log(parseFloat(e.target.value));
     this.setState({ seeking: false, playing: true });
     this.player.seekTo(parseFloat(e.target.value));
+    Tone.Transport.seconds = e.target.value;
+    Tone.Transport.start();
   };
 
   handleProgress = (state) => {
     if (!this.state.seeking) {
       this.setState(state);
-      const roundedPlayedSeconds = roundToOneDecimal(state.playedSeconds);
-      this.handlePlayTTSOnTimeStamp(roundedPlayedSeconds);
       this.setState({ playedSeconds: state.playedSeconds });
     }
-  };
-
-  handlePlayTTSOnTimeStamp = (roundedPlayedSeconds) => {
-    if (!this.state.playing) return;
-
-    this.state.ttsList.map((tts) => {
-      // Still not playing for some reason
-      // Time sometimes still skips, like from 0.2 then suddenly 0.5
-      const ttsRoundedStartTime = roundToOneDecimal(tts.startTime);
-
-      if (Math.abs(ttsRoundedStartTime - roundedPlayedSeconds) < 0.01) {
-        const base64string = tts.content;
-        playTTS(base64string);
-      }
-    });
   };
 
   findByStartTime = (roundedStartTime) => {};
@@ -153,6 +183,11 @@ class App extends Component {
   };
 
   handlePauseButton = () => {
+    if (this.state.playing) {
+      Tone.Transport.pause();
+    } else {
+      Tone.Transport.start();
+    }
     this.setState({ playing: !this.state.playing });
   };
 
@@ -180,7 +215,7 @@ class App extends Component {
     // Also need to update URL and other stuff
     this.handleUrlChange(project.videoURL);
     this.handleAudioURLChange(project.originalAudioURL);
-    this.fetchTTS();
+    this.fetchTTS(true);
     this.fetchTracks();
 
     // Clear track deletion flags
@@ -195,16 +230,18 @@ class App extends Component {
     }
   };
 
-  fetchTTS = () => {
+  fetchTTS = async (isFirst) => {
     // Might need to deal with track later
     // Currently get all TTS in backend into the project
-    axios.get(`http://localhost:3001/audio-clips`).then((res) => {
-      const ttsList = res.data;
-      // We keep the whole tts object in list
-      // This could be optimized with mapping
-      // For example, we wanna search tts content by time, so we map startTime -> content
-      this.setState({ ttsList: ttsList });
-    });
+    const response = await axios.get(`http://localhost:3001/audio-clips`);
+    const ttsList = response.data;
+    if (isFirst) {
+      this.loadTransportTTS(ttsList);
+    }
+    // We keep the whole tts object in list
+    // This could be optimized with mapping
+    // For example, we wanna search tts content by time, so we map startTime -> content
+    this.setState({ ttsList: ttsList });
   };
 
   handleSaveProject = () => {
@@ -464,9 +501,12 @@ class App extends Component {
               text={text}
               selectedWaveId={this.state.selectedWaveId}
               onChange={this.onChange.bind(this)}
+              ttsStartTime={this.state.ttsStartTime}
+              ttsDuration={this.state.ttsDuration}
+              ttsSource={this.state.ttsSource}
               playedSeconds={this.state.playedSeconds}
               selectedTrackId={this.state.selectedTrackId}
-              onTTSGenerated={this.fetchTTS}
+              onTTSGenerated={this.createOrUpdateTransportTTS}
               onCreateTTS={(e) => this.handleTTS(e)}
             />
           </div>

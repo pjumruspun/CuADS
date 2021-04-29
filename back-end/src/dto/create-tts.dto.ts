@@ -22,6 +22,20 @@ export class CreateTTSDto {
     startTime: number;
 
     @ApiProperty({
+        description: 'Speed of the TTS.',
+        required: true,
+        default: 1
+    })
+    speed: number;
+
+    @ApiProperty({
+        description: 'Volume of the TTS.',
+        required: true,
+        default: 50
+    })
+    volume: number;
+
+    @ApiProperty({
         description: 'Track ID of this TTS.',
         required: true,
     })

@@ -49,4 +49,10 @@ export class CreateAudioClipDto {
         description: 'TTS audio file URL',
     })
     audioFileURL: string;
+
+    @ApiProperty({
+        description: 'Platform of TTS generation. Either `chula` or `google`.',
+        required: true,
+    })
+    source: string;
 }

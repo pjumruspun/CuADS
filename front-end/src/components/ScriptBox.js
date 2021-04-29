@@ -19,8 +19,8 @@ class ScriptBox extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      volumn: 100,
-      speed: "1",
+      volume: 50,
+      speed: 1.0,
       pitch: "1.0",
       text: "",
       starttime: "",
@@ -29,6 +29,11 @@ class ScriptBox extends Component {
   }
 
   rmVolume = () => {
+    if (this.state.volume != 0 && this.props.selectedWaveId === -1) {
+      this.setState(prevState => ({
+        volume: prevState.volume - 5
+      }));
+    }
     if (this.props.trackvolume != 0) {
       const fieldName = "trackvolume";
       const fieldValue = this.props.trackvolume - 5;
@@ -37,6 +42,11 @@ class ScriptBox extends Component {
   };
 
   addVolume = () => {
+    if (this.state.volume != 100 && this.props.selectedWaveId === -1) {
+      this.setState(prevState => ({
+        volume: prevState.volume + 5
+      }));
+    }
     if (this.props.trackvolume != 100) {
       const fieldName = "trackvolume";
       const fieldValue = this.props.trackvolume + 5;
@@ -45,7 +55,12 @@ class ScriptBox extends Component {
   };
 
   rmSpeed = () => {
-    if (this.props.speed != 0.25) {
+    if (this.state.speed != 0.25 && this.props.selectedWaveId === -1) {
+      this.setState(prevState => ({
+        speed: prevState.speed - 0.25
+      }));
+    }
+    else if (this.props.speed != 0.25) {
       const fieldName = "speed";
       const fieldValue = this.props.speed - 0.25;
       this.props.onChange(fieldName, fieldValue);
@@ -53,7 +68,12 @@ class ScriptBox extends Component {
   };
 
   addSpeed = () => {
-    if (this.props.speed != 2.0) {
+    if (this.state.speed != 2.0 && this.props.selectedWaveId === -1) {
+      this.setState(prevState => ({
+        speed: prevState.speed + 0.25
+      }));
+    }
+    else if (this.props.speed != 2.0) {
       const fieldName = "speed";
       const fieldValue = this.props.speed + 0.25;
       this.props.onChange(fieldName, fieldValue);
@@ -69,35 +89,45 @@ class ScriptBox extends Component {
 
   handleSource = (e) => {
     this.setState({ source: e });
+    const fieldName = "ttsSource";
+    const fieldValue = e;
+    this.props.onChange(fieldName, fieldValue);
   };
 
   generateTTS = () => {
-    const text = this.state.text;
-    const source = this.state.source;
-    const playedSeconds = this.props.playedSeconds; // value from App.js
     const tts_id = this.props.selectedWaveId;
-    const trackId = this.props.selectedTrackId; // value from App.js
+    const trackId = this.props.selectedTrackId;
+    var ttsFormData = {}; 
 
     if (trackId == undefined) {
       alert("Please select a track to add TTS first.");
       return;
     }
 
-    var ttsFormData = {
-      text: text,
-      source: source,
-      trackId: trackId,
-    };
-
     if (tts_id === -1) {
-      ttsFormData.startTime = playedSeconds;      
+      const text = this.state.text;
+      const source = this.state.source;
+      const speed = this.state.speed;
+      const playedSeconds = this.props.playedSeconds;
+      const volume = this.state.volume;
+  
+      ttsFormData = {
+        text: text,
+        source: source,
+        trackId: trackId,
+        speed: speed,
+        volume: volume,
+        startTime: playedSeconds,
+      };
+          
       axios
         .post(`http://localhost:3001/tts`, ttsFormData, {
           headers: { "Content-Type": "application/json" },
         })
         .then((response) => {
-          const tts_audio = response.data.audio;
-          this.props.onTTSGenerated();
+          this.props.onTTSGenerated("create", response.data, -1);
+          console.log(response);
+          this.setState({ text: "" });
           console.log(
             `Generated TTS with sentence '${text}' at ${playedSeconds} seconds`
           );
@@ -107,12 +137,25 @@ class ScriptBox extends Component {
           alert(`ERROR.\nFailed to generate TTS from ${source}`);
         });
     } else {
+      const text = this.props.text;
+      const source = this.props.ttsSource;
+      const speed = this.props.speed;
+      const volume = this.props.trackvolume;
+  
+      ttsFormData = {
+        text: text,
+        source: source,
+        trackId: trackId,
+        speed: speed,
+        volume: volume,
+      };
+  
       axios
         .patch(`http://localhost:3001/tts/${tts_id}/`, ttsFormData, {
           headers: { "Content-Type": "application/json" },
         })
         .then((response) => {
-          this.props.onTTSGenerated();
+          this.props.onTTSGenerated("update", {}, tts_id);
           console.log(
             `Updated TTS with sentence ${text} with source ${source}`
           );
@@ -139,7 +182,7 @@ class ScriptBox extends Component {
               multiline
               rows={3}
               inputProps={{ "aria-label": "naked" }}
-              value={this.props.text}
+              value={this.props.selectedWaveId === -1 ? this.state.text : this.props.text}
               onChange={(event) => this.handleText(event.target.value)}
               style={{
                 backgroundColor: "#F2F2F2",
@@ -168,7 +211,7 @@ class ScriptBox extends Component {
                 marginRight: "10px",
                 marginBottom: "10px",
               }}
-              value={this.props.playedSeconds}
+              value={this.props.selectedWaveId === -1 ? this.props.playedSeconds : this.props.ttsStartTime.toFixed(6)}
             />
             <div style={{ marginRight: "10px", marginBottom: "12px" }}>To:</div>
             <InputBase
@@ -180,6 +223,7 @@ class ScriptBox extends Component {
                 marginRight: "10px",
                 marginBottom: "10px",
               }}
+              value={this.props.selectedWaveId === -1 ? "" : (this.props.ttsStartTime + this.props.ttsDuration).toFixed(6)}
             />
           </Grid>
           <div style={{ marginBottom: "8px", direction: "row" }}>
@@ -214,7 +258,7 @@ class ScriptBox extends Component {
                 <input
                   type="text"
                   placeholder="Volume"
-                  value={this.props.trackvolume + "%"}
+                  value={this.props.selectedWaveId === -1 ? `${this.state.volume}%` : `${this.props.trackvolume}%`}
                   class="input-box"
                   style={{ backgroundColor: "#F2F2F2", width: "3vw" }}
                 />
@@ -233,7 +277,7 @@ class ScriptBox extends Component {
                 <input
                   type="text"
                   placeholder="Speed"
-                  value={"x" + this.props.speed}
+                  value={this.props.selectedWaveId === -1 ? `x${this.state.speed}` : `x${this.props.speed}`}
                   class="input-box"
                   style={{ backgroundColor: "#F2F2F2", width: "3vw" }}
                 />
@@ -247,7 +291,7 @@ class ScriptBox extends Component {
                 style={{ marginBottom: "13px", alignItems: "center" }}
               >
                 <Select
-                  value={this.state.source}
+                  value={this.props.selectedWaveId === -1 ? this.state.source : this.props.ttsSource}
                   onChange={(event) => this.handleSource(event.target.value)}
                   style={{
                     color: "#00",
@@ -268,7 +312,7 @@ class ScriptBox extends Component {
             style={{ alignSelf: "flex-end", textTransform: "initial", borderRadius: 0, fontSize: "medium"}}
             onClick={this.generateTTS}
           >
-            <b>Generate TTS</b>
+            <b>{this.props.selectedWaveId === -1 ? "Generate TTS" : "Update TTS"}</b>
           </Button>
         </Grid>
       </div>

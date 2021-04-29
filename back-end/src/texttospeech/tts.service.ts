@@ -70,6 +70,8 @@ export class TTSService {
         const source = createTTSDto.source;
         const text = createTTSDto.text;
         const startTime = createTTSDto.startTime;
+        const speed = createTTSDto.speed;
+        const volume = createTTSDto.volume;
 
         const [result, statusCode] = await generateAudio(source, text);
 
@@ -83,24 +85,32 @@ export class TTSService {
             content: sound,
             startTime: startTime,
             text: text,
+            speed: speed,
+            volume: volume,
+            source: source,
         });
         responseAudio.save((err) => {
             if (err) return res.status(400).json({'msg': err})
-            return res.status(200).json({'msg': 'success', 'audio': 'data:audio/mpeg;base64,'+sound});
+            return res.status(200).json({'msg': 'success', 'content': 'data:audio/mpeg;base64,'+sound, 'startTime': startTime, 'speed': speed, 'volume': volume});
         });
     }
 
     async update(id: string, UpdateTTSDto: UpdateTTSDto) {
         var updatePayload = new UpdateAudioClipDto();
         
-        if ('text' in UpdateTTSDto && 'source' in UpdateTTSDto) {
+        if ('text' in UpdateTTSDto && 'source' in UpdateTTSDto && 'speed' in UpdateTTSDto && 'volume' in UpdateTTSDto) {
             const text = UpdateTTSDto.text;
             const source = UpdateTTSDto.source;
+            const speed = UpdateTTSDto.speed;
+            const volume = UpdateTTSDto.volume;
 
             const [result, statusCode] = await generateAudio(source, text);
             if (statusCode === 200) {
                 updatePayload.content = result;
                 updatePayload.text = text;
+                updatePayload.speed = speed;
+                updatePayload.volume = volume;
+                updatePayload.source = source;
             }
         }
 

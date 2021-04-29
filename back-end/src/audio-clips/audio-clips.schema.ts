@@ -9,4 +9,5 @@ export const AudioClipSchema = new Schema({
     speed: Number,
     pitch: Number,
     audioFileURL: String,
+    source: String,
 });

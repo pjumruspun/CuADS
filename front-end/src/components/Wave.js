@@ -56,18 +56,18 @@ export default function Waveform(props) {
     return () => wavesurfer.current.destroy();
   }, [props.url]);
 
-  useEffect(() => {
-    if (selected) {
-      wavesurfer.current.setVolume(props.trackvolume / 100);
-      setVolume(props.trackvolume);
-    }
-  }, [props.trackvolume]);
-  useEffect(() => {
-    if (selected) {
-      wavesurfer.current.setPlaybackRate(props.speed);
-      setSpeed(props.speed);
-    }
-  }, [props.speed]);
+  // useEffect(() => {
+  //   if (selected) {
+  //     wavesurfer.current.setVolume(props.trackvolume / 100);
+  //     setVolume(props.trackvolume);
+  //   }
+  // }, [props.trackvolume]);
+  // useEffect(() => {
+  //   if (selected) {
+  //     wavesurfer.current.setPlaybackRate(props.speed);
+  //     setSpeed(props.speed);
+  //   }
+  // }, [props.speed]);
 
   useEffect(() => {
     const waveSurfer = wavesurfer.current;
