@@ -67,7 +67,7 @@ class App extends Component {
     ttsList: [],
     tracks: [],
     tracksToDelete: [],
-    selectedttsList:[],
+    selectedttsList: [],
     id: 0,
     selectedWaveId: -1,
     localTrackId: 0,
@@ -167,14 +167,16 @@ class App extends Component {
     this.setState({ volume: parseFloat(e) });
   };
 
-  handleSelected = (e, f, g) => { 
+  handleSelected = (e, f, g) => {
     this.setState({ trackvolume: e, speed: f, text: g });
   };
 
   handleProjectChange = (project) => {
     console.log(`change project id to: ${project._id}`);
     var topTextToSet =
-      project._id === "" ? topTextEmptyProject : `Project Name: ${project.name}`;
+      project._id === ""
+        ? topTextEmptyProject
+        : `Project Name: ${project.name}`;
     this.setState({
       projectId: project._id,
       topText: topTextToSet,
@@ -186,7 +188,11 @@ class App extends Component {
     this.fetchTracks();
 
     // Clear track deletion flags
-    this.setState({ tracksToDelete: [],selectedTrackId: undefined,selectedWaveId: -1 });
+    this.setState({
+      tracksToDelete: [],
+      selectedTrackId: undefined,
+      selectedWaveId: -1,
+    });
   };
 
   handleTrackSelection = (trackId) => {
@@ -201,15 +207,15 @@ class App extends Component {
     // Might need to deal with track later
     // Currently get all TTS in backend into the project
     axios.get(`http://localhost:3001/audio-clips`).then((res) => {
-    const ttsList = res.data;
+      const ttsList = res.data;
       // We keep the whole tts object in list
       // This could be optimized with mapping
       // For example, we wanna search tts content by time, so we map startTime -> content
       this.setState({ ttsList: ttsList });
-      });
+    });
   };
-  handleselectedTTS = (e) =>{
-     this.setState({ selectedttsList: e });
+  handleselectedTTS = (e) => {
+    this.setState({ selectedttsList: e });
   };
   handleSaveProject = () => {
     if (this.state.projectId === "") {
@@ -337,10 +343,10 @@ class App extends Component {
         setTimeout(() => {
           const backendId = track.backendId;
           const name = track.name;
-	  const audioClips = track.audioClips;
+          const audioClips = track.audioClips;
           const trackFormData = {
             name: name,
-	    audioClips:audioClips
+            audioClips: audioClips,
           };
 
           if (backendId === undefined) {
@@ -417,18 +423,17 @@ class App extends Component {
           axios
             .get(`http://localhost:3001/tracks/findbyid/${trackId}`)
             .then((res) => {
-	   
               this.state.tracks.push({
                 backendId: res.data._id,
                 name: res.data.name,
                 localTrackId: this.state.localTrackId,
-		audioClips: res.data.audioClips
+                audioClips: res.data.audioClips,
               });
               this.setState({ localTrackId: this.state.localTrackId + 1 });
             });
         });
-	this.setState({selectedTrackId: undefined,selectedWaveId: -1 });
-	this.fetchTTS();
+        this.setState({ selectedTrackId: undefined, selectedWaveId: -1 });
+        this.fetchTTS();
         // return console.log(this.state.tracks);
       });
   };
@@ -458,7 +463,7 @@ class App extends Component {
       audioURL,
       id,
       ttsList,
-      selectedttsList
+      selectedttsList,
     } = this.state;
 
     return (
@@ -471,9 +476,16 @@ class App extends Component {
           onImport={(videoId, videoFile) =>
             this.handleImportProject(videoId, videoFile)
           }
+          projectId={this.state.projectId}
         />
         <header>
-          {topText === topTextEmptyProject ? <p>{topText}</p> : <b><p>{topText}</p></b>}
+          {topText === topTextEmptyProject ? (
+            <p>{topText}</p>
+          ) : (
+            <b>
+              <p>{topText}</p>
+            </b>
+          )}
         </header>
         <Grid
           container
@@ -481,9 +493,9 @@ class App extends Component {
           alignItems="flex"
           justify="space-around"
           xs={12}
-          style={{padding:"20px", display:"flex"}}
+          style={{ padding: "20px", display: "flex" }}
         >
-          <div style={{width: '48%', margin: '10px'}}>
+          <div style={{ width: "48%", margin: "10px" }}>
             <ScriptBox
               trackvolume={trackvolume}
               speed={speed}
@@ -495,7 +507,10 @@ class App extends Component {
               onTTSGenerated={this.fetchTracks}
             />
           </div>
-          <div className="Video-block" style={{backgroundColor: 'black', width: '48%', margin: '10px'}}>
+          <div
+            className="Video-block"
+            style={{ backgroundColor: "black", width: "48%", margin: "10px" }}
+          >
             <ReactPlayer
               ref={this.ref}
               className="react-player"
@@ -521,32 +536,38 @@ class App extends Component {
               onMouseUp={this.handleSeekMouseUp}
             />
             <table className="Table-center">
-              <center><tbody className="Table-body">
-                <tr>
-                  <th>Duration</th>
-                  <td>
-                    <Duration seconds={duration} />
-                  </td>
-                  <th>Elapsed</th>
-                  <td>
-                    <Duration seconds={duration * played} />
-                  </td>
-                </tr>
-              </tbody></center>
+              <center>
+                <tbody className="Table-body">
+                  <tr>
+                    <th>Duration</th>
+                    <td>
+                      <Duration seconds={duration} />
+                    </td>
+                    <th>Elapsed</th>
+                    <td>
+                      <Duration seconds={duration * played} />
+                    </td>
+                  </tr>
+                </tbody>
+              </center>
             </table>
 
             <table className="Table-center">
-              <center><tbody className="Table-body">
-                <tr>
-                  <IconButton onClick={this.handlePauseButton} style={{color: 'white'}}>
-                    {playing ? <PauseIcon /> : <PlayArrowIcon />}
-                  </IconButton>
-                </tr>
-              </tbody></center>
+              <center>
+                <tbody className="Table-body">
+                  <tr>
+                    <IconButton
+                      onClick={this.handlePauseButton}
+                      style={{ color: "white" }}
+                    >
+                      {playing ? <PauseIcon /> : <PlayArrowIcon />}
+                    </IconButton>
+                  </tr>
+                </tbody>
+              </center>
             </table>
           </div>
         </Grid>
-
 
         <TrackSection
           url={audioURL}
@@ -556,7 +577,7 @@ class App extends Component {
           text={text}
           playing={playing}
           played={duration * played}
-          onSelected={(e,f,g)=>this.handleSelected(e,f,g)}
+          onSelected={(e, f, g) => this.handleSelected(e, f, g)}
           handleTTSDelete={this.handleTTSDelete}
           tts={ttsList}
           setText={this.handleScriptTextChange}
@@ -568,11 +589,14 @@ class App extends Component {
           onAddTrack={this.handleAddTrack}
           onNameChange={this.handleTrackNameChange}
           onDeleteTrack={this.handleDeleteTrack}
-	  selectedTrackId={this.state.selectedTrackId}
+          selectedTrackId={this.state.selectedTrackId}
           selectedWaveId={this.state.selectedWaveId}
-	  setTTS={(e)=>this.handleselectedTTS(e)}
+          setTTS={(e) => this.handleselectedTTS(e)}
         />
-        <div id="zoom" style={{textAlign: "right", padding: "10px 40px 10px 0px"}}>
+        <div
+          id="zoom"
+          style={{ textAlign: "right", padding: "10px 40px 10px 0px" }}
+        >
           zoom &nbsp;
           <input
             type="range"
