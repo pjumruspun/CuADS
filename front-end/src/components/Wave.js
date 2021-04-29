@@ -29,10 +29,14 @@ export default function Waveform(props) {
   const [text, setText] = useState(props.text);
   const [border, setBorder] = useState('1px solid grey');
   const [selected, setSelected] = useState(false);
-  const { id, handleTTSDelete } = props;
+  const { id, handleTTSDelete, duration, url  } = props;
   //const [zoom, setZoom] = useState(50);
   // create new WaveSurfer instance
   // On component mount and when url changes
+
+  const { startTime } = url;
+  const styles = genStyle(duration, startTime);
+
   useEffect(() => {
     //setPlay(false);
 
@@ -63,6 +67,7 @@ export default function Waveform(props) {
       setVolume(props.trackvolume);
     }
   }, [props.trackvolume]);
+
   useEffect(() => {
     if (selected) {
       wavesurfer.current.setPlaybackRate(props.speed);
@@ -141,15 +146,19 @@ export default function Waveform(props) {
   );
 }
 
-const styles = {
-  waveContainer: {
-    position: 'relative',
-  },
-  deleteButton: {
-    position: 'absolute',
-    top: '2px',
-    right: '0px',
-    cursor: 'pointer',
-    zIndex: '5',
-  },
+const genStyle = (duration, startTime) => {
+  const percentage = (startTime * 100) / duration;
+  return {
+    waveContainer: {
+      position: 'relative',
+      left: `${percentage}%`,
+    },
+    deleteButton: {
+      position: 'absolute',
+      top: '0',
+      right: '0',
+      cursor: 'pointer',
+      zIndex: '5',
+    },
+  };
 };
