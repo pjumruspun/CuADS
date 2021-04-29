@@ -21,7 +21,9 @@ class TrackItem extends Component {
       ttsList:[]
     };
     this.handleTTSDelete = props.handleTTSDelete;
-    this.handlefetchTTS(this.props.ttsList)
+    if(props.ttsList != undefined){
+    this.handlefetchTTS(props.ttsList)
+    }
   };
 
   handlefetchTTS =(e) => {

@@ -559,12 +559,12 @@ class App extends Component {
           played={duration * played}
           onSelected={(e,f,g)=>this.handleSelected(e,f,g)}
           handleTTSDelete={this.handleTTSDelete}
-          tts={ttsList}
+          tts={this.state.ttsList}
           setText={this.handleScriptTextChange}
           projectId={this.state.projectId}
           fetchTracks={this.fetchTracks}
           tracks={this.state.tracks}
-          onSelectTrack={this.handleTrackSelection}
+          onSelectTrack={(e)=>this.handleTrackSelection(e)}
           localTrackId={this.state.localTrackId}
           onAddTrack={this.handleAddTrack}
           onNameChange={this.handleTrackNameChange}
