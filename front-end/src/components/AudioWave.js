@@ -57,15 +57,14 @@ export default function AudioWave(props) {
   useEffect(() => {
     const waveSurfer = wavesurfer.current;
     if (waveSurfer) waveSurfer.zoom(props.zoom);
-  }, [props.zoom]);
-
-  useEffect(() => {
-    const waveSurfer = wavesurfer.current;
-    if (waveSurfer) waveSurfer.zoom(props.zoom);
     if (id) {
       onZoomFinish();
     }
   }, [props.zoom]);
+
+  useEffect(() => {
+    wavesurfer.current.playPause();
+  }, [props.playing]);
 
   useEffect(() => {
     const waveSurfer = wavesurfer.current;
