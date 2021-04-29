@@ -149,6 +149,7 @@ const genStyles = (fullLength) => {
       display: 'flex',
       width: fullLength ? fullLength : '200%',
       height: '80px',
+      position: 'relative'
     },
   };
 };
