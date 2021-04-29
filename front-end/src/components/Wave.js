@@ -150,7 +150,7 @@ const genStyle = (duration, startTime) => {
   const percentage = (startTime * 100) / duration;
   return {
     waveContainer: {
-      position: 'relative',
+      position: 'absolute',
       left: `${percentage}%`,
     },
     deleteButton: {
