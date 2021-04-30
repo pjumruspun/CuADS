@@ -70,6 +70,8 @@ export class TTSService {
         const source = createTTSDto.source;
         const text = createTTSDto.text;
         const startTime = createTTSDto.startTime;
+        const speed = createTTSDto.speed;
+        const volume = createTTSDto.volume;
         const trackId = createTTSDto.trackId;
 
         const [result, statusCode] = await generateAudio(source, text);
@@ -78,28 +80,19 @@ export class TTSService {
             return res.status(statusCode).json({'msg': result});
         }
 
-        // const sound = result;
-        // const Model =  mongoose.model("AudioClip", AudioClipSchema, "audioclips");
-        // const responseAudio = new Model({
-        //     content: sound,
-        //     startTime: startTime,
-        //     text: text,
-        // });
-        // responseAudio.save((err) => {
-        //     if (err) return res.status(400).json({'msg': err})
-        //     return res.status(200).json({'msg': 'success', 'audio': 'data:audio/mpeg;base64,'+sound});
-        // });
-
         const formData = {
             content: result,
             startTime: startTime,
             text: text,
-        }
+            speed: speed,
+            volume: volume,
+            source: source,
+        });
 
         try {
             axios.post(`http://localhost:3001/audio-clips/${trackId}`, formData).then((response) => {
                 console.log("success");
-		return res.status(201).json({'msg': 'success', 'audio': 'data:audio/mpeg;base64,'+result});
+		            return res.status(201).json({'msg': 'success', 'content': 'data:audio/mpeg;base64,'+result, 'startTime': startTime, 'speed': speed, 'volume': volume});
             })
         } catch(e) {
             return res.status(500).json({ 'msg': e.message });
@@ -109,14 +102,19 @@ export class TTSService {
     async update(id: string, UpdateTTSDto: UpdateTTSDto) {
         var updatePayload = new UpdateAudioClipDto();
         
-        if ('text' in UpdateTTSDto && 'source' in UpdateTTSDto) {
+        if ('text' in UpdateTTSDto && 'source' in UpdateTTSDto && 'speed' in UpdateTTSDto && 'volume' in UpdateTTSDto) {
             const text = UpdateTTSDto.text;
             const source = UpdateTTSDto.source;
+            const speed = UpdateTTSDto.speed;
+            const volume = UpdateTTSDto.volume;
 
             const [result, statusCode] = await generateAudio(source, text);
             if (statusCode === 200) {
                 updatePayload.content = result;
                 updatePayload.text = text;
+                updatePayload.speed = speed;
+                updatePayload.volume = volume;
+                updatePayload.source = source;
             }
         }
 
