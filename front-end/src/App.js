@@ -65,13 +65,20 @@ class App extends Component {
     ttsTransportMap: {}
   };
 
-  loadTransportTTS = (ttsList = this.state.selectedttsList) => {
+  loadTransportTTS = (ttsList = this.state.ttsList) => {
     ttsList.forEach((ttsItem) => {
       if (!(ttsItem._id in this.state.ttsTransportMap)) {
         const player = new Tone.Player("data:audio/wav;base64," + ttsItem.content);
         player.playbackRate = normalizeSpeed(ttsItem.speed);
-        player.volume.value = normalizeVolume(ttsItem.volume);
-        player.toDestination();
+	if((this.state.selectedttsList!= undefined)&&(this.state.selectedttsList.includes(ttsItem._id))){
+        //alert(ttsItem.text+" play");
+	player.volume.value = normalizeVolume(ttsItem.volume);
+        }else{
+	//alert(ttsItem.text+" silence");
+	player.volume.value = -Infinity;
+	player.volume.mute = true;
+	}
+	player.toDestination();
         player.sync().start(ttsItem.startTime);
         this.setState(prevState => ({
           ttsTransportMap: {
@@ -79,12 +86,13 @@ class App extends Component {
             [ttsItem._id]: player
           }
         }));
+      }else{
+	this.createOrUpdateTransportTTS("update",ttsItem,ttsItem._id);
       }
     });
   }
 
   createOrUpdateTransportTTS = async (mode, ttsItem, tts_id) => {
-    this.fetchTracks();
     await this.fetchTTS(false);
     switch(mode) {
       case "create":
@@ -95,7 +103,15 @@ class App extends Component {
         const response = await axios.get(`http://localhost:3001/audio-clips/findbyid/${tts_id}/`)
         const newPlayer = new Tone.Player("data:audio/wav;base64," + response.data.content);
         newPlayer.playbackRate = normalizeSpeed(response.data.speed);
+        //alert(this.state.selectedttsList);
+        if((this.state.selectedttsList!= undefined)&&(this.state.selectedttsList.includes(ttsItem._id))){
+	//alert(ttsItem.text+" play");
         newPlayer.volume.value = normalizeVolume(response.data.volume);
+        }else{
+	//alert(ttsItem.text+" silence");
+	newPlayer.volume.value = -Infinity;
+	newPlayer.volume.mute = true;
+	}
         newPlayer.toDestination();
         newPlayer.sync().start(response.data.startTime);
         this.setState(prevState => ({
@@ -109,7 +125,10 @@ class App extends Component {
         break;
     }
   }
-
+  handleTTSGenerated =(e)=> {
+	this.fetchTracks();
+	this.createOrUpdateTransportTTS(e);
+  }
   getTTSDuration = (id) => {
     const thisPlayer = (this.state.ttsTransportMap)[id]
     return thisPlayer.buffer.duration / thisPlayer.playbackRate;
@@ -231,12 +250,21 @@ class App extends Component {
     });
   };
 
-  handleTrackSelection = (trackId) => {
+  handleTrackSelection = async(trackId) => {
     if (trackId !== 99) {
-      this.setState({ selectedTrackId: trackId });
+      await this.setState({ selectedTrackId: trackId });
     } else {
-      this.setState({ selectedTrackId: undefined });
+      await this.setState({ selectedTrackId: undefined });
     }
+  };
+
+  handleselectedTTS = async(e) =>{
+    if(e == undefined){
+    await this.setState({ selectedttsList: [] });
+    }
+    await this.setState({ selectedttsList: e });
+    console.log("currently selecting "+this.state.selectedttsList);
+    this.loadTransportTTS();
   };
 
   fetchTTS = async (isFirst) => {
@@ -251,9 +279,6 @@ class App extends Component {
     // This could be optimized with mapping
     // For example, we wanna search tts content by time, so we map startTime -> content
     this.setState({ ttsList: ttsList });
-  };
-  handleselectedTTS = (e) => {
-    this.setState({ selectedttsList: e });
   };
   handleSaveProject = () => {
     if (this.state.projectId === "") {
@@ -483,7 +508,7 @@ class App extends Component {
   onChange(field, value) {
     // parent class change handler is always called with field name and value
     this.setState({ [field]: value });
-  }
+  };
 
   render() {
     const {
@@ -545,7 +570,7 @@ class App extends Component {
               ttsSource={this.state.ttsSource}
               playedSeconds={this.state.playedSeconds}
               selectedTrackId={this.state.selectedTrackId}
-              onTTSGenerated={this.createOrUpdateTransportTTS}
+              onTTSGenerated={this.handleTTSGenerated}
               onCreateTTS={(e) => this.handleTTS(e)}
             />
           </div>

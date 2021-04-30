@@ -58,8 +58,8 @@ class TrackSection extends Component {
     this.props.setText(e);
   };
   handleTrackSelecting = (e) => {
-    this.props.onSelectTrack(e.backendId);
-    this.props.setTTS(e.ttsList);
+	this.props.onSelectTrack(e.backendId);
+	this.props.setTTS(e.ttsList);
   };
   render() {
     return (

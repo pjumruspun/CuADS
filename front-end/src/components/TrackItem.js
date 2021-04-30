@@ -18,7 +18,8 @@ class TrackItem extends Component {
       border: "thin solid #4F4F4F",
       trackselected: false,
       ttsid: 0,
-      ttsList:[]
+      ttsList:[],
+      ttsidList:[]
     };
     this.handleTTSDelete = props.handleTTSDelete;
     if(props.ttsList != undefined){
@@ -28,10 +29,11 @@ class TrackItem extends Component {
 
   handlefetchTTS =(e) => {
 	  e.map((id) => {
-		  axios.get(`http://localhost:3001/audio-clips/findbyid/${id}`).then((res) => {
-     			const tts = res.data;
+		axios.get(`http://localhost:3001/audio-clips/findbyid/${id}`).then((res) => {
+     		const tts = res.data;
       		this.setState((prevState) => ({ttsList: [...prevState.ttsList, tts]}));
-		});
+		this.setState((prevState) => ({ttsidList: [...prevState.ttsidList, id]}));
+	});
 	});
   };
   handleTrackSelected = () => {
@@ -43,12 +45,12 @@ class TrackItem extends Component {
       this.props.onTrackSelecting({
         localTrackId: this.state.localTrackId,
         backendId: this.state.backendId,
-	ttsList: this.state.ttsList
+	ttsList: this.state.ttsidList
       });
     }
     if (this.state.trackselected) {
       this.setState({ border: "thin solid #4F4F4F", trackselected: false });
-      this.props.onTrackSelecting({ localTrackId: 99, backendId: 99 ,ttsList:[] });
+      this.props.onTrackSelecting({ localTrackId: 99, backendId: 99 ,ttsidList:[] });
 
     }
   };
