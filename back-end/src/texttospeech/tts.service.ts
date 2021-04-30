@@ -87,7 +87,7 @@ export class TTSService {
             speed: speed,
             volume: volume,
             source: source,
-        });
+        };
 
         try {
             axios.post(`http://localhost:3001/audio-clips/${trackId}`, formData).then((response) => {

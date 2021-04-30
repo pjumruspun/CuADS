@@ -99,7 +99,7 @@ class ScriptBox extends Component {
     const trackId = this.props.selectedTrackId;
     var ttsFormData = {}; 
 
-    if (trackId == undefined) {
+    if (trackId === undefined) {
       alert("Please select a track to add TTS first.");
       return;
     }
