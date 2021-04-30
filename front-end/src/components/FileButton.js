@@ -6,6 +6,7 @@ import MyModal from "./MyModal.js";
 import axios from "axios";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import NameModal from "./NameModal.js";
+import TrackModal from "./TrackModal.js";
 import fs from "fs";
 
 export default function SimpleMenu(props) {
@@ -41,6 +42,7 @@ export default function SimpleMenu(props) {
 
   const handleSave = () => {
     console.log("trying to save...");
+    // console.log(this.props.projectId);
     props.onSaveProject();
     setAnchorEl(null);
   };
@@ -87,11 +89,16 @@ export default function SimpleMenu(props) {
     setAnchorEl(null);
   };
 
+  const handleExport = () => {
+    window.open(`http://localhost:3001/audio-clips/export/mp3`);
+    setAnchorEl(null);
+  };
+
   var ButtonStyle = {
     color: "white",
     textTransform: "initial",
     fontSize: "medium",
-    padding: "0 10px 0 10px"
+    padding: "0 10px 0 10px",
   };
 
   return (
@@ -106,7 +113,7 @@ export default function SimpleMenu(props) {
       </Button>
       <Menu
         id="simple-menu1"
-        style={{top: '24px'}}
+        style={{ top: "24px" }}
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
@@ -134,7 +141,7 @@ export default function SimpleMenu(props) {
             <i className="fa fa-cloud-upload" /> Import...{" "}
           </label>
         </MenuItem>
-        <MenuItem onClick={handleClose}>Export...</MenuItem>
+        <TrackModal projectId={props.projectId}></TrackModal>
       </Menu>
     </div>
   );

@@ -57,6 +57,7 @@ class App extends Component {
     ttsList: [],
     tracks: [],
     tracksToDelete: [],
+    selectedttsList: [],
     id: 0,
     selectedWaveId: -1,
     localTrackId: 0,
@@ -64,7 +65,7 @@ class App extends Component {
     ttsTransportMap: {}
   };
 
-  loadTransportTTS = (ttsList = this.state.ttsList) => {
+  loadTransportTTS = (ttsList = this.state.selectedttsList) => {
     ttsList.forEach((ttsItem) => {
       if (!(ttsItem._id in this.state.ttsTransportMap)) {
         const player = new Tone.Player("data:audio/wav;base64," + ttsItem.content);
@@ -83,6 +84,7 @@ class App extends Component {
   }
 
   createOrUpdateTransportTTS = async (mode, ttsItem, tts_id) => {
+    this.fetchTracks();
     await this.fetchTTS(false);
     switch(mode) {
       case "create":
@@ -121,6 +123,7 @@ class App extends Component {
     delete newTTSTransportMap[id];
     this.setState({ ttsTransportMap: newTTSTransportMap });
     this.setState({ ttsList: filteredTTSList });
+    this.fetchTracks();
   };
 
   handleScriptTextChange = (tts_id) => {
@@ -128,9 +131,9 @@ class App extends Component {
     if (tts_id === -1) {
       this.setState({ text: '', speed: 1, trackvolume: 50 });
     } else {
-      const currentTTS = this.state.ttsList.find(tts => {
+      const currentTTS = this.state.ttsList.find((tts) => {
         return tts._id === tts_id;
-      })
+      });
       if (currentTTS) {
         const duration = this.getTTSDuration(tts_id);
         this.setState({ text: currentTTS.text, ttsStartTime: currentTTS.startTime, ttsDuration: duration, speed: currentTTS.speed, trackvolume: currentTTS.volume, ttsSource: currentTTS.source });
@@ -207,7 +210,9 @@ class App extends Component {
   handleProjectChange = (project) => {
     console.log(`change project id to: ${project._id}`);
     var topTextToSet =
-      project._id === "" ? topTextEmptyProject : `Project Name: ${project.name}`;
+      project._id === ""
+        ? topTextEmptyProject
+        : `Project Name: ${project.name}`;
     this.setState({
       projectId: project._id,
       topText: topTextToSet,
@@ -219,7 +224,11 @@ class App extends Component {
     this.fetchTracks();
 
     // Clear track deletion flags
-    this.setState({ tracksToDelete: [] });
+    this.setState({
+      tracksToDelete: [],
+      selectedTrackId: undefined,
+      selectedWaveId: -1,
+    });
   };
 
   handleTrackSelection = (trackId) => {
@@ -243,7 +252,9 @@ class App extends Component {
     // For example, we wanna search tts content by time, so we map startTime -> content
     this.setState({ ttsList: ttsList });
   };
-
+  handleselectedTTS = (e) => {
+    this.setState({ selectedttsList: e });
+  };
   handleSaveProject = () => {
     if (this.state.projectId === "") {
       alert(
@@ -304,14 +315,27 @@ class App extends Component {
   };
 
   handleAddTrack = () => {
-    console.log("add track");
-    this.setState((prevState) => ({
-      tracks: [
-        ...prevState.tracks,
-        { localTrackId: prevState.localTrackId, name: "" },
-      ],
-      localTrackId: prevState.localTrackId + 1,
-    }));
+    let addTrackPromise = new Promise((resolve) => {
+      this.setState((prevState) => ({
+        tracks: [
+          ...prevState.tracks,
+          {
+            localTrackId: prevState.localTrackId,
+            name: "New Track",
+            backendId: undefined,
+          },
+        ],
+        localTrackId: prevState.localTrackId + 1,
+      }));
+
+      resolve();
+    });
+
+    addTrackPromise.then(() => {
+      this.saveTracks();
+      console.log("Added track");
+      console.log(this.state.tracks);
+    });
   };
 
   handleDeleteTrack = (localTrackId) => {
@@ -330,6 +354,8 @@ class App extends Component {
     this.setState((prevState) => ({
       tracks: prevState.tracks.filter((el) => el.localTrackId !== localTrackId),
     }));
+
+    this.saveTracks();
   };
 
   handleTrackNameChange = (localTrackId, name) => {
@@ -341,6 +367,8 @@ class App extends Component {
         track.name = name;
       }
     });
+
+    this.saveTracks();
   };
 
   saveTracks = () => {
@@ -353,9 +381,10 @@ class App extends Component {
         setTimeout(() => {
           const backendId = track.backendId;
           const name = track.name;
-
+          const audioClips = track.audioClips;
           const trackFormData = {
             name: name,
+            audioClips: audioClips,
           };
 
           if (backendId === undefined) {
@@ -389,7 +418,7 @@ class App extends Component {
               });
           }
           resolve(); // mark as resolved
-        }, 300 * this.state.tracks.length - 300 * i); // total delay of saving in ms
+        }, 20 * this.state.tracks.length - 20 * i); // total delay of saving in ms
       });
     });
 
@@ -404,7 +433,7 @@ class App extends Component {
               console.log(`successfully delete track ${backendId}`);
             });
           resolve(); // mark as resolved
-        }, 300 * this.state.tracksToDelete.length - 300 * i); // total delay of deleting in ms
+        }, 20 * this.state.tracksToDelete.length - 20 * i); // total delay of deleting in ms
       });
     });
 
@@ -436,12 +465,14 @@ class App extends Component {
                 backendId: res.data._id,
                 name: res.data.name,
                 localTrackId: this.state.localTrackId,
+                audioClips: res.data.audioClips,
               });
               this.setState({ localTrackId: this.state.localTrackId + 1 });
             });
         });
-
-        return console.log(this.state.tracks);
+        this.setState({ selectedTrackId: undefined, selectedWaveId: -1 });
+        this.fetchTTS();
+        // return console.log(this.state.tracks);
       });
   };
 
@@ -470,6 +501,7 @@ class App extends Component {
       audioURL,
       id,
       ttsList,
+      selectedttsList,
     } = this.state;
 
     return (
@@ -482,9 +514,16 @@ class App extends Component {
           onImport={(videoId, videoFile) =>
             this.handleImportProject(videoId, videoFile)
           }
+          projectId={this.state.projectId}
         />
         <header>
-          {topText === topTextEmptyProject ? <p>{topText}</p> : <b><p>{topText}</p></b>}
+          {topText === topTextEmptyProject ? (
+            <p>{topText}</p>
+          ) : (
+            <b>
+              <p>{topText}</p>
+            </b>
+          )}
         </header>
         <Grid
           container
@@ -492,9 +531,9 @@ class App extends Component {
           alignItems="flex"
           justify="space-around"
           xs={12}
-          style={{padding:"20px", display:"flex"}}
+          style={{ padding: "20px", display: "flex" }}
         >
-          <div style={{width: '48%', margin: '10px'}}>
+          <div style={{ width: "48%", margin: "10px" }}>
             <ScriptBox
               trackvolume={trackvolume}
               speed={speed}
@@ -510,7 +549,10 @@ class App extends Component {
               onCreateTTS={(e) => this.handleTTS(e)}
             />
           </div>
-          <div className="Video-block" style={{backgroundColor: 'black', width: '48%', margin: '10px'}}>
+          <div
+            className="Video-block"
+            style={{ backgroundColor: "black", width: "48%", margin: "10px" }}
+          >
             <ReactPlayer
               ref={this.ref}
               className="react-player"
@@ -536,32 +578,38 @@ class App extends Component {
               onMouseUp={this.handleSeekMouseUp}
             />
             <table className="Table-center">
-              <center><tbody className="Table-body">
-                <tr>
-                  <th>Duration</th>
-                  <td>
-                    <Duration seconds={duration} />
-                  </td>
-                  <th>Elapsed</th>
-                  <td>
-                    <Duration seconds={duration * played} />
-                  </td>
-                </tr>
-              </tbody></center>
+              <center>
+                <tbody className="Table-body">
+                  <tr>
+                    <th>Duration</th>
+                    <td>
+                      <Duration seconds={duration} />
+                    </td>
+                    <th>Elapsed</th>
+                    <td>
+                      <Duration seconds={duration * played} />
+                    </td>
+                  </tr>
+                </tbody>
+              </center>
             </table>
 
             <table className="Table-center">
-              <center><tbody className="Table-body">
-                <tr>
-                  <IconButton onClick={this.handlePauseButton} style={{color: 'white'}}>
-                    {playing ? <PauseIcon /> : <PlayArrowIcon />}
-                  </IconButton>
-                </tr>
-              </tbody></center>
+              <center>
+                <tbody className="Table-body">
+                  <tr>
+                    <IconButton
+                      onClick={this.handlePauseButton}
+                      style={{ color: "white" }}
+                    >
+                      {playing ? <PauseIcon /> : <PlayArrowIcon />}
+                    </IconButton>
+                  </tr>
+                </tbody>
+              </center>
             </table>
           </div>
         </Grid>
-
 
         <TrackSection
           url={audioURL}
@@ -570,21 +618,28 @@ class App extends Component {
           zoom={zoom}
           text={text}
           playing={playing}
+          duration={duration}
           played={duration * played}
-          onSelected={this.handleSelected}
+          onSelected={(e, f, g) => this.handleSelected(e, f, g)}
           handleTTSDelete={this.handleTTSDelete}
-          tts={ttsList}
+          tts={this.state.ttsList}
           setText={this.handleScriptTextChange}
           projectId={this.state.projectId}
           fetchTracks={this.fetchTracks}
           tracks={this.state.tracks}
-          onSelectTrack={this.handleTrackSelection}
+          onSelectTrack={(e)=>this.handleTrackSelection(e)}
           localTrackId={this.state.localTrackId}
           onAddTrack={this.handleAddTrack}
           onNameChange={this.handleTrackNameChange}
           onDeleteTrack={this.handleDeleteTrack}
+          selectedTrackId={this.state.selectedTrackId}
+          selectedWaveId={this.state.selectedWaveId}
+          setTTS={(e) => this.handleselectedTTS(e)}
         />
-        <div id="zoom" style={{textAlign: "right", padding: "10px 40px 10px 0px"}}>
+        <div
+          id="zoom"
+          style={{ textAlign: "right", padding: "10px 40px 10px 0px" }}
+        >
           zoom &nbsp;
           <input
             type="range"

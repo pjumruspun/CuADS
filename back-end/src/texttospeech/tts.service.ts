@@ -72,6 +72,7 @@ export class TTSService {
         const startTime = createTTSDto.startTime;
         const speed = createTTSDto.speed;
         const volume = createTTSDto.volume;
+        const trackId = createTTSDto.trackId;
 
         const [result, statusCode] = await generateAudio(source, text);
 
@@ -79,20 +80,23 @@ export class TTSService {
             return res.status(statusCode).json({'msg': result});
         }
 
-        const sound = result;
-        const Model =  mongoose.model("AudioClip", AudioClipSchema, "audioclips");
-        const responseAudio = new Model({
-            content: sound,
+        const formData = {
+            content: result,
             startTime: startTime,
             text: text,
             speed: speed,
             volume: volume,
             source: source,
         });
-        responseAudio.save((err) => {
-            if (err) return res.status(400).json({'msg': err})
-            return res.status(200).json({'msg': 'success', 'content': 'data:audio/mpeg;base64,'+sound, 'startTime': startTime, 'speed': speed, 'volume': volume});
-        });
+
+        try {
+            axios.post(`http://localhost:3001/audio-clips/${trackId}`, formData).then((response) => {
+                console.log("success");
+		            return res.status(201).json({'msg': 'success', 'content': 'data:audio/mpeg;base64,'+result, 'startTime': startTime, 'speed': speed, 'volume': volume});
+            })
+        } catch(e) {
+            return res.status(500).json({ 'msg': e.message });
+        }
     }
 
     async update(id: string, UpdateTTSDto: UpdateTTSDto) {
