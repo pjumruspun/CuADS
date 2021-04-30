@@ -50,11 +50,26 @@ export class AudioClipsService {
         return await this.audioClipModel.findByIdAndRemove(audioClipId);
     }
 
-    async exportMp3(projectId: string=undefined, trackId:string = undefined, @Res() response) {
+    async exportMp3(trackId:string, @Res() response) {
         // Add tts filter by trackId here once TTS front and back is connected
         // Right now will try to send from all TTS in the database
-        
-        const audioClips = await this.audioClipModel.find().exec();
-        return this.audioUtilityService.export(audioClips, response);
+        const audioClips = await this.audioClipModel.find().exec()
+        const allAudioClipsIdInTrack = await this.tracksService.findAllAudioClips(trackId);
+        const finalExportClips = []
+        audioClips.forEach(audioClip => {
+            if(allAudioClipsIdInTrack.includes(audioClip._id))
+            {
+                finalExportClips.push(audioClip)
+            }
+        })
+
+        if(finalExportClips.length == 0)
+        {
+            return response.status(200).json({ msg: `Cannot export from track with trackId: ${trackId} as there is no TTS in that particular track.`});
+        }
+        else
+        {
+            return await this.audioUtilityService.export(finalExportClips, response);
+        }
     }
 }
