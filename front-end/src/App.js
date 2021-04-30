@@ -576,6 +576,7 @@ class App extends Component {
           zoom={zoom}
           text={text}
           playing={playing}
+          duration={duration}
           played={duration * played}
           onSelected={(e, f, g) => this.handleSelected(e, f, g)}
           handleTTSDelete={this.handleTTSDelete}
@@ -584,7 +585,7 @@ class App extends Component {
           projectId={this.state.projectId}
           fetchTracks={this.fetchTracks}
           tracks={this.state.tracks}
-          onSelectTrack={this.handleTrackSelection}
+          onSelectTrack={(e)=>this.handleTrackSelection(e)}
           localTrackId={this.state.localTrackId}
           onAddTrack={this.handleAddTrack}
           onNameChange={this.handleTrackNameChange}

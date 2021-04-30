@@ -24,6 +24,8 @@ export default function AudioWave(props) {
   // create new WaveSurfer instance
   // On component mount and when url changes
 
+  const { id, onZoomFinish } = props;
+
   useEffect(() => {
     //setPlay(false);
 
@@ -55,6 +57,9 @@ export default function AudioWave(props) {
   useEffect(() => {
     const waveSurfer = wavesurfer.current;
     if (waveSurfer) waveSurfer.zoom(props.zoom);
+    if (id) {
+      onZoomFinish();
+    }
   }, [props.zoom]);
 
   useEffect(() => {
@@ -70,7 +75,7 @@ export default function AudioWave(props) {
 
   return (
     <div>
-      <div style={{ height: 80 }} id="waveform" ref={waveformRef} />
+      <div style={{ height: 80 }} id={id ? id : 'waveform'} ref={waveformRef} />
     </div>
   );
 }

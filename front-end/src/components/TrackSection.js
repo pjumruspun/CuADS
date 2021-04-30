@@ -19,6 +19,8 @@ class TrackSection extends Component {
     this.state = {
       tracks: this.props.tracks,
       localTrackId: this.props.localTrackId,
+      fullLength: undefined,
+      offset: 0,
     };
     this.handleTTSDelete = props.handleTTSDelete;
   }
@@ -36,6 +38,20 @@ class TrackSection extends Component {
     // The deletion code below is currently not working for some reason
     // Maybe we need to delete it in App.js
     this.props.onDeleteTrack(localTrackId);
+  };
+
+  onZoomFinish = () => {
+    let newWidth = 0;
+    const child = document.querySelector('#origin-waveform').firstElementChild
+      .childNodes;
+    for (let i = 1; i < child.length; i++) {
+      newWidth += parseInt(child[i].style.width.replace('px', ''));
+    }
+    this.setState({ fullLength: newWidth });
+  };
+
+  onScroll = (e) => {
+    console.log(e);
   };
 
   handleSelecting = (e) => {
@@ -143,6 +159,9 @@ class TrackSection extends Component {
                       zoom={this.props.zoom}
                       playing={this.props.playing}
                       played={this.props.played}
+                      id={'origin-waveform'}
+                      onZoomFinish={this.onZoomFinish}
+                      onScroll={this.onScroll}
                     />
                   )}
                 </div>
@@ -166,11 +185,14 @@ class TrackSection extends Component {
               speed={this.props.speed}
               playing={this.props.playing}
               played={this.props.played}
+              duration={this.props.duration}
               trackselecting={this.props.selectedTrackId}
               ttsList={track.audioClips}
               text={this.props.text}
               onNameChange={this.props.onNameChange}
-	      selectedWaveId={this.props.selectedWaveId}
+	            selectedWaveId={this.props.selectedWaveId}
+              fullLength={this.state.fullLength}
+              offset={this.offset}
             />
           ))}
         </Grid>
