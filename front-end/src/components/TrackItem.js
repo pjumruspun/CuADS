@@ -3,8 +3,11 @@ import { Grid, InputBase } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Waveform from "./Wave";
-import HorizontalScroller from "react-horizontal-scroll-container";
+
 import axios from "axios";
+
+import mystyle from './noscroll.module.css';
+
 class TrackItem extends Component {
   constructor(props) {
     super(props);
@@ -24,10 +27,10 @@ class TrackItem extends Component {
   };
 
   handlefetchTTS =(e) => {
-	e.map((id) => {
-		axios.get(`http://localhost:3001/audio-clips/findbyid/${id}`).then((res) => {
-     			 const tts = res.data;
-      			 this.setState((prevState) => ({ttsList: [...prevState.ttsList, tts]}));
+	  e.map((id) => {
+		  axios.get(`http://localhost:3001/audio-clips/findbyid/${id}`).then((res) => {
+     			const tts = res.data;
+      		this.setState((prevState) => ({ttsList: [...prevState.ttsList, tts]}));
 		});
 	});
   };
@@ -55,7 +58,9 @@ class TrackItem extends Component {
     this.props.onNameChange(this.state.localTrackId, name); // Change name in App.js track list
   };
   render() {
-    var onDeleteTrack = this.props.onDeleteTrack;
+    const { fullLength } = this.props;
+    const styles = genStyles(fullLength);
+
     return (
       <Grid
         container
@@ -95,33 +100,60 @@ class TrackItem extends Component {
             backgroundColor: "#222222",
             border: this.state.border,
             height: "12vh",
+            width: "80vh",
           }}
         >
-          <HorizontalScroller>
-            {this.state.ttsList.map((tts) => (
-              <Waveform
-                id={tts._id}
-                url={tts}
-                selecting={this.props.selectedWaveId}
-                onSelecting={(e) => this.props.onSelecting(e)}
-                onSelected={(volume, speed, text) =>
-                  this.props.onSelected(volume, speed, text)
-                }
-                handleTTSDelete={this.handleTTSDelete}
-                trackvolume={this.props.trackvolume}
-                speed={this.props.speed}
-                text={this.props.text}
-                zoom={this.props.zoom}
-                playing={false}
-                played={0}
-                key={tts._id}
-              />
-            ))}
-          </HorizontalScroller>
+          {/* <HorizontalScroller> */}
+          <div
+            // className={mystyle.noscroll}
+            style={styles.scrollContainer}
+            ref={this.scrollRef}
+          >
+            <div style={styles.flexibleContainer}>
+              {this.state.ttsList.map((tts) => (
+                <Waveform
+                  id={tts._id}
+                  url={tts}
+                  selecting={this.props.selectedWaveId}
+                  onSelecting={(e) => this.props.onSelecting(e)}
+                  onSelected={(volume, speed, text) =>
+                    this.props.onSelected(volume, speed, text)
+                  }
+                  duration={this.props.duration}
+                  handleTTSDelete={this.handleTTSDelete}
+                  trackvolume={this.props.trackvolume}
+                  speed={this.props.speed}
+                  text={this.props.text}
+                  zoom={this.props.zoom}
+                  playing={false}
+                  played={0}
+                  key={tts._id}
+                />
+              ))}
+            </div>
+          </div>
+          {/* </HorizontalScroller> */}
         </Grid>
       </Grid>
     );
   }
 }
+
+const genStyles = (fullLength) => {
+  return {
+    scrollContainer: {
+      overflowX: 'scroll',
+      overflowY: 'clip',
+      height: '100px',
+      maxWidth: '80vw',
+    },
+    flexibleContainer: {
+      display: 'flex',
+      width: fullLength ? fullLength : '200%',
+      height: '80px',
+      position: 'relative'
+    },
+  };
+};
 
 export default TrackItem;

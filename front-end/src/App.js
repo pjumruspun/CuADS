@@ -555,6 +555,7 @@ class App extends Component {
           zoom={zoom}
           text={text}
           playing={playing}
+          duration={duration}
           played={duration * played}
           onSelected={(e,f,g)=>this.handleSelected(e,f,g)}
           handleTTSDelete={this.handleTTSDelete}
@@ -568,9 +569,9 @@ class App extends Component {
           onAddTrack={this.handleAddTrack}
           onNameChange={this.handleTrackNameChange}
           onDeleteTrack={this.handleDeleteTrack}
-	  selectedTrackId={this.state.selectedTrackId}
+	        selectedTrackId={this.state.selectedTrackId}
           selectedWaveId={this.state.selectedWaveId}
-	  setTTS={(e)=>this.handleselectedTTS(e)}
+	        setTTS={(e)=>this.handleselectedTTS(e)}
         />
         <div id="zoom" style={{textAlign: "right", padding: "10px 40px 10px 0px"}}>
           zoom &nbsp;
