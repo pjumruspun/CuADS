@@ -235,13 +235,13 @@ class ScriptBox extends Component {
             justify="flex-start"
           >
             <div style={{ marginRight: "12px" }}>
-              <div style={{ marginRight: "10px", marginBottom: "20px" }}>
+              <div style={{ marginRight: "10px", marginBottom: "18px" }}>
                 Volume:
               </div>
-              <div style={{ marginRight: "10px", marginBottom: "25px" }}>
+              <div style={{ marginRight: "10px", marginBottom: "23px" }}>
                 Speed:
               </div>
-              <div style={{ marginRight: "10px", marginBottom: "12px" }}>
+              <div style={{ marginRight: "10px", marginBottom: "10px" }}>
                 Source:
               </div>
             </div>
@@ -268,7 +268,7 @@ class ScriptBox extends Component {
               <Grid
                 container
                 direction="row"
-                style={{ marginBottom: "13px", alignItems: "center" }}
+                style={{ marginBottom: "11px", alignItems: "center" }}
               >
                 <Button onClick={this.rmSpeed}>
                   <RemoveIcon style={{ color: "#F2F2F2" }} />
@@ -287,7 +287,7 @@ class ScriptBox extends Component {
               <Grid
                 container
                 direction="row"
-                style={{ marginBottom: "13px", alignItems: "center" }}
+                style={{ marginBottom: "11px", alignItems: "center" }}
               >
                 <Select
                   value={this.props.selectedWaveId === -1 ? this.state.source : this.props.ttsSource}

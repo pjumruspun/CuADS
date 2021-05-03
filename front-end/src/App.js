@@ -588,6 +588,8 @@ class App extends Component {
               onDuration={this.handleDuration}
               onProgress={this.handleProgress}
               progressInterval={10}
+              width="512px"
+              height="288px"
             />
             <input
               className="Input-slider"

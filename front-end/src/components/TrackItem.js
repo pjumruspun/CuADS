@@ -67,7 +67,7 @@ class TrackItem extends Component {
       <Grid
         container
         direction="row"
-        style={{ height: "12vh", width: "100%", marginLeft:"40px", marginRight:'40px'}}
+        style={{ height: "12vh", width: "100%", marginLeft:'42px'}}
       >
         <Grid
           item
@@ -84,7 +84,7 @@ class TrackItem extends Component {
           <InputBase
             inputProps={{ "aria-label": "naked" }}
             style={{
-              backgroundColor: "#bababa",
+              backgroundColor: "#F2F2F2",
             }}
             onChange={this.handleNameChange}
             value={this.state.name}
