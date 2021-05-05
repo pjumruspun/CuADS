@@ -8,4 +8,5 @@ export interface IAudioClip extends Document {
     speed: number;
     pitch: number;
     audioFileURL: string;
+    source: string;
 }

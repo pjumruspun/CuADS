@@ -28,6 +28,7 @@
   display: block;
   background-color: #333333;
   max-width: inherit;
+  padding: 5px;
 }
 
 .Table-body {
