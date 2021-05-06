@@ -139,6 +139,9 @@ dist
 /back-end/!.vscode/launch.json
 /back-end/!.vscode/extensions.json
 
+# Backend video storage
+/back-end/upload/*
+
 # MacOS .DS_Store
 .DS_Store
 
