@@ -14,7 +14,25 @@ export default function ProjectButton(props) {
   };
 
   const deleteProject = () => {
-    axios
+   axios
+      .get(
+        `http://localhost:3001/projects/getalltracks/${props.projectId}`
+      )
+      .then((response) => {
+        const trackIdList = response.data;
+	trackIdList.map((trackId) => {
+          axios
+            .get(`http://localhost:3001/tracks/findbyid/${trackId}`)
+            .then((res) => {
+		res.data.audioClips.map((id) => {
+		const response = axios.delete(
+      	`	http://localhost:3001/audio-clips/${id}`
+    	);
+	});
+	});
+    }); 
+   });   
+   axios
       .delete(`http://localhost:3001/projects/${props.projectId}`)
       .then((res) => {
         const projectData = res.data;
