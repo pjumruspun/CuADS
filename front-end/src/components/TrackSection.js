@@ -35,17 +35,15 @@ class TrackSection extends Component {
   };
 
   onDeleteTrack = (localTrackId) => {
-    // The deletion code below is currently not working for some reason
-    // Maybe we need to delete it in App.js
     this.props.onDeleteTrack(localTrackId);
   };
 
   onZoomFinish = () => {
     let newWidth = 0;
-    const child = document.querySelector('#origin-waveform').firstElementChild
+    const child = document.querySelector("#origin-waveform").firstElementChild
       .childNodes;
     for (let i = 1; i < child.length; i++) {
-      newWidth += parseInt(child[i].style.width.replace('px', ''));
+      newWidth += parseInt(child[i].style.width.replace("px", ""));
     }
     this.setState({ fullLength: newWidth });
   };
@@ -58,8 +56,9 @@ class TrackSection extends Component {
     this.props.setText(e);
   };
   handleTrackSelecting = (e) => {
-	this.props.onSelectTrack(e.backendId);
-	this.props.setTTS(e.ttsList);
+    console.log(e);
+    this.props.onSelectTrack(e.backendId);
+    this.props.setTTS(e.ttsList);
   };
   render() {
     return (
@@ -159,7 +158,7 @@ class TrackSection extends Component {
                       zoom={this.props.zoom}
                       playing={this.props.playing}
                       played={this.props.played}
-                      id={'origin-waveform'}
+                      id={"origin-waveform"}
                       onZoomFinish={this.onZoomFinish}
                       onScroll={this.onScroll}
                     />
@@ -168,8 +167,8 @@ class TrackSection extends Component {
               </Grid>
             </Grid>
             <GridList
-              style={{width:"100%", height:"20vh", marginRight:"40px"}}
-            >  
+              style={{ width: "100%", height: "20vh", marginRight: "40px" }}
+            >
               {this.props.tracks.map((track) => (
                 <TrackItem
                   key={track.localTrackId}
@@ -177,7 +176,7 @@ class TrackSection extends Component {
                   localTrackId={track.localTrackId}
                   name={track.name}
                   backendId={track.backendId}
-                  onDeleteTrack={(e,f) =>this.onDeleteTrack(e,f)}
+                  onDeleteTrack={(e, f) => this.onDeleteTrack(e, f)}
                   handleTTSDelete={this.handleTTSDelete}
                   onSelected={(volume, speed, text) =>
                     this.props.onSelected(volume, speed, text)
@@ -198,9 +197,10 @@ class TrackSection extends Component {
                   offset={this.offset}
                 />
               ))}
-          </GridList>
-        </Grid>
-      </div></center>
+            </GridList>
+          </Grid>
+        </div>
+      </center>
     );
   }
 }
