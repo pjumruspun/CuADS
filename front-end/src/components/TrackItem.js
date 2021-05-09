@@ -11,6 +11,7 @@ import mystyle from './noscroll.module.css';
 class TrackItem extends Component {
   constructor(props) {
     super(props);
+    this.scrollRef = React.createRef();
     this.state = {
       localTrackId: this.props.localTrackId,
       backendId: this.props.backendId,
@@ -19,13 +20,17 @@ class TrackItem extends Component {
       trackselected: false,
       ttsid: 0,
       ttsList:[],
-      ttsidList:[]
+      ttsidList:[],
     };
+    this.xScroll = props.xScroll
     this.handleTTSDelete = props.handleTTSDelete;
     if(props.ttsList != undefined){
-    this.handlefetchTTS(props.ttsList)
+      this.handlefetchTTS(props.ttsList)
     }
   };
+
+  
+
 
   handlefetchTTS =(e) => {
 	  e.map((id) => {
@@ -45,7 +50,7 @@ class TrackItem extends Component {
       this.props.onTrackSelecting({
         localTrackId: this.state.localTrackId,
         backendId: this.state.backendId,
-	ttsList: this.state.ttsidList
+	      ttsList: this.state.ttsidList
       });
     }
     if (this.state.trackselected) {
@@ -53,17 +58,33 @@ class TrackItem extends Component {
       this.props.onTrackSelecting({ localTrackId: 99, backendId: 99 ,ttsidList:[] });
 
     }
+    console.log(this.state.ttsList);
   };
   handleNameChange = (e) => {
     const name = e.target.value;
     this.setState({ name: name });
     this.props.onNameChange(this.state.localTrackId, name); // Change name in App.js track list
   };
+
+  handleScroll = (e) => {
+    console.log(e);
+    this.scrollRef.current.scrollLeft = e;
+  };
+
+  componentDidMount = () => {
+    this.handleScroll(this.props.xScroll)
+  }
+
   render() {
     const { fullLength } = this.props;
     const styles = genStyles(fullLength);
 
+    if (this.scrollRef.current) {
+      this.handleScroll(this.props.xScroll);
+    }
+
     return (
+      
       <Grid
         container
         direction="row"
@@ -107,10 +128,12 @@ class TrackItem extends Component {
         >
           {/* <HorizontalScroller> */}
           <div
+            id="scroller"
             // className={mystyle.noscroll}
             style={styles.scrollContainer}
             ref={this.scrollRef}
           >
+            <Button onClick={()=>{ this.handleScroll(this.props.xScroll) }} />
             <div style={styles.flexibleContainer}>
               {this.state.ttsList.map((tts) => (
                 <Waveform
