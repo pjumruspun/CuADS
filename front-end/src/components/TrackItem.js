@@ -67,7 +67,7 @@ class TrackItem extends Component {
   };
 
   handleScroll = (e) => {
-    console.log(e);
+    //console.log(e);
     this.scrollRef.current.scrollLeft = e;
   };
 

@@ -33,7 +33,7 @@ export default function AudioWave(props) {
   // create new WaveSurfer instance
   // On component mount and when url changes
 
-  const { id, onZoomFinish } = props;
+  const { id, onZoomFinish, selectedttsList } = props;
 
   const componentDidMount = () => {
     const waveSurfer = wavesurfer.current;
@@ -82,6 +82,24 @@ export default function AudioWave(props) {
   useEffect(() => {
     componentDidMount();
   }, [props.xScroll]);
+
+  useEffect(() => { 
+    if (selectedttsList.length > 0) {
+      const currentTTS = props.tts.find((selectedttsList) => {
+        return props.tts._id === selectedttsList[0]
+      })
+    
+      console.log(currentTTS.startTime)
+      wavesurfer.current.addRegion({ 
+        start: currentTTS.startTime,             
+        end: currentTTS.startTime+2, 
+        color: 'rgb(242, 201, 76, 0.1)',
+        drag: false
+      });
+    
+      console.log(props.getTTSDuration(selectedttsList[0]));
+    }
+  }, [props.selectedttsList]);
 
   useEffect(() => {
     const waveSurfer = wavesurfer.current;
