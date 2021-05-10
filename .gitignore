@@ -142,6 +142,9 @@ dist
 # Backend video storage
 /back-end/upload/*
 
+# Backend temp directory
+/back-end/tmp/*
+
 # MacOS .DS_Store
 .DS_Store
 
