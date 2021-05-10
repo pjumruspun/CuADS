@@ -43,7 +43,13 @@ class TrackItem extends Component {
     });
   };
   handleTrackSelected = () => {
-    if (!this.state.trackselected && this.props.trackselecting == undefined) {
+    if(this.props.playing){
+    	alert("Please Pause the Video first.");
+    }
+    else if(this.props.trackselecting != undefined && !this.state.trackselected){
+    	alert("Please deselect another track first.");
+    }
+    if (!this.state.trackselected && this.props.trackselecting == undefined && !this.props.playing) {
       this.setState({ border: "5px solid white", trackselected: true });
       console.log(
         `selecting: ${this.props.backendId} localId: ${this.props.localTrackId} name: ${this.state.name}`
@@ -68,7 +74,7 @@ class TrackItem extends Component {
         }, 200);
       }
     }
-    if (this.state.trackselected) {
+    if (this.state.trackselected && !this.props.playing) {
       this.setState({ border: "thin solid #4F4F4F", trackselected: false });
       this.props.onTrackSelecting({
         localTrackId: 99,
