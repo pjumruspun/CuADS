@@ -99,22 +99,25 @@ class App extends Component {
         this.loadTransportTTS();
         break;
       case "update":
+	if((this.state.ttsTransportMap)[tts_id]!= undefined){
         (this.state.ttsTransportMap)[tts_id].dispose();
+	}
         const response = await axios.get(`http://localhost:3001/audio-clips/findbyid/${tts_id}/`)
         const newPlayer = new Tone.Player("data:audio/wav;base64," + response.data.content);
         newPlayer.playbackRate = normalizeSpeed(response.data.speed);
-        //alert(this.state.selectedttsList);
         if((this.state.selectedttsList!= undefined)&&(this.state.selectedttsList.includes(ttsItem._id))){
-	//alert(ttsItem.text+" play");
-        newPlayer.volume.value = normalizeVolume(response.data.volume);
-        }else{
-	//alert(ttsItem.text+" silence");
+        if(response.data.volume!=null){
+	newPlayer.volume.value = normalizeVolume(response.data.volume);
+        }
+	}else{
 	newPlayer.volume.value = -Infinity;
 	newPlayer.volume.mute = true;
 	}
         newPlayer.toDestination();
-        newPlayer.sync().start(response.data.startTime);
-        this.setState(prevState => ({
+        if(response.data.startTime>=0){
+	newPlayer.sync().start(response.data.startTime);
+        }
+	this.setState(prevState => ({
           ttsTransportMap: {
             ...prevState.ttsTransportMap,
             [tts_id]: newPlayer
@@ -370,6 +373,17 @@ class App extends Component {
       if (track.localTrackId === localTrackId) {
         // push backendId for deletion if user saves project
         // but the track must have backendId (exist in database)
+	if(this.state.selectedTrackId == track.backendId){
+	 this.setState({ selectedTrackId: undefined });
+	}
+	track.audioClips.map((id) => {
+	if((this.state.ttsTransportMap)[id]!= undefined){
+        (this.state.ttsTransportMap)[id].dispose();
+	}
+	const response = axios.delete(
+      	`http://localhost:3001/audio-clips/${id}`
+    	);
+	});
         if (track.backendId !== undefined) {
           this.state.tracksToDelete.push(track.backendId);
         }
@@ -563,6 +577,7 @@ class App extends Component {
               trackvolume={trackvolume}
               speed={speed}
               text={text}
+	      playing={playing}
               selectedWaveId={this.state.selectedWaveId}
               onChange={this.onChange.bind(this)}
               ttsStartTime={this.state.ttsStartTime}

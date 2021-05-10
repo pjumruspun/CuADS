@@ -86,7 +86,7 @@ export class AudioUtilityService {
                 }
 
                 // If projectId is not undefined, try to update projects document
-                const audioURL = `http://localhost:3001/files/${res.data[0].id}`;
+                const audioURL = `http://localhost:3001/files/${res.data.filename}`;
                 const putURL = `http://localhost:3001/projects/${projectId}`;
                 return axios.put(putURL, { 'originalAudioURL': audioURL });
             })

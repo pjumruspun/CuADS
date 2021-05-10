@@ -310,6 +310,7 @@ class ScriptBox extends Component {
             variant="contained"
             style={{ alignSelf: "flex-end", textTransform: "initial", borderRadius: 0, fontSize: "medium"}}
             onClick={this.generateTTS}
+	    disabled={this.props.playing}
           >
             <b>{this.props.selectedWaveId === -1 ? "Generate TTS" : "Update TTS"}</b>
           </Button>
