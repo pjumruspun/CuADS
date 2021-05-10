@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "react-modal": "^3.12.1"
+    "react-modal": "^3.12.1",
+    "tone": "^14.7.77"
   }
 }

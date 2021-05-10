@@ -21,6 +21,7 @@ class TrackSection extends Component {
       localTrackId: this.props.localTrackId,
       fullLength: undefined,
       offset: 0,
+      xScroll: 0,
     };
     this.handleTTSDelete = props.handleTTSDelete;
   }
@@ -54,13 +55,21 @@ class TrackSection extends Component {
     console.log(e);
   };
 
+  handleUpdateXScroll = (e) => {
+    this.setState({ xScroll: e });
+    //console.log(e);
+    //console.log(this.state.xScroll);
+  };
+
   handleSelecting = (e) => {
     this.props.setText(e);
   };
+
   handleTrackSelecting = (e) => {
-    this.props.onSelectTrack(e.backendId);
-    this.props.setTTS(e.ttsList);
+	  this.props.onSelectTrack(e.backendId);
+	  this.props.setTTS(e.ttsList);
   };
+
   render() {
     return (
       <center>
@@ -159,42 +168,56 @@ class TrackSection extends Component {
                       zoom={this.props.zoom}
                       playing={this.props.playing}
                       played={this.props.played}
+                      duration={this.props.duration}
                       id={'origin-waveform'}
                       onZoomFinish={this.onZoomFinish}
                       onScroll={this.onScroll}
+                      tracks={this.props.tracks}
+                      onTrackSelecting={(e) => this.handleTrackSelecting(e)}
+                      trackselecting={this.props.selectedTrackId}
+                      handleUpdateXScroll={(e) => this.handleUpdateXScroll(e)}
+                      selectedttsList={this.props.selectedttsList}
+                      tts={this.props.tts}
+                      getTTSDuration={(e) => this.props.getTTSDuration(e)}
+                      xScroll={this.state.xScroll}
                     />
                   )}
                 </div>
               </Grid>
             </Grid>
-          {this.props.tracks.map((track) => (
-            <TrackItem
-              key={track.localTrackId}
-	      test={track.test}
-              localTrackId={track.localTrackId}
-              name={track.name}
-              backendId={track.backendId}
-              onDeleteTrack={(e,f) =>this.onDeleteTrack(e,f)}
-              handleTTSDelete={this.handleTTSDelete}
-              onSelected={(volume, speed, text) =>
-                this.props.onSelected(volume, speed, text)
-              }
-              onSelecting={(e) => this.handleSelecting(e)}
-              onTrackSelecting={(e) => this.handleTrackSelecting(e)}
-              trackvolume={this.props.trackvolume}
-              speed={this.props.speed}
-              playing={this.props.playing}
-              played={this.props.played}
-              duration={this.props.duration}
-              trackselecting={this.props.selectedTrackId}
-              ttsList={track.audioClips}
-              text={this.props.text}
-              onNameChange={this.props.onNameChange}
-	            selectedWaveId={this.props.selectedWaveId}
-              fullLength={this.state.fullLength}
-              offset={this.offset}
-            />
-          ))}
+            <GridList
+              style={{width:"100%", height:"20vh", marginRight:"40px"}}
+            >  
+              {this.props.tracks.map((track) => ( 
+                <TrackItem
+                  key={track.localTrackId}
+                  test={track.test}
+                  localTrackId={track.localTrackId}
+                  name={track.name}
+                  backendId={track.backendId}
+                  onDeleteTrack={(e,f) =>this.onDeleteTrack(e,f)}
+                  handleTTSDelete={this.handleTTSDelete}
+                  onSelected={(volume, speed, text) =>
+                    this.props.onSelected(volume, speed, text)
+                  }
+                  onSelecting={(e) => this.handleSelecting(e)}
+                  onTrackSelecting={(e) => this.handleTrackSelecting(e)}
+                  trackvolume={this.props.trackvolume}
+                  speed={this.props.speed}
+                  playing={this.props.playing}
+                  played={this.props.played}
+                  duration={this.props.duration}
+                  trackselecting={this.props.selectedTrackId}
+                  ttsList={track.audioClips}
+                  text={this.props.text}
+                  onNameChange={this.props.onNameChange}
+                  selectedWaveId={this.props.selectedWaveId}
+                  fullLength={this.state.fullLength}
+                  offset={this.offset}
+                  xScroll={this.state.xScroll}
+                />
+              ))}
+          </GridList>
         </Grid>
       </div></center>
     );

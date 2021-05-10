@@ -42,10 +42,8 @@ export class AudioClipsController {
     }
 
     @ApiOperation({ summary: 'Export mp3 file by trackId or projectId'})
-    @Get('export/mp3')
-    async export(@Param('projectId') projectId: string, @Param('trackId') trackId: string, @Res() response) {
-        // console.log(`projectId: ${projectId}`);
-        // console.log(`trackId: ${trackId}`);
-        return this.audioClipsService.exportMp3(projectId, trackId, response);
+    @Get('export/mp3/:trackId')
+    async export(@Param('trackId') trackId: string, @Res() response) {
+        return this.audioClipsService.exportMp3(trackId, response);
     }
 }

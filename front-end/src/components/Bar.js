@@ -8,17 +8,17 @@ export default function SimpleMenu(props) {
   var rootStyle = {
     backgroundColor: "#4F4F4F",
     position: "sticky",
-    top:0,
-    zIndex:5
+    top: 0,
+    zIndex: 5,
   };
 
   var logoStyle = {
-    width: '5%',
-    height: '5%',
-    position: 'relative',
-    padding: '10px',
-    marginRight: '10px'
-  }
+    width: "5%",
+    height: "5%",
+    position: "relative",
+    padding: "10px",
+    marginRight: "10px",
+  };
 
   var ButtonStyle = {
     color: "white",
@@ -38,6 +38,10 @@ export default function SimpleMenu(props) {
     padding: "0 10px 0 10px",
   };
 
+  const test = (props) => {
+    console.log(props.projectId);
+  };
+
   return (
     <div align="left" style={rootStyle}>
       <Grid container direction="row" alignItems="center">
@@ -49,6 +53,7 @@ export default function SimpleMenu(props) {
           onUploading={onUploading}
           onProgressChange={onProgressChange}
           onImport={(videoId, videoFile) => props.onImport(videoId, videoFile)}
+          projectId={props.projectId}
         />
         <SettingButton onChange={(value) => props.onVolumeChange(value)} />
         {progress === "in-progress" ? (
