@@ -1,8 +1,7 @@
 import React from "react";
 import MenuItem from "@material-ui/core/MenuItem";
-import axios from "axios";
 
-export default function TrackExportButton(props) {
+export default function ExportMp3Button(props) {
   const handleClick = () => {
     // axios.get export
     console.log(`exporting track ${props.trackId}`);
