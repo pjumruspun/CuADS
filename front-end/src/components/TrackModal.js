@@ -37,9 +37,7 @@ const TrackModal = (props) => {
   // getModalStyle is not a pure function, we roll the style only on the first render
   const [modalStyle] = React.useState(getModalStyle);
   const [open, setOpen] = React.useState(false);
-  const [nameIdPairs, setNameIdPairs] = React.useState([
-    { name: "dummyName", projectId: "dummyId" },
-  ]);
+  const [nameIdPairs, setNameIdPairs] = React.useState([]);
 
   const handleExport = () => {
     if (props.projectId.length < 1) {
@@ -59,14 +57,17 @@ const TrackModal = (props) => {
             .then((res) => {
               const trackName = res.data.name;
               pairs.push({ name: trackName, trackId: trackId });
-              if (pairs.length > nameIdPairs.length) {
-                setNameIdPairs(pairs);
-              }
             });
         });
       });
 
-    setOpen(true);
+    setTimeout(() => {
+      setNameIdPairs(pairs);
+    }, 50);
+
+    setTimeout(() => {
+      setOpen(true);
+    }, 80);
   };
 
   const exportTrackButtons = (pair) => {
