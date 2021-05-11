@@ -59,7 +59,7 @@ class TrackItem extends Component {
       );
 
       this.props.onTrackSelecting({
-        localTrackId: this.props.localTrackId,
+        localTrackId: this.propsใlocalTrackId,
         backendId: this.props.backendId,
         ttsList: this.state.ttsidList,
       });

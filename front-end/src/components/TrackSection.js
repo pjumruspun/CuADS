@@ -55,8 +55,6 @@ class TrackSection extends Component {
 
   handleUpdateXScroll = (e) => {
     this.setState({ xScroll: e });
-    //console.log(e);
-    //console.log(this.state.xScroll);
   };
 
   handleSelecting = (e) => {

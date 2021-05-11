@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Grid } from '@material-ui/core';
 import WaveSurfer from 'wavesurfer.js';
-import RegionPlugin from 'wavesurfer.js/dist/plugin/wavesurfer.regions.min.js'
 
 const formWaveSurferOptions = (ref) => ({
   container: ref,
@@ -15,13 +14,6 @@ const formWaveSurferOptions = (ref) => ({
   normalize: true,
   // Use the PeakCache to improve rendering speed of large waveforms.
   partialRender: true,
-   plugins: [
-    RegionPlugin.create(),
-    //  TimelinePlugin.create({
-    //     container: ref
-    //  })
-  ]
- 
 });
 
 export default function AudioWave(props) {
