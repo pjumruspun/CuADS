@@ -135,7 +135,6 @@ class TrackItem extends Component {
             style={styles.scrollContainer}
             ref={this.scrollRef}
           >
-            <Button onClick={()=>{ this.handleScroll(this.props.xScroll) }} />
             <div style={styles.flexibleContainer}>
               {this.state.ttsList.map((tts) => (
                 <Waveform

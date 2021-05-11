@@ -81,12 +81,14 @@ export default function AudioWave(props) {
   }, [props.xScroll]);
 
   useEffect(() => { 
-    console.log(trackselected);
     if (trackselected) {
       ttsList.map((tts) => {
+        //console.log(tts.startTime);
+        //console.log(tts.startTime+props.getTTSDuration(tts._id));
+        var TTSDuration = 1;
         wavesurfer.current.addRegion({ 
           start: tts.startTime,             
-          end: tts.startTime+1, 
+          end: tts.startTime+TTSDuration, 
           color: 'hsla(400, 100%, 30%, 0.1)',
           drag: false
         }); 

@@ -46,7 +46,7 @@ class App extends Component {
     volume: 0.8,
     trackvolume: 50,
     speed: 1.0,
-    zoom: 0,
+    zoom: 75,
     projectId: "",
     text: "",
     topText: topTextEmptyProject,
@@ -662,6 +662,7 @@ class App extends Component {
           selectedTrackId={this.state.selectedTrackId}
           selectedWaveId={this.state.selectedWaveId}
           setTTS={(e) => this.handleselectedTTS(e)}
+          getTTSDuration={(e) => this.getTTSDuration(e)}
         />
         <div
           id="zoom"
