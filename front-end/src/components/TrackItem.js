@@ -22,7 +22,7 @@ class TrackItem extends Component {
       ttsList: [],
       ttsidList: [],
     };
-    this.xScroll = props.xScroll
+    this.xScroll = props.xScroll;
     this.handleTTSDelete = props.handleTTSDelete;
     if(props.ttsList != undefined){
       this.handlefetchTTS(props.ttsList)
@@ -164,11 +164,10 @@ class TrackItem extends Component {
           {/* <HorizontalScroller> */}
           <div
             id="scroller"
-            // className={mystyle.noscroll}
+            //className={mystyle.noscroll}
             style={styles.scrollContainer}
             ref={this.scrollRef}
           >
-            <Button onClick={()=>{ this.handleScroll(this.props.xScroll) }} />
             <div style={styles.flexibleContainer}>
               {this.state.ttsList.map((tts) => (
                 <Waveform
