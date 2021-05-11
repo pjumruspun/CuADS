@@ -36,17 +36,15 @@ class TrackSection extends Component {
   };
 
   onDeleteTrack = (localTrackId) => {
-    // The deletion code below is currently not working for some reason
-    // Maybe we need to delete it in App.js
     this.props.onDeleteTrack(localTrackId);
   };
 
   onZoomFinish = () => {
     let newWidth = 0;
-    const child = document.querySelector('#origin-waveform').firstElementChild
+    const child = document.querySelector("#origin-waveform").firstElementChild
       .childNodes;
     for (let i = 1; i < child.length; i++) {
-      newWidth += parseInt(child[i].style.width.replace('px', ''));
+      newWidth += parseInt(child[i].style.width.replace("px", ""));
     }
     this.setState({ fullLength: newWidth });
   };
@@ -66,8 +64,9 @@ class TrackSection extends Component {
   };
 
   handleTrackSelecting = (e) => {
-	  this.props.onSelectTrack(e.backendId);
-	  this.props.setTTS(e.ttsList);
+    console.log(e);
+    this.props.onSelectTrack(e.backendId);
+    this.props.setTTS(e.ttsList);
   };
 
   render() {
@@ -195,7 +194,7 @@ class TrackSection extends Component {
                   localTrackId={track.localTrackId}
                   name={track.name}
                   backendId={track.backendId}
-                  onDeleteTrack={(e,f) =>this.onDeleteTrack(e,f)}
+                  onDeleteTrack={(e, f) => this.onDeleteTrack(e, f)}
                   handleTTSDelete={this.handleTTSDelete}
                   onSelected={(volume, speed, text) =>
                     this.props.onSelected(volume, speed, text)
@@ -217,9 +216,10 @@ class TrackSection extends Component {
                   xScroll={this.state.xScroll}
                 />
               ))}
-          </GridList>
-        </Grid>
-      </div></center>
+            </GridList>
+          </Grid>
+        </div>
+      </center>
     );
   }
 }

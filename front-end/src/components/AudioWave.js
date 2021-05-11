@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Grid } from '@material-ui/core';
 import WaveSurfer from 'wavesurfer.js';
+import RegionPlugin from 'wavesurfer.js/dist/plugin/wavesurfer.regions.min.js'
 
 const formWaveSurferOptions = (ref) => ({
   container: ref,
@@ -48,6 +49,7 @@ export default function AudioWave(props) {
 
     const options = formWaveSurferOptions(waveformRef.current);
     wavesurfer.current = WaveSurfer.create(options);
+  
     if (props.url == undefined) {
       wavesurfer.current.load(
         'https://reelcrafter-east.s3.amazonaws.com/aux/test.m4a'
