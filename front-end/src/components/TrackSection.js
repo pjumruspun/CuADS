@@ -21,6 +21,9 @@ class TrackSection extends Component {
       localTrackId: this.props.localTrackId,
       fullLength: undefined,
       offset: 0,
+      xScroll: 0,
+      ttsList: [],
+      trackselected: false
     };
     this.handleTTSDelete = props.handleTTSDelete;
   }
@@ -52,14 +55,28 @@ class TrackSection extends Component {
     console.log(e);
   };
 
+  handleUpdateXScroll = (e) => {
+    this.setState({ xScroll: e });
+  };
+
+  updateTTS = (e) => {
+    this.setState({ ttsList: e})
+  }
+
+  updateTrackSelected = (e) => {
+    this.setState({ trackselected: e})
+  }
+
   handleSelecting = (e) => {
     this.props.setText(e);
   };
+
   handleTrackSelecting = (e) => {
     console.log(e);
     this.props.onSelectTrack(e.backendId);
     this.props.setTTS(e.ttsList);
   };
+
   render() {
     return (
       <center>
@@ -158,18 +175,28 @@ class TrackSection extends Component {
                       zoom={this.props.zoom}
                       playing={this.props.playing}
                       played={this.props.played}
-                      id={"origin-waveform"}
+                      duration={this.props.duration}
+                      id={'origin-waveform'}
                       onZoomFinish={this.onZoomFinish}
                       onScroll={this.onScroll}
+                      tracks={this.props.tracks}
+                      onTrackSelecting={(e) => this.handleTrackSelecting(e)}
+                      trackselecting={this.props.selectedTrackId}
+                      handleUpdateXScroll={(e) => this.handleUpdateXScroll(e)}
+                      selectedttsList={this.props.selectedttsList}
+                      ttsList={this.state.ttsList}
+                      getTTSDuration={(e) => this.props.getTTSDuration(e)}
+                      xScroll={this.state.xScroll}
+                      trackselected={this.state.trackselected}
                     />
                   )}
                 </div>
               </Grid>
             </Grid>
             <GridList
-              style={{ width: "100%", height: "20vh", marginRight: "40px" }}
-            >
-              {this.props.tracks.map((track) => (
+              style={(this.props.tracks) !== undefined && (this.props.tracks).length > 1 ? {width:"100%", height:"20vh", marginRight:"22px"} : {width:"100%", height:"20vh", marginRight:"40px"}}
+            >  
+              {this.props.tracks.map((track) => ( 
                 <TrackItem
                   key={track.localTrackId}
                   test={track.test}
@@ -195,6 +222,11 @@ class TrackSection extends Component {
                   selectedWaveId={this.props.selectedWaveId}
                   fullLength={this.state.fullLength}
                   offset={this.offset}
+                  xScroll={this.state.xScroll}
+                  selectedttsList={this.props.selectedttsList}
+                  getTTSDuration={(e) => this.getTTSDuration(e)}
+                  updateTTS={(e) => this.updateTTS(e)}
+                  updateTrackSelected={(e) => this.updateTrackSelected(e)}
                 />
               ))}
             </GridList>
