@@ -70,24 +70,24 @@ class App extends Component {
       if (!(ttsItem._id in this.state.ttsTransportMap)) {
         const player = new Tone.Player("data:audio/wav;base64," + ttsItem.content);
         player.playbackRate = normalizeSpeed(ttsItem.speed);
-	if((this.state.selectedttsList!= undefined)&&(this.state.selectedttsList.includes(ttsItem._id))){
-        //alert(ttsItem.text+" play");
-	player.volume.value = normalizeVolume(ttsItem.volume);
+        if((this.state.selectedttsList!= undefined)&&(this.state.selectedttsList.includes(ttsItem._id))){
+          //alert(ttsItem.text+" play");
+          player.volume.value = normalizeVolume(ttsItem.volume);
         }else{
-	//alert(ttsItem.text+" silence");
-	player.volume.value = -Infinity;
-	player.volume.mute = true;
-	}
-	player.toDestination();
+          //alert(ttsItem.text+" silence");
+          player.volume.value = -Infinity;
+          player.volume.mute = true;
+        }
+        player.toDestination();
         player.sync().start(ttsItem.startTime);
         this.setState(prevState => ({
           ttsTransportMap: {
             ...prevState.ttsTransportMap,
             [ttsItem._id]: player
-          }
+        }
         }));
       }else{
-	this.createOrUpdateTransportTTS("update",ttsItem,ttsItem._id);
+        this.createOrUpdateTransportTTS("update",ttsItem,ttsItem._id);
       }
     });
   }
@@ -99,25 +99,25 @@ class App extends Component {
         this.loadTransportTTS();
         break;
       case "update":
-	if((this.state.ttsTransportMap)[tts_id]!= undefined){
-        (this.state.ttsTransportMap)[tts_id].dispose();
-	}
+        if((this.state.ttsTransportMap)[tts_id]!= undefined){
+          (this.state.ttsTransportMap)[tts_id].dispose();
+        }
         const response = await axios.get(`http://localhost:3001/audio-clips/findbyid/${tts_id}/`)
         const newPlayer = new Tone.Player("data:audio/wav;base64," + response.data.content);
         newPlayer.playbackRate = normalizeSpeed(response.data.speed);
         if((this.state.selectedttsList!= undefined)&&(this.state.selectedttsList.includes(ttsItem._id))){
-        if(response.data.volume!=null){
-	newPlayer.volume.value = normalizeVolume(response.data.volume);
+          if(response.data.volume!=null){
+            newPlayer.volume.value = normalizeVolume(response.data.volume);
+          }
+        }else{
+          newPlayer.volume.value = -Infinity;
+          newPlayer.volume.mute = true;
         }
-	}else{
-	newPlayer.volume.value = -Infinity;
-	newPlayer.volume.mute = true;
-	}
         newPlayer.toDestination();
         if(response.data.startTime>=0){
-	newPlayer.sync().start(response.data.startTime);
+          newPlayer.sync().start(response.data.startTime);
         }
-	this.setState(prevState => ({
+        this.setState(prevState => ({
           ttsTransportMap: {
             ...prevState.ttsTransportMap,
             [tts_id]: newPlayer
@@ -128,10 +128,12 @@ class App extends Component {
         break;
     }
   }
-  handleTTSGenerated =(e)=> {
-	this.fetchTracks();
-	this.createOrUpdateTransportTTS(e);
+
+  handleTTSGenerated = (e) => {
+    this.fetchTracks();
+    this.createOrUpdateTransportTTS(e);
   }
+  
   getTTSDuration = (id) => {
     const thisPlayer = (this.state.ttsTransportMap)[id]
     return thisPlayer.buffer.duration / thisPlayer.playbackRate;
@@ -190,9 +192,12 @@ class App extends Component {
     console.log(parseFloat(e.target.value));
     this.setState({ seeking: false, playing: true });
     this.player.seekTo(parseFloat(e.target.value));
-    Tone.Transport.seconds = e.target.value;
-    Tone.Transport.start();
   };
+
+  handleSeekTTS = (e) => {
+    Tone.Transport.seconds = e;
+    Tone.Transport.start();
+  }
 
   handleProgress = (state) => {
     if (!this.state.seeking) {
@@ -599,7 +604,7 @@ class App extends Component {
               url={url}
               playing={playing}
               volume={volume}
-              onSeek={(e) => console.log("onSeek", e)}
+              onSeek={(e) => this.handleSeekTTS(e)}
               onDuration={this.handleDuration}
               onProgress={this.handleProgress}
               progressInterval={10}
