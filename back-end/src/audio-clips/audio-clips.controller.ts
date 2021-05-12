@@ -41,9 +41,15 @@ export class AudioClipsController {
         return this.audioClipsService.delete(audioClipId);
     }
 
-    @ApiOperation({ summary: 'Export mp3 file by trackId or projectId'})
+    @ApiOperation({ summary: 'Export mp3 file by trackId'})
     @Get('export/mp3/:trackId')
-    async export(@Param('trackId') trackId: string, @Res() response) {
+    async exportMp3(@Param('trackId') trackId: string, @Res() response) {
         return this.audioClipsService.exportMp3(trackId, response);
+    }
+
+    @ApiOperation({ summary: 'Export csv file by trackId'})
+    @Get('export/csv/:trackId')
+    async exportCsv(@Param('trackId') trackId: string, @Res() response) {
+        return this.audioClipsService.exportCsv(trackId, response);
     }
 }
