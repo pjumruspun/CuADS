@@ -22,21 +22,28 @@ class TrackItem extends Component {
       ttsList: [],
       ttsidList: [],
     };
-    this.xScroll = props.xScroll
+    this.xScroll = props.xScroll;
     this.handleTTSDelete = props.handleTTSDelete;
-    if (props.ttsList != undefined) {
-      this.handlefetchTTS(props.ttsList);
+    if(props.ttsList != undefined){
+      this.handlefetchTTS(props.ttsList)
     }
   }
 
-  handlefetchTTS =(e) => {
-	  e.map((id) => {
-		axios.get(`http://localhost:3001/audio-clips/findbyid/${id}`).then((res) => {
-     		const tts = res.data;
-      		this.setState((prevState) => ({ttsList: [...prevState.ttsList, tts]}));
-		this.setState((prevState) => ({ttsidList: [...prevState.ttsidList, id]}));
-	});
-	});
+  handlefetchTTS = (e) => {
+    e.map((id) => {
+      axios
+        .get(`http://localhost:3001/audio-clips/findbyid/${id}`)
+        .then((res) => {
+          const tts = res.data;
+          this.setState((prevState) => ({
+            ttsList: [...prevState.ttsList, tts],
+          }));
+          this.setState((prevState) => ({
+            ttsidList: [...prevState.ttsidList, id],
+          }));
+        });
+    });
+
   };
   handleTrackSelected = () => {
     if(this.props.playing){
@@ -159,7 +166,7 @@ class TrackItem extends Component {
           {/* <HorizontalScroller> */}
           <div
             id="scroller"
-            // className={mystyle.noscroll}
+            //className={mystyle.noscroll}
             style={styles.scrollContainer}
             ref={this.scrollRef}
           >

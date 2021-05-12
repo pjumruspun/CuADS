@@ -57,8 +57,6 @@ class TrackSection extends Component {
 
   handleUpdateXScroll = (e) => {
     this.setState({ xScroll: e });
-    //console.log(e);
-    //console.log(this.state.xScroll);
   };
 
   updateTTS = (e) => {
@@ -196,9 +194,9 @@ class TrackSection extends Component {
               </Grid>
             </Grid>
             <GridList
-              style={{ width: "100%", height: "20vh", marginRight: "40px" }}
-            >
-              {this.props.tracks.map((track) => (
+              style={(this.props.tracks) !== undefined && (this.props.tracks).length > 1 ? {width:"100%", height:"20vh", marginRight:"22px"} : {width:"100%", height:"20vh", marginRight:"40px"}}
+            >  
+              {this.props.tracks.map((track) => ( 
                 <TrackItem
                   key={track.localTrackId}
                   test={track.test}

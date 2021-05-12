@@ -19,7 +19,6 @@ const formWaveSurferOptions = (ref) => ({
    plugins: [
     RegionPlugin.create(),
   ]
- 
 });
 
 export default function AudioWave(props) {
