@@ -85,7 +85,11 @@ export default function AudioWave(props) {
       ttsList.map((tts) => {
         //console.log(tts.startTime);
         //console.log(tts.startTime+props.getTTSDuration(tts._id));
-        var TTSDuration = 1;
+        if (tts.startTime === tts.startTime+props.getTTSDuration(tts._id)) {
+          var TTSDuration = 1;
+        } else {
+          var TTSDuration = props.getTTSDuration(tts._id);
+        }
         wavesurfer.current.addRegion({ 
           start: tts.startTime,             
           end: tts.startTime+TTSDuration, 
