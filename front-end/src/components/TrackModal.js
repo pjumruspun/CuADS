@@ -2,11 +2,9 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import MenuItem from "@material-ui/core/MenuItem";
-import TrackExportButton from "./TrackExportButton";
+import ExportMp3Button from "./ExportMp3Button";
+import ExportCsvButton from "./ExportCsvButton";
 import axios from "axios";
-import DeleteButton from "./DeleteButton.js";
-import Delete from "@material-ui/icons/Delete";
-import Button from "@material-ui/core/Button";
 
 function rand() {
   return Math.round(Math.random() * 20) - 10;
@@ -37,9 +35,7 @@ const TrackModal = (props) => {
   // getModalStyle is not a pure function, we roll the style only on the first render
   const [modalStyle] = React.useState(getModalStyle);
   const [open, setOpen] = React.useState(false);
-  const [nameIdPairs, setNameIdPairs] = React.useState([
-    { name: "dummyName", projectId: "dummyId" },
-  ]);
+  const [nameIdPairs, setNameIdPairs] = React.useState([]);
 
   const handleExport = () => {
     if (props.projectId.length < 1) {
@@ -59,22 +55,32 @@ const TrackModal = (props) => {
             .then((res) => {
               const trackName = res.data.name;
               pairs.push({ name: trackName, trackId: trackId });
-              if (pairs.length > nameIdPairs.length) {
-                setNameIdPairs(pairs);
-              }
             });
         });
       });
 
-    setOpen(true);
+    setTimeout(() => {
+      setNameIdPairs(pairs);
+    }, 50);
+
+    setTimeout(() => {
+      setOpen(true);
+    }, 80);
   };
 
   const exportTrackButtons = (pair) => {
     return (
       <tr style={{ verticalAlign: "middle" }}>
+        <td>{pair.name}</td>
         <td>
-          {React.createElement(TrackExportButton, {
-            text: pair.name,
+          {React.createElement(ExportMp3Button, {
+            text: "MP3",
+            trackId: pair.trackId,
+          })}
+        </td>
+        <td>
+          {React.createElement(ExportCsvButton, {
+            text: "CSV",
             trackId: pair.trackId,
           })}
         </td>
