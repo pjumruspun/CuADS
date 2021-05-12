@@ -677,6 +677,7 @@ class App extends Component {
           selectedTrackId={this.state.selectedTrackId}
           selectedWaveId={this.state.selectedWaveId}
           setTTS={(e) => this.handleselectedTTS(e)}
+          getTTSDuration={(e) => this.getTTSDuration(e)}
         />
         <div
           id="zoom"

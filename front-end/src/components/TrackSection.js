@@ -22,6 +22,8 @@ class TrackSection extends Component {
       fullLength: undefined,
       offset: 0,
       xScroll: 0,
+      ttsList: [],
+      trackselected: false
     };
     this.handleTTSDelete = props.handleTTSDelete;
   }
@@ -56,6 +58,14 @@ class TrackSection extends Component {
   handleUpdateXScroll = (e) => {
     this.setState({ xScroll: e });
   };
+
+  updateTTS = (e) => {
+    this.setState({ ttsList: e})
+  }
+
+  updateTrackSelected = (e) => {
+    this.setState({ trackselected: e})
+  }
 
   handleSelecting = (e) => {
     this.props.setText(e);
@@ -174,9 +184,10 @@ class TrackSection extends Component {
                       trackselecting={this.props.selectedTrackId}
                       handleUpdateXScroll={(e) => this.handleUpdateXScroll(e)}
                       selectedttsList={this.props.selectedttsList}
-                      tts={this.props.tts}
+                      ttsList={this.state.ttsList}
                       getTTSDuration={(e) => this.props.getTTSDuration(e)}
                       xScroll={this.state.xScroll}
+                      trackselected={this.state.trackselected}
                     />
                   )}
                 </div>
@@ -212,6 +223,10 @@ class TrackSection extends Component {
                   fullLength={this.state.fullLength}
                   offset={this.offset}
                   xScroll={this.state.xScroll}
+                  selectedttsList={this.props.selectedttsList}
+                  getTTSDuration={(e) => this.getTTSDuration(e)}
+                  updateTTS={(e) => this.updateTTS(e)}
+                  updateTrackSelected={(e) => this.updateTrackSelected(e)}
                 />
               ))}
             </GridList>

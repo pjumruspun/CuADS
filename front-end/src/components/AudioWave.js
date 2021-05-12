@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Grid } from '@material-ui/core';
 import WaveSurfer from 'wavesurfer.js';
+import Timeline from'wavesurfer.js/dist/plugin/wavesurfer.timeline.js'
+import RegionPlugin from 'wavesurfer.js/dist/plugin/wavesurfer.regions.min.js';
 
 const formWaveSurferOptions = (ref) => ({
   container: ref,
@@ -14,6 +16,9 @@ const formWaveSurferOptions = (ref) => ({
   normalize: true,
   // Use the PeakCache to improve rendering speed of large waveforms.
   partialRender: true,
+   plugins: [
+    RegionPlugin.create(),
+  ]
 });
 
 export default function AudioWave(props) {
@@ -24,7 +29,7 @@ export default function AudioWave(props) {
   // create new WaveSurfer instance
   // On component mount and when url changes
 
-  const { id, onZoomFinish } = props;
+  const { id, onZoomFinish, selectedttsList, ttsList, trackselected } = props;
 
   const componentDidMount = () => {
     const waveSurfer = wavesurfer.current;
@@ -58,11 +63,11 @@ export default function AudioWave(props) {
       if (wavesurfer.current) {
         wavesurfer.current.setVolume(0);
       }
-      var timeline = Object.create(WaveSurfer.Timeline);
 
-      timeline.init({
-        wavesurfer: wavesurfer.current,
-        container: '#waveform-timeline'
+      var timeline = Object.create(WaveSurfer.Timeline); 
+      timeline.init({ 
+        wavesurfer: wavesurfer, 
+        container: '#waveform-timeline' 
       });
     });
 
@@ -74,6 +79,24 @@ export default function AudioWave(props) {
   useEffect(() => {
     componentDidMount();
   }, [props.xScroll]);
+
+  useEffect(() => { 
+    if (trackselected) {
+      ttsList.map((tts) => {
+        //console.log(tts.startTime);
+        //console.log(tts.startTime+props.getTTSDuration(tts._id));
+        var TTSDuration = 1;
+        wavesurfer.current.addRegion({ 
+          start: tts.startTime,             
+          end: tts.startTime+TTSDuration, 
+          color: 'hsla(400, 100%, 30%, 0.1)',
+          drag: false
+        }); 
+      })
+    } else {
+      wavesurfer.current.clearRegions();
+    }
+  }, [props.trackselected]);
 
   useEffect(() => {
     const waveSurfer = wavesurfer.current;

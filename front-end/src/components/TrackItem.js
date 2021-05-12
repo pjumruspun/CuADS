@@ -57,9 +57,9 @@ class TrackItem extends Component {
       console.log(
         `selecting: ${this.props.backendId} localId: ${this.props.localTrackId} name: ${this.state.name}`
       );
-
+      this.props.updateTrackSelected(true);
       this.props.onTrackSelecting({
-        localTrackId: this.propsใlocalTrackId,
+        localTrackId: this.props.localTrackId,
         backendId: this.props.backendId,
         ttsList: this.state.ttsidList,
       });
@@ -79,12 +79,14 @@ class TrackItem extends Component {
     }
     if (this.state.trackselected && !this.props.playing) {
       this.setState({ border: "thin solid #4F4F4F", trackselected: false });
+      this.props.updateTrackSelected(false);
       this.props.onTrackSelecting({
         localTrackId: 99,
         backendId: 99,
         ttsidList: [],
       });
     }
+    this.props.updateTTS(this.state.ttsList);
     console.log(this.state.ttsList);
   };
   handleNameChange = (e) => {
