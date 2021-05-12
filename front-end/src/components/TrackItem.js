@@ -166,7 +166,7 @@ class TrackItem extends Component {
           {/* <HorizontalScroller> */}
           <div
             id="scroller"
-            //className={mystyle.noscroll}
+            className={mystyle.noscroll}
             style={styles.scrollContainer}
             ref={this.scrollRef}
           >
