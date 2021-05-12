@@ -56,7 +56,6 @@ export default function SimpleMenu(props) {
             onChange={onChangeVolume}
           />
         </MenuItem>
-        <MenuItem onClick={handleClose}>Setting2</MenuItem>
       </Menu>
     </div>
   );

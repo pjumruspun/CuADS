@@ -124,7 +124,6 @@ export default function SimpleMenu(props) {
         <NameModal
           onProjectChange={(project) => props.onProjectChange(project)}
         />
-        <MenuItem onClick={handleSave}>Save</MenuItem>
         <MyModal
           onProjectChange={(project) => props.onProjectChange(project)}
         />

@@ -381,6 +381,7 @@ class App extends Component {
 	if(this.state.selectedTrackId == track.backendId){
 	 this.setState({ selectedTrackId: undefined });
 	}
+	if(track.audioClips!=undefined){
 	track.audioClips.map((id) => {
 	if((this.state.ttsTransportMap)[id]!= undefined){
         (this.state.ttsTransportMap)[id].dispose();
@@ -389,6 +390,7 @@ class App extends Component {
       	`http://localhost:3001/audio-clips/${id}`
     	);
 	});
+	}
         if (track.backendId !== undefined) {
           this.state.tracksToDelete.push(track.backendId);
         }
