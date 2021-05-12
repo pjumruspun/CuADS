@@ -6,7 +6,7 @@ import Waveform from "./Wave";
 
 import axios from "axios";
 
-import mystyle from './noscroll.module.css';
+import mystyle from "./noscroll.module.css";
 
 class TrackItem extends Component {
   constructor(props) {
@@ -19,18 +19,15 @@ class TrackItem extends Component {
       border: "thin solid #4F4F4F",
       trackselected: false,
       ttsid: 0,
-      ttsList:[],
-      ttsidList:[],
+      ttsList: [],
+      ttsidList: [],
     };
     this.xScroll = props.xScroll
     this.handleTTSDelete = props.handleTTSDelete;
-    if(props.ttsList != undefined){
-      this.handlefetchTTS(props.ttsList)
+    if (props.ttsList != undefined) {
+      this.handlefetchTTS(props.ttsList);
     }
-  };
-
-  
-
+  }
 
   handlefetchTTS =(e) => {
 	  e.map((id) => {
@@ -42,22 +39,44 @@ class TrackItem extends Component {
 	});
   };
   handleTrackSelected = () => {
-    if (!this.state.trackselected && (this.props.trackselecting ==undefined)) {
+    if(this.props.playing){
+    	alert("Please Pause the Video first.");
+    }
+    else if(this.props.trackselecting != undefined && !this.state.trackselected){
+    	alert("Please deselect another track first.");
+    }
+    if (!this.state.trackselected && this.props.trackselecting == undefined && !this.props.playing) {
       this.setState({ border: "5px solid white", trackselected: true });
       console.log(
-        `selecting: ${this.state.backendId} localId: ${this.state.localTrackId} name: ${this.state.name}`
+        `selecting: ${this.props.backendId} localId: ${this.props.localTrackId} name: ${this.state.name}`
       );
+
       this.props.onTrackSelecting({
-        localTrackId: this.state.localTrackId,
-        backendId: this.state.backendId,
-	      ttsList: this.state.ttsidList
+        localTrackId: this.props.localTrackId,
+        backendId: this.props.backendId,
+        ttsList: this.state.ttsidList,
       });
-      this.props.updateTrackSelected(true);
+
+      if (this.props.backendId == undefined) {
+        // If undefined, click one more time
+        // Or backendId will not passed for some reason
+        setTimeout(() => {
+          this.props.onTrackSelecting({
+            localTrackId: this.props.localTrackId,
+            backendId: this.props.backendId,
+            ttsList: this.state.ttsidList,
+          });
+          console.log("2nd time!");
+        }, 200);
+      }
     }
-    if (this.state.trackselected) {
+    if (this.state.trackselected && !this.props.playing) {
       this.setState({ border: "thin solid #4F4F4F", trackselected: false });
-      this.props.onTrackSelecting({ localTrackId: 99, backendId: 99 ,ttsidList:[] });
-      this.props.updateTrackSelected(false);
+      this.props.onTrackSelecting({
+        localTrackId: 99,
+        backendId: 99,
+        ttsidList: [],
+      });
     }
     this.props.updateTTS(this.state.ttsList);
     console.log(this.state.ttsList);
@@ -90,7 +109,7 @@ class TrackItem extends Component {
       <Grid
         container
         direction="row"
-        style={{ height: "12vh", width: "100%", marginLeft:'42px'}}
+        style={{ height: "12vh", width: "100%", marginLeft: "42px" }}
       >
         <Grid
           item
@@ -101,7 +120,7 @@ class TrackItem extends Component {
             backgroundColor: "#333333",
             border: this.state.border,
             paddingTop: "10px",
-            alignItems: 'left'
+            alignItems: "left",
           }}
         >
           <InputBase
@@ -112,8 +131,16 @@ class TrackItem extends Component {
             onChange={this.handleNameChange}
             value={this.state.name}
           />
-          <Button onClick={() => this.props.onDeleteTrack(this.props.localTrackId,this.state.trackslected)} style={{minWidth:0, padding:0, marginLeft:"15px"}}>
-          <DeleteIcon style={{ color: "EB5757" }} />
+          <Button
+            onClick={() =>
+              this.props.onDeleteTrack(
+                this.props.localTrackId,
+                this.state.trackslected
+              )
+            }
+            style={{ minWidth: 0, padding: 0, marginLeft: "15px" }}
+          >
+            <DeleteIcon style={{ color: "EB5757" }} />
           </Button>
           <div>{`${this.state.name}`}</div>
         </Grid>
@@ -168,16 +195,16 @@ class TrackItem extends Component {
 const genStyles = (fullLength) => {
   return {
     scrollContainer: {
-      overflowX: 'scroll',
-      overflowY: 'clip',
-      height: '100px',
-      maxWidth: '80vw',
+      overflowX: "scroll",
+      overflowY: "clip",
+      height: "100px",
+      maxWidth: "80vw",
     },
     flexibleContainer: {
-      display: 'flex',
-      width: fullLength ? fullLength : '200%',
-      height: '80px',
-      position: 'relative'
+      display: "flex",
+      width: fullLength ? fullLength : "200%",
+      height: "80px",
+      position: "relative",
     },
   };
 };

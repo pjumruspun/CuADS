@@ -47,6 +47,7 @@ export default function AudioWave(props) {
 
     const options = formWaveSurferOptions(waveformRef.current);
     wavesurfer.current = WaveSurfer.create(options);
+  
     if (props.url == undefined) {
       wavesurfer.current.load(
         'https://reelcrafter-east.s3.amazonaws.com/aux/test.m4a'
