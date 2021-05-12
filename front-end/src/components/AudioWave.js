@@ -13,7 +13,7 @@ const formWaveSurferOptions = (ref) => ({
   height: 80,
   normalize: true,
   // Use the PeakCache to improve rendering speed of large waveforms.
-  partialRender: true
+  partialRender: true,
 });
 
 export default function AudioWave(props) {
@@ -25,6 +25,16 @@ export default function AudioWave(props) {
   // On component mount and when url changes
 
   const { id, onZoomFinish } = props;
+
+  const componentDidMount = () => {
+    const waveSurfer = wavesurfer.current;
+    const wave = document.getElementById(id ? id : 'waveform').firstChild
+    //console.log(wave)
+    wave.addEventListener('scroll', function(e) {
+      //console.log(waveSurfer.drawer.getScrollX())
+      props.handleUpdateXScroll(waveSurfer.drawer.getScrollX());
+    })
+  };
 
   useEffect(() => {
     //setPlay(false);
@@ -48,12 +58,22 @@ export default function AudioWave(props) {
       if (wavesurfer.current) {
         wavesurfer.current.setVolume(0);
       }
+      var timeline = Object.create(WaveSurfer.Timeline);
+
+      timeline.init({
+        wavesurfer: wavesurfer.current,
+        container: '#waveform-timeline'
+      });
     });
 
     // Removes events, elements and disconnects Web Audio nodes.
     // when component unmount
     return () => wavesurfer.current.destroy();
   }, [props.url]);
+
+  useEffect(() => {
+    componentDidMount();
+  }, [props.xScroll]);
 
   useEffect(() => {
     const waveSurfer = wavesurfer.current;
@@ -76,7 +96,11 @@ export default function AudioWave(props) {
 
   return (
     <div>
-      <div style={{ height: 80 }} id={id ? id : 'waveform'} ref={waveformRef} />
+      <div 
+        style={{ height: 80 }} 
+        id={id ? id : 'waveform'} 
+        ref={waveformRef} 
+      />
     </div>
   );
 }
