@@ -2,7 +2,6 @@ import { Body, Injectable, Req, Res } from '@nestjs/common';
 import { ModifyAudioDto } from 'src/dto/modify-audio.dto';
 import axios from 'axios';
 import { IAudioClip } from 'src/interface/audio-clip.interface';
-import { resolve } from 'path';
 
 var path = require('path')
 var ffmpeg = require('fluent-ffmpeg')
