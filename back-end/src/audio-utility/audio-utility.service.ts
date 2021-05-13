@@ -2,6 +2,7 @@ import { Body, Injectable, Req, Res } from '@nestjs/common';
 import { ModifyAudioDto } from 'src/dto/modify-audio.dto';
 import axios from 'axios';
 import { IAudioClip } from 'src/interface/audio-clip.interface';
+import { resolve } from 'path';
 
 var path = require('path')
 var ffmpeg = require('fluent-ffmpeg')
@@ -113,7 +114,19 @@ export class AudioUtilityService {
         const paths = []
         const ffmpegOutPath = path.join(__dirname, `../../tmp/result.mp3`)
 
-        let createTTSFiles = new Promise((resolve, reject) => {
+        var results = await this.createTTSFiles(audioClips, paths);
+        var command = await this.addInputs(ffmpeg(), results)
+
+        var outputsAndFilters = await this.addFilters(audioClips, [], []);
+        const outputs = outputsAndFilters[0]
+        const filters = await this.mixAudio(audioClips, outputs, outputsAndFilters[1]);
+
+        const res = await this.execute(command, audioClips, filters, ffmpegOutPath, this.deleteTmpFiles, response);
+    }
+
+    async createTTSFiles(audioClips, paths)
+    {
+        return new Promise((resolve, reject) => {
             audioClips.map((audioClip, idx) => {
                 const base64Data = audioClip.content
                 var dir = `tmp`
@@ -130,26 +143,27 @@ export class AudioUtilityService {
 
                 if(idx == audioClips.length - 1)
                 {
-                    resolve(null);
+                    resolve(paths);
                 }
             })
         });
+    }
 
-        // New instance of command
-        const command = ffmpeg()
-        const filters = []
-        const outputs = []
-
-        let addInputs = (() => {
+    async addInputs(command, paths){
+        return new Promise((resolve, reject) => {
             // Add all input audio files into the command
             paths.forEach((path, idx) => {
                 command.input(path)
+                if(idx == paths.length - 1)
+                {
+                    resolve(command);
+                }
             })
-
-            return
         })
-        
-        let addFilters = (() => {
+    }
+
+    async addFilters(audioClips, outputs, filters) {
+        return new Promise((resolve, reject) => {
             // Create complexFilter filter instance
             audioClips.map((audioClip, idx) => {
                 const startTimeMs = Math.round(audioClip.startTime * 1000)
@@ -160,40 +174,49 @@ export class AudioUtilityService {
                     inputs: idx,
                     outputs: output,
                 }
+
+                console.log(audioClip.text);
+                console.log(startTimeMs);
                 
                 outputs.push(output)
                 filters.push(filter);
+
+                if(idx == audioClips.length - 1)
+                {
+                    resolve([outputs, filters]);
+                }
             })
         })
+    }
 
-        let mixAudio = (() => {
+    async mixAudio(audioClips, outputs, filters) {
+        return new Promise((resolve, reject) => {
             filters.push({
                 filter: 'amix',
                 options: audioClips.length,
                 inputs: outputs
             })
-        })
 
-        let deleteTmpFiles = (() => {
-            // Delete temp file once ended
-            for(var i = 0; i < audioClips.length; ++i)
-            {
-                const tmpFilePath = path.join(__dirname, `../../tmp/${i}.mp3`)
-                fs.unlinkSync(tmpFilePath, (err) => console.log(err));                
-            }
+            setTimeout(() => {
+                resolve(filters);
+            }, 10)
         })
+    }
 
-        let execute = (() => {
+    async execute(command, audioClips, filters, ffmpegOutPath, deleteTmpFiles, response) {
+        return new Promise((resolve, reject) => {
             command
             .complexFilter(filters)
             .saveToFile(ffmpegOutPath)
             .on('end', () => {
                 try {
-                    deleteTmpFiles();
+                    deleteTmpFiles(audioClips);
                 } catch(e) {
                     // ENOENT error for some reason
                     // console.log(e.message)
                 }
+
+                resolve(true);
 
                 return response.download(ffmpegOutPath, `export.mp3`, () => {
                     try {
@@ -212,12 +235,14 @@ export class AudioUtilityService {
             
             command.run()
         })
-
-        createTTSFiles
-        .then(addInputs)
-        .then(addFilters)
-        .then(mixAudio)
-        .then(execute)
-        .catch((err) => console.log(err.message));
     }
+
+    deleteTmpFiles = ((audioClips) => {
+        // Delete temp file once ended
+        for(var i = 0; i < audioClips.length; ++i)
+        {
+            const tmpFilePath = path.join(__dirname, `../../tmp/${i}.mp3`)
+            fs.unlinkSync(tmpFilePath, (err) => console.log(err));                
+        }
+    })
 }
