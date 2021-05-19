@@ -125,6 +125,7 @@ class ScriptBox extends Component {
           headers: { "Content-Type": "application/json" },
         })
         .then((response) => {
+          console.log(response);
           this.props.onTTSGenerated("create", response.data, -1);
           this.setState({ text: "" });
           console.log(

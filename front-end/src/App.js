@@ -28,8 +28,15 @@ const ZOOM_RANGE = {
 var topTextEmptyProject =
   "No project opened, please create a new project or open an existing project from File menu.";
 
-var normalizeSpeed = (speed) => {
-  return ((speed/2)*0.5) + 0.85;
+var normalizeSpeed = (speed, source) => {
+  switch (source) {
+    case "chula":
+      return ((speed*0.1) + 0.40);
+    case "google":
+      return ((speed/2)*0.5) + 0.85;
+    default:
+      return ((speed/2)*0.5) + 0.85;
+  }
 }
 
 var normalizeVolume = (volume) => {
@@ -68,8 +75,21 @@ class App extends Component {
   loadTransportTTS = (ttsList = this.state.ttsList) => {
     ttsList.forEach((ttsItem) => {
       if (!(ttsItem._id in this.state.ttsTransportMap)) {
-        const player = new Tone.Player("data:audio/wav;base64," + ttsItem.content);
-        player.playbackRate = normalizeSpeed(ttsItem.speed);
+        var player;
+        switch (ttsItem.source) {
+          case "chula":
+            const typedArr = new Float32Array(JSON.parse(ttsItem.content));
+            const audioBuffer = new Tone.ToneAudioBuffer();
+            audioBuffer.fromArray(typedArr);
+            player = new Tone.Player(audioBuffer);
+            break;
+          case "google":
+            player = new Tone.Player("data:audio/wav;base64," + ttsItem.content);
+            break;
+          default:
+            break;
+        }
+        player.playbackRate = normalizeSpeed(ttsItem.speed, ttsItem.source);
         if((this.state.selectedttsList!= undefined)&&(this.state.selectedttsList.includes(ttsItem._id))){
           //alert(ttsItem.text+" play");
           player.volume.value = normalizeVolume(ttsItem.volume);
@@ -103,8 +123,21 @@ class App extends Component {
           (this.state.ttsTransportMap)[tts_id].dispose();
         }
         const response = await axios.get(`http://localhost:3001/audio-clips/findbyid/${tts_id}/`)
-        const newPlayer = new Tone.Player("data:audio/wav;base64," + response.data.content);
-        newPlayer.playbackRate = normalizeSpeed(response.data.speed);
+        var newPlayer;
+        switch (response.data.source) {
+          case "chula":
+            const typedArr = new Float32Array(JSON.parse(response.data.content));
+            const audioBuffer = new Tone.ToneAudioBuffer();
+            audioBuffer.fromArray(typedArr);
+            newPlayer = new Tone.Player(audioBuffer);
+            break;
+          case "google":
+            newPlayer = new Tone.Player("data:audio/wav;base64," + response.data.content);
+            break;
+          default:
+            break;
+        }
+        newPlayer.playbackRate = normalizeSpeed(response.data.speed, response.data.source);
         if((this.state.selectedttsList!= undefined)&&(this.state.selectedttsList.includes(ttsItem._id))){
           if(response.data.volume!=null){
             newPlayer.volume.value = normalizeVolume(response.data.volume);

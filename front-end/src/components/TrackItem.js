@@ -25,12 +25,14 @@ class TrackItem extends Component {
     this.xScroll = props.xScroll;
     this.handleTTSDelete = props.handleTTSDelete;
     if(props.ttsList != undefined){
+      console.log("FETCH: ", props.ttsList);
       this.handlefetchTTS(props.ttsList)
     }
   }
 
   handlefetchTTS = (e) => {
     e.map((id) => {
+      console.log("INSIDE: ", id);
       axios
         .get(`http://localhost:3001/audio-clips/findbyid/${id}`)
         .then((res) => {

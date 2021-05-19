@@ -31,22 +31,23 @@ function getSound(buffer) {
 async function generateAudio(source, text) {
     if (source === 'chula') {
         try {
-            axios.post(
+            const response = await axios.post(
                 process.env.TTS_API_ENDPOINT,
-                {'data': text},
+                {
+                    'data': text,
+                    'mode': 'MelGan'
+                },
                 {
                     headers: {
                         'Content-Type': 'application/json'
                     }
                 }
-            ).then((response) => {
-                const sound = response.data.data;
-                return [sound, 200];
-            }).catch((response) => {
-                return [response, 400];
-            });
+            );
+            const b64string = response.data;
+            const audioArr = JSON.parse(Buffer.from(b64string, 'base64').toString('utf-8'));
+            return [audioArr, 200];
         } catch (error) {
-            return [error, 500];
+            return [error, 400];
         }
     } else if (source === 'google') {
         try {
@@ -81,7 +82,7 @@ export class TTSService {
         }
 
         const formData = {
-            content: result,
+            content: source === "chula" ? JSON.stringify(result) : result,
             startTime: startTime,
             text: text,
             speed: speed,
@@ -91,9 +92,15 @@ export class TTSService {
 
         try {
             axios.post(`http://localhost:3001/audio-clips/${trackId}`, formData).then((response) => {
-                console.log("success");
-		            return res.status(201).json({'msg': 'success', 'content': 'data:audio/mpeg;base64,'+result, 'startTime': startTime, 'speed': speed, 'volume': volume});
-            })
+                switch (source) {
+                    case "chula":
+                        return res.status(201).json({'msg': 'success', 'content': result, 'startTime': startTime, 'speed': speed, 'volume': volume});
+                    case "google":
+                        return res.status(201).json({'msg': 'success', 'content': 'data:audio/mpeg;base64,'+result, 'startTime': startTime, 'speed': speed, 'volume': volume});
+                    default:
+                        throw "Wrong Source.";
+                }
+            });
         } catch(e) {
             return res.status(500).json({ 'msg': e.message });
         }
@@ -110,7 +117,7 @@ export class TTSService {
 
             const [result, statusCode] = await generateAudio(source, text);
             if (statusCode === 200) {
-                updatePayload.content = result;
+                updatePayload.content = source === "chula" ? JSON.stringify(result) : result;
                 updatePayload.text = text;
                 updatePayload.speed = speed;
                 updatePayload.volume = volume;
