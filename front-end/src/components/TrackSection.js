@@ -23,7 +23,6 @@ class TrackSection extends Component {
       offset: 0,
       xScroll: 0,
       ttsList: [],
-      trackselected: false
     };
     this.handleTTSDelete = props.handleTTSDelete;
   }
@@ -64,7 +63,7 @@ class TrackSection extends Component {
   }
 
   updateTrackSelected = (e) => {
-    this.setState({ trackselected: e})
+    this.props.updateTrackSelectedAtApp(e);
   }
 
   handleSelecting = (e) => {
@@ -187,7 +186,7 @@ class TrackSection extends Component {
                       ttsList={this.state.ttsList}
                       getTTSDuration={(e) => this.props.getTTSDuration(e)}
                       xScroll={this.state.xScroll}
-                      trackselected={this.state.trackselected}
+                      trackselected={this.props.trackselected}
                     />
                   )}
                 </div>
