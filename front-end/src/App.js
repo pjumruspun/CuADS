@@ -374,6 +374,11 @@ class App extends Component {
   };
 
   handleDeleteTrack = (localTrackId) => {
+    if (
+      window.confirm(
+        'Are you sure you want to delete this track ?'
+      )
+    ) {
     console.log(`Trying to delete ${localTrackId}`);
     // mark track for delete
     this.state.tracks.map((track) => {
@@ -404,6 +409,7 @@ class App extends Component {
     }));
 
     this.saveTracks();
+    }
   };
 
   handleTrackNameChange = (localTrackId, name) => {
