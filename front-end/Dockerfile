@@ -1,6 +1,6 @@
-FROM node:14.15.1
+FROM node:14.17.0
 
-RUN npm install -g nodemon
+RUN yarn global add nodemon
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -10,6 +10,7 @@ COPY package*.json ./
 
 # Install dependencies
 RUN yarn install
+RUN yarn global add react-scripts
 
 # Copy code into container
 COPY . .

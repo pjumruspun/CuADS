@@ -10,6 +10,7 @@ COPY package*.json ./
 
 # Install dependencies
 RUN yarn install
+RUN yarn global add @nestjs/cli@7.5.1
 
 # FFMPEG dependencies
 # Will be installed in /usr/bin/ffmpeg
