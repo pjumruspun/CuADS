@@ -5,7 +5,8 @@ import { IAudioClip } from 'src/interface/audio-clip.interface';
 
 var path = require('path')
 var ffmpeg = require('fluent-ffmpeg')
-var pathToFfmpeg = require('ffmpeg-static')
+// var pathToFfmpeg = require('ffmpeg-static') // Yields ffmpeg error code 2 (ffmpeg not installed)
+var pathToFfmpeg = '/usr/bin/ffmpeg' // Actual path from "apt-get install -y ffmpeg" in Dockerfile
 var fs = require('fs');
 var formdata = require('form-data')
 const followRedirects = require('follow-redirects');
@@ -165,7 +166,7 @@ export class AudioUtilityService {
         return new Promise((resolve, reject) => {
             // Create complexFilter filter instance
             audioClips.map((audioClip, idx) => {
-                const startTimeMs = Math.round(audioClip.startTime * 1000)
+                const startTimeMs = Math.round(audioClip.startTime * 1000) + 1
                 const output = `out${idx}`
                 const filter = {
                     filter: 'adelay',
@@ -196,9 +197,8 @@ export class AudioUtilityService {
                 inputs: outputs
             })
 
-            setTimeout(() => {
-                resolve(filters);
-            }, 10)
+            // Doesn't need setTimeout()
+            resolve(filters);
         })
     }
 
@@ -227,9 +227,12 @@ export class AudioUtilityService {
                     }
                 });
             })
-            .on('error', (error) => {
+            .on('error', (error, stdout, stderr) => {
                 // When error occurs when concatenating mp3 files
+                // ffmpeg stdout and stderr for more detailed errors
                 console.log(`Error occurred when trying to merge files: ${error.message}`);
+                console.log("ffmpeg stdout:\n" + stdout);
+                console.log("ffmpeg stderr:\n" + stderr);
             })
             
             command.run()

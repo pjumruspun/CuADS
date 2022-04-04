@@ -11,6 +11,12 @@ COPY package*.json ./
 #install dependencies
 RUN yarn install
 
+# FFMPEG dependencies
+# Will be installed in /usr/bin/ffmpeg
+RUN apt-get -y update
+RUN apt-get -y upgrade
+RUN apt-get install -y ffmpeg
+
 #copy code into container
 COPY . .
 
