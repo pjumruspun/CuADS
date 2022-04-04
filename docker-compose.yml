@@ -9,8 +9,6 @@ services:
   front-end:
     build: ./front-end
     tty: true
-    volumes:
-      - "./front-end:/usr/src/app"
     command: ["yarn", "start"]
     ports:
       - ${FRONTEND_PORT}:${FRONTEND_PORT}
@@ -21,8 +19,6 @@ services:
     tty: true
     depends_on:
       - mongo
-    volumes:
-      - "./back-end:/usr/src/app"
     ports:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
     command: ["yarn", "start"]

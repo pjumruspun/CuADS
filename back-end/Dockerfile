@@ -5,13 +5,20 @@ RUN yarn global add nodemon
 # Create app directory
 WORKDIR /usr/src/app
 
-#copy package files to app directory
+# Copy package files to app directory
 COPY package*.json ./
 
-#install dependencies
+# Install dependencies
 RUN yarn install
+RUN yarn global add @nestjs/cli@7.5.1
 
-#copy code into container
+# FFMPEG dependencies
+# Will be installed in /usr/bin/ffmpeg
+RUN apt-get -y update
+RUN apt-get -y upgrade
+RUN apt-get install -y ffmpeg
+
+# Copy code into container
 COPY . .
 
 # Should export the same port as BACKEND_PORT in .env

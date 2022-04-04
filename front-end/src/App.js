@@ -62,7 +62,8 @@ class App extends Component {
     selectedWaveId: -1,
     localTrackId: 0,
     selectedTrackId: undefined,
-    ttsTransportMap: {}
+    ttsTransportMap: {},
+    trackselected: false
   };
 
   loadTransportTTS = (ttsList = this.state.ttsList) => {
@@ -148,6 +149,7 @@ class App extends Component {
     this.setState({ ttsTransportMap: newTTSTransportMap });
     this.setState({ ttsList: filteredTTSList });
     this.fetchTracks();
+    this.updateTrackSelectedAtApp(false);
   };
 
   handleScriptTextChange = (tts_id) => {
@@ -372,6 +374,11 @@ class App extends Component {
   };
 
   handleDeleteTrack = (localTrackId) => {
+    if (
+      window.confirm(
+        'Are you sure you want to delete this track ?'
+      )
+    ) {
     console.log(`Trying to delete ${localTrackId}`);
     // mark track for delete
     this.state.tracks.map((track) => {
@@ -402,6 +409,7 @@ class App extends Component {
     }));
 
     this.saveTracks();
+    }
   };
 
   handleTrackNameChange = (localTrackId, name) => {
@@ -522,6 +530,10 @@ class App extends Component {
       });
   };
 
+  updateTrackSelectedAtApp = (e) => {
+    this.setState({ trackselected: e })
+  }
+
   ref = (player) => {
     this.player = player;
   };
@@ -594,6 +606,7 @@ class App extends Component {
               selectedTrackId={this.state.selectedTrackId}
               onTTSGenerated={this.handleTTSGenerated}
               onCreateTTS={(e) => this.handleTTS(e)}
+              updateTrackSelectedAtApp={(e) => this.updateTrackSelectedAtApp(e)}
             />
           </div>
           <div
@@ -685,6 +698,9 @@ class App extends Component {
           selectedWaveId={this.state.selectedWaveId}
           setTTS={(e) => this.handleselectedTTS(e)}
           getTTSDuration={(e) => this.getTTSDuration(e)}
+          selectedttsList={this.selectedttsList}
+          updateTrackSelectedAtApp={(e) => this.updateTrackSelectedAtApp(e)}
+          trackselected={this.state.trackselected}
         />
         <div
           id="zoom"

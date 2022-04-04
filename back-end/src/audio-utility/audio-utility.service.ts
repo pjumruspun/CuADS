@@ -5,7 +5,8 @@ import { IAudioClip } from 'src/interface/audio-clip.interface';
 
 var path = require('path')
 var ffmpeg = require('fluent-ffmpeg')
-var pathToFfmpeg = require('ffmpeg-static')
+// var pathToFfmpeg = require('ffmpeg-static') // Yields ffmpeg error code 2 (ffmpeg not installed)
+var pathToFfmpeg = '/usr/bin/ffmpeg' // Actual path from "apt-get install -y ffmpeg" in Dockerfile
 var fs = require('fs');
 var formdata = require('form-data')
 const followRedirects = require('follow-redirects');
@@ -113,7 +114,19 @@ export class AudioUtilityService {
         const paths = []
         const ffmpegOutPath = path.join(__dirname, `../../tmp/result.mp3`)
 
-        let createTTSFiles = new Promise((resolve, reject) => {
+        var results = await this.createTTSFiles(audioClips, paths);
+        var command = await this.addInputs(ffmpeg(), results)
+
+        var outputsAndFilters = await this.addFilters(audioClips, [], []);
+        const outputs = outputsAndFilters[0]
+        const filters = await this.mixAudio(audioClips, outputs, outputsAndFilters[1]);
+
+        const res = await this.execute(command, audioClips, filters, ffmpegOutPath, this.deleteTmpFiles, response);
+    }
+
+    async createTTSFiles(audioClips, paths)
+    {
+        return new Promise((resolve, reject) => {
             audioClips.map((audioClip, idx) => {
                 const base64Data = audioClip.content
                 var dir = `tmp`
@@ -130,29 +143,30 @@ export class AudioUtilityService {
 
                 if(idx == audioClips.length - 1)
                 {
-                    resolve(null);
+                    resolve(paths);
                 }
             })
         });
+    }
 
-        // New instance of command
-        const command = ffmpeg()
-        const filters = []
-        const outputs = []
-
-        let addInputs = (() => {
+    async addInputs(command, paths){
+        return new Promise((resolve, reject) => {
             // Add all input audio files into the command
             paths.forEach((path, idx) => {
                 command.input(path)
+                if(idx == paths.length - 1)
+                {
+                    resolve(command);
+                }
             })
-
-            return
         })
-        
-        let addFilters = (() => {
+    }
+
+    async addFilters(audioClips, outputs, filters) {
+        return new Promise((resolve, reject) => {
             // Create complexFilter filter instance
             audioClips.map((audioClip, idx) => {
-                const startTimeMs = Math.round(audioClip.startTime * 1000)
+                const startTimeMs = Math.round(audioClip.startTime * 1000) + 1
                 const output = `out${idx}`
                 const filter = {
                     filter: 'adelay',
@@ -160,40 +174,48 @@ export class AudioUtilityService {
                     inputs: idx,
                     outputs: output,
                 }
+
+                console.log(audioClip.text);
+                console.log(startTimeMs);
                 
                 outputs.push(output)
                 filters.push(filter);
+
+                if(idx == audioClips.length - 1)
+                {
+                    resolve([outputs, filters]);
+                }
             })
         })
+    }
 
-        let mixAudio = (() => {
+    async mixAudio(audioClips, outputs, filters) {
+        return new Promise((resolve, reject) => {
             filters.push({
                 filter: 'amix',
                 options: audioClips.length,
                 inputs: outputs
             })
-        })
 
-        let deleteTmpFiles = (() => {
-            // Delete temp file once ended
-            for(var i = 0; i < audioClips.length; ++i)
-            {
-                const tmpFilePath = path.join(__dirname, `../../tmp/${i}.mp3`)
-                fs.unlinkSync(tmpFilePath, (err) => console.log(err));                
-            }
+            // Doesn't need setTimeout()
+            resolve(filters);
         })
+    }
 
-        let execute = (() => {
+    async execute(command, audioClips, filters, ffmpegOutPath, deleteTmpFiles, response) {
+        return new Promise((resolve, reject) => {
             command
             .complexFilter(filters)
             .saveToFile(ffmpegOutPath)
             .on('end', () => {
                 try {
-                    deleteTmpFiles();
+                    deleteTmpFiles(audioClips);
                 } catch(e) {
                     // ENOENT error for some reason
                     // console.log(e.message)
                 }
+
+                resolve(true);
 
                 return response.download(ffmpegOutPath, `export.mp3`, () => {
                     try {
@@ -205,19 +227,24 @@ export class AudioUtilityService {
                     }
                 });
             })
-            .on('error', (error) => {
+            .on('error', (error, stdout, stderr) => {
                 // When error occurs when concatenating mp3 files
+                // ffmpeg stdout and stderr for more detailed errors
                 console.log(`Error occurred when trying to merge files: ${error.message}`);
+                console.log("ffmpeg stdout:\n" + stdout);
+                console.log("ffmpeg stderr:\n" + stderr);
             })
             
             command.run()
         })
-
-        createTTSFiles
-        .then(addInputs)
-        .then(addFilters)
-        .then(mixAudio)
-        .then(execute)
-        .catch((err) => console.log(err.message));
     }
+
+    deleteTmpFiles = ((audioClips) => {
+        // Delete temp file once ended
+        for(var i = 0; i < audioClips.length; ++i)
+        {
+            const tmpFilePath = path.join(__dirname, `../../tmp/${i}.mp3`)
+            fs.unlinkSync(tmpFilePath, (err) => console.log(err));                
+        }
+    })
 }
