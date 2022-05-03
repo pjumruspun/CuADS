@@ -28,23 +28,30 @@ function getSound(buffer) {
     });
 }
 
-async function generateAudio(source, text) {
+async function generateAudio(source, text): Promise<any> {
     if (source === 'chula') {
+        const chulaUrl = `http://${process.env.TTS_API_ENDPOINT}:${process.env.TTS_PORT}`
+        console.log(`chulaUrl: ${chulaUrl}`)
+        console.log(`text: ${text}`)
         try {
-            axios.post(
-                process.env.TTS_API_ENDPOINT,
-                {'data': text},
+            
+            const promise = axios.post(
+                chulaUrl,
+                {'text': text},
                 {
                     headers: {
                         'Content-Type': 'application/json'
                     }
                 }
-            ).then((response) => {
-                const sound = response.data.data;
-                return [sound, 200];
-            }).catch((response) => {
-                return [response, 400];
-            });
+            )
+
+            const dataPromise = promise.then((response) => 
+                [response.data, response.status]
+            )
+            
+            console.log(dataPromise)
+            return dataPromise
+
         } catch (error) {
             return [error, 500];
         }
@@ -67,6 +74,7 @@ export class TTSService {
     constructor(@Inject('AUDIOCLIP_MODEL') private audioClipModel: mongoose.Model<IAudioClip>){}
 
     async saveAudio(@Body() createTTSDto: CreateTTSDto, @Req() req, @Res() res) {
+        console.log('saving audio...')
         const source = createTTSDto.source;
         const text = createTTSDto.text;
         const startTime = createTTSDto.startTime;
@@ -74,29 +82,48 @@ export class TTSService {
         const volume = createTTSDto.volume;
         const trackId = createTTSDto.trackId;
 
-        const [result, statusCode] = await generateAudio(source, text);
+        console.log('will generate audio...')
 
-        if (statusCode !== 200) {
-            return res.status(statusCode).json({'msg': result});
-        }
+        generateAudio(source, text).then((response) => {
+            const [result, statusCode] = response
+            // let prefix
+            // let finalResult
+            // if (source == 'google') {
+            //     prefix = 'data:audio/mpeg;base64,'
+            //     finalResult = result
+            // }
+            // else if (source == 'chula') {
+            //     prefix = 'data:audio/x-wav;base64,'
+            //     finalResult = Buffer.from(result, 'binary').toString('base64');
+            // }
+            // else {
+            //     throw new Error("invalid source")
+            // }
+            // console.log(finalResult)
+            // console.log(`statusCode: ${statusCode}`)
 
-        const formData = {
-            content: result,
-            startTime: startTime,
-            text: text,
-            speed: speed,
-            volume: volume,
-            source: source,
-        };
+            if (statusCode !== 200) {
+                return res.status(statusCode).json({'msg': result});
+            }
 
-        try {
-            axios.post(`http://localhost:3001/audio-clips/${trackId}`, formData).then((response) => {
-                console.log("success");
-		            return res.status(201).json({'msg': 'success', 'content': 'data:audio/mpeg;base64,'+result, 'startTime': startTime, 'speed': speed, 'volume': volume});
-            })
-        } catch(e) {
-            return res.status(500).json({ 'msg': e.message });
-        }
+            const formData = {
+                content: 'data:audio/mpeg;base64,'+result,
+                startTime: startTime,
+                text: text,
+                speed: speed,
+                volume: volume,
+                source: source,
+            };
+
+            try {
+                axios.post(`http://localhost:3001/audio-clips/${trackId}`, formData).then((response) => {
+                    console.log("success");
+                        return res.status(201).json({'msg': 'success', 'content': 'data:audio/mpeg;base64,'+result, 'startTime': startTime, 'speed': speed, 'volume': volume});
+                })
+            } catch(e) {
+                return res.status(500).json({ 'msg': e.message });
+            }
+        })
     }
 
     async update(id: string, UpdateTTSDto: UpdateTTSDto) {
