@@ -53,6 +53,8 @@ async function generateAudio(source, text): Promise<any> {
             return dataPromise
 
         } catch (error) {
+            console.log("error generating chula:")
+            console.log(error)
             return [error, 500];
         }
     } else if (source === 'google') {
@@ -85,29 +87,29 @@ export class TTSService {
         console.log('will generate audio...')
 
         generateAudio(source, text).then((response) => {
-            const [result, statusCode] = response
-            // let prefix
-            // let finalResult
-            // if (source == 'google') {
-            //     prefix = 'data:audio/mpeg;base64,'
-            //     finalResult = result
-            // }
-            // else if (source == 'chula') {
-            //     prefix = 'data:audio/x-wav;base64,'
-            //     finalResult = Buffer.from(result, 'binary').toString('base64');
-            // }
-            // else {
-            //     throw new Error("invalid source")
-            // }
-            // console.log(finalResult)
-            // console.log(`statusCode: ${statusCode}`)
+            const [resp, statusCode] = response
+            let prefix
+            let result
+            if (source == 'google') {
+                prefix = 'data:audio/mpeg;base64,'
+                result = resp
+            }
+            else if (source == 'chula') {
+                prefix = 'data:audio/mpeg;base64,'
+                result = Buffer.from(resp, 'binary').toString('base64');
+            }
+            else {
+                throw new Error("invalid source")
+            }
+            console.log(result)
+            console.log(`statusCode: ${statusCode}`)
 
             if (statusCode !== 200) {
                 return res.status(statusCode).json({'msg': result});
             }
 
             const formData = {
-                content: 'data:audio/mpeg;base64,'+result,
+                content: result,
                 startTime: startTime,
                 text: text,
                 speed: speed,
@@ -118,7 +120,7 @@ export class TTSService {
             try {
                 axios.post(`http://localhost:3001/audio-clips/${trackId}`, formData).then((response) => {
                     console.log("success");
-                        return res.status(201).json({'msg': 'success', 'content': 'data:audio/mpeg;base64,'+result, 'startTime': startTime, 'speed': speed, 'volume': volume});
+                        return res.status(201).json({'msg': 'success', 'content': prefix+result, 'startTime': startTime, 'speed': speed, 'volume': volume});
                 })
             } catch(e) {
                 return res.status(500).json({ 'msg': e.message });
