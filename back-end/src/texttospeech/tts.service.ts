@@ -45,12 +45,14 @@ async function generateAudio(source, text): Promise<any> {
                 }
             )
 
-            const dataPromise = promise.then((response) => 
+            const [rawAudioData, statusCode] = await promise.then((response) => 
                 [response.data, response.status]
             )
+
+            const binaryData = Buffer.from(rawAudioData, 'binary')
+            const base64Data = binaryData.toString('base64')
             
-            console.log(dataPromise)
-            return dataPromise
+            return [base64Data, statusCode]
 
         } catch (error) {
             console.log("error generating chula:")
@@ -87,21 +89,20 @@ export class TTSService {
         console.log('will generate audio...')
 
         generateAudio(source, text).then((response) => {
-            const [resp, statusCode] = response
+            const [result, statusCode] = response
+
             let prefix
-            let result
+
             if (source == 'google') {
                 prefix = 'data:audio/mpeg;base64,'
-                result = resp
             }
             else if (source == 'chula') {
                 prefix = 'data:audio/mpeg;base64,'
-                result = Buffer.from(resp, 'binary').toString('base64');
             }
             else {
                 throw new Error("invalid source")
             }
-            console.log(result)
+ 
             console.log(`statusCode: ${statusCode}`)
 
             if (statusCode !== 200) {
