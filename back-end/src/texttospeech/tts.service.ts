@@ -31,10 +31,9 @@ function getSound(buffer) {
 async function generateAudio(source, text): Promise<any> {
     if (source === 'chula') {
         const chulaUrl = `http://${process.env.TTS_API_ENDPOINT}:${process.env.TTS_PORT}`
-        console.log(`chulaUrl: ${chulaUrl}`)
-        console.log(`text: ${text}`)
         try {
-            
+            // Request .wav file from chula's TTS server
+            // arraybuffer because the file is binary
             const promise = axios.post(
                 chulaUrl,
                 {'text': text},
@@ -49,15 +48,15 @@ async function generateAudio(source, text): Promise<any> {
             const [rawAudioData, statusCode] = await promise.then((response) => 
                 [response.data, response.status]
             )
-
+            
+            // Convert from binary to base64 to further store in MongoDB
+            // Front-end will read base64 file and play it
             const binaryData = Buffer.from(rawAudioData, 'binary')
             const base64Data = binaryData.toString('base64')
             
             return [base64Data, statusCode]
 
         } catch (error) {
-            console.log("error generating chula:")
-            console.log(error)
             return [error, 500];
         }
     } else if (source === 'google') {
@@ -91,21 +90,6 @@ export class TTSService {
 
         generateAudio(source, text).then((response) => {
             const [result, statusCode] = response
-
-            let prefix
-
-            if (source == 'google') {
-                prefix = 'data:audio/mpeg;base64,'
-            }
-            else if (source == 'chula') {
-                prefix = 'data:audio/mpeg;base64,'
-            }
-            else {
-                throw new Error("invalid source")
-            }
- 
-            console.log(`statusCode: ${statusCode}`)
-
             if (statusCode !== 200) {
                 return res.status(statusCode).json({'msg': result});
             }
@@ -122,7 +106,7 @@ export class TTSService {
             try {
                 axios.post(`http://localhost:3001/audio-clips/${trackId}`, formData).then((response) => {
                     console.log("success");
-                        return res.status(201).json({'msg': 'success', 'content': prefix+result, 'startTime': startTime, 'speed': speed, 'volume': volume});
+                        return res.status(201).json({'msg': 'success', 'content': 'data:audio/mpeg;base64,'+result, 'startTime': startTime, 'speed': speed, 'volume': volume});
                 })
             } catch(e) {
                 return res.status(500).json({ 'msg': e.message });
