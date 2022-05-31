@@ -40,8 +40,9 @@ async function generateAudio(source, text): Promise<any> {
                 {'text': text},
                 {
                     headers: {
-                        'Content-Type': 'application/json'
-                    }
+                        'Content-Type': 'arraybuffer'
+                    },
+                    responseType: "arraybuffer"
                 }
             )
 
