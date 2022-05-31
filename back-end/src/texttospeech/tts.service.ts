@@ -28,23 +28,34 @@ function getSound(buffer) {
     });
 }
 
-async function generateAudio(source, text) {
+async function generateAudio(source, text): Promise<any> {
     if (source === 'chula') {
+        const chulaUrl = `http://${process.env.TTS_API_ENDPOINT}:${process.env.TTS_PORT}`
         try {
-            axios.post(
-                process.env.TTS_API_ENDPOINT,
-                {'data': text},
+            // Request .wav file from chula's TTS server
+            // arraybuffer because the file is binary
+            const promise = axios.post(
+                chulaUrl,
+                {'text': text},
                 {
                     headers: {
-                        'Content-Type': 'application/json'
-                    }
+                        'Content-Type': 'arraybuffer'
+                    },
+                    responseType: "arraybuffer"
                 }
-            ).then((response) => {
-                const sound = response.data.data;
-                return [sound, 200];
-            }).catch((response) => {
-                return [response, 400];
-            });
+            )
+
+            const [rawAudioData, statusCode] = await promise.then((response) => 
+                [response.data, response.status]
+            )
+            
+            // Convert from binary to base64 to further store in MongoDB
+            // Front-end will read base64 file and play it
+            const binaryData = Buffer.from(rawAudioData, 'binary')
+            const base64Data = binaryData.toString('base64')
+            
+            return [base64Data, statusCode]
+
         } catch (error) {
             return [error, 500];
         }
@@ -67,6 +78,7 @@ export class TTSService {
     constructor(@Inject('AUDIOCLIP_MODEL') private audioClipModel: mongoose.Model<IAudioClip>){}
 
     async saveAudio(@Body() createTTSDto: CreateTTSDto, @Req() req, @Res() res) {
+        console.log('saving audio...')
         const source = createTTSDto.source;
         const text = createTTSDto.text;
         const startTime = createTTSDto.startTime;
@@ -74,29 +86,32 @@ export class TTSService {
         const volume = createTTSDto.volume;
         const trackId = createTTSDto.trackId;
 
-        const [result, statusCode] = await generateAudio(source, text);
+        console.log('will generate audio...')
 
-        if (statusCode !== 200) {
-            return res.status(statusCode).json({'msg': result});
-        }
+        generateAudio(source, text).then((response) => {
+            const [result, statusCode] = response
+            if (statusCode !== 200) {
+                return res.status(statusCode).json({'msg': result});
+            }
 
-        const formData = {
-            content: result,
-            startTime: startTime,
-            text: text,
-            speed: speed,
-            volume: volume,
-            source: source,
-        };
+            const formData = {
+                content: result,
+                startTime: startTime,
+                text: text,
+                speed: speed,
+                volume: volume,
+                source: source,
+            };
 
-        try {
-            axios.post(`http://localhost:3001/audio-clips/${trackId}`, formData).then((response) => {
-                console.log("success");
-		            return res.status(201).json({'msg': 'success', 'content': 'data:audio/mpeg;base64,'+result, 'startTime': startTime, 'speed': speed, 'volume': volume});
-            })
-        } catch(e) {
-            return res.status(500).json({ 'msg': e.message });
-        }
+            try {
+                axios.post(`http://localhost:3001/audio-clips/${trackId}`, formData).then((response) => {
+                    console.log("success");
+                        return res.status(201).json({'msg': 'success', 'content': 'data:audio/mpeg;base64,'+result, 'startTime': startTime, 'speed': speed, 'volume': volume});
+                })
+            } catch(e) {
+                return res.status(500).json({ 'msg': e.message });
+            }
+        })
     }
 
     async update(id: string, UpdateTTSDto: UpdateTTSDto) {

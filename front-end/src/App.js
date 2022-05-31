@@ -12,7 +12,7 @@ import PauseIcon from "@material-ui/icons/Pause";
 import axios from "axios";
 import Waveform from "./components//Wave";
 import TrackSection from "./components/TrackSection";
-import * as Tone from 'tone';
+import * as Tone from "tone";
 
 var rootStyle = {
   backgroundColor: "#222222",
@@ -29,12 +29,12 @@ var topTextEmptyProject =
   "No project opened, please create a new project or open an existing project from File menu.";
 
 var normalizeSpeed = (speed) => {
-  return ((speed/2)*0.5) + 0.85;
-}
+  return (speed / 2) * 0.5 + 0.85;
+};
 
 var normalizeVolume = (volume) => {
-  return parseInt((volume/5)-10);
-}
+  return parseInt(volume / 5 - 10);
+};
 
 class App extends Component {
   state = {
@@ -63,87 +63,101 @@ class App extends Component {
     localTrackId: 0,
     selectedTrackId: undefined,
     ttsTransportMap: {},
-    trackselected: false
+    trackselected: false,
   };
 
   loadTransportTTS = (ttsList = this.state.ttsList) => {
+    Tone.start();
     ttsList.forEach((ttsItem) => {
       if (!(ttsItem._id in this.state.ttsTransportMap)) {
-        const player = new Tone.Player("data:audio/wav;base64," + ttsItem.content);
+        const player = new Tone.Player(
+          "data:audio/mpeg;base64," + ttsItem.content
+        );
         player.playbackRate = normalizeSpeed(ttsItem.speed);
-        if((this.state.selectedttsList!= undefined)&&(this.state.selectedttsList.includes(ttsItem._id))){
+        if (
+          this.state.selectedttsList != undefined &&
+          this.state.selectedttsList.includes(ttsItem._id)
+        ) {
           //alert(ttsItem.text+" play");
           player.volume.value = normalizeVolume(ttsItem.volume);
-        }else{
+        } else {
           //alert(ttsItem.text+" silence");
           player.volume.value = -Infinity;
           player.volume.mute = true;
         }
         player.toDestination();
         player.sync().start(ttsItem.startTime);
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
           ttsTransportMap: {
             ...prevState.ttsTransportMap,
-            [ttsItem._id]: player
-        }
+            [ttsItem._id]: player,
+          },
         }));
-      }else{
-        this.createOrUpdateTransportTTS("update",ttsItem,ttsItem._id);
+      } else {
+        this.createOrUpdateTransportTTS("update", ttsItem, ttsItem._id);
       }
     });
-  }
+  };
 
   createOrUpdateTransportTTS = async (mode, ttsItem, tts_id) => {
+    Tone.start();
     await this.fetchTTS(false);
-    switch(mode) {
+    switch (mode) {
       case "create":
         this.loadTransportTTS();
         break;
       case "update":
-        if((this.state.ttsTransportMap)[tts_id]!= undefined){
-          (this.state.ttsTransportMap)[tts_id].dispose();
+        if (this.state.ttsTransportMap[tts_id] != undefined) {
+          this.state.ttsTransportMap[tts_id].dispose();
         }
-        const response = await axios.get(`http://localhost:3001/audio-clips/findbyid/${tts_id}/`)
-        const newPlayer = new Tone.Player("data:audio/wav;base64," + response.data.content);
+        const response = await axios.get(
+          `http://localhost:3001/audio-clips/findbyid/${tts_id}/`
+        );
+        const newPlayer = new Tone.Player(
+          "data:audio/mpeg;base64," + response.data.content
+        );
         newPlayer.playbackRate = normalizeSpeed(response.data.speed);
-        if((this.state.selectedttsList!= undefined)&&(this.state.selectedttsList.includes(ttsItem._id))){
-          if(response.data.volume!=null){
+        if (
+          this.state.selectedttsList != undefined &&
+          this.state.selectedttsList.includes(ttsItem._id)
+        ) {
+          if (response.data.volume != null) {
             newPlayer.volume.value = normalizeVolume(response.data.volume);
           }
-        }else{
+        } else {
           newPlayer.volume.value = -Infinity;
           newPlayer.volume.mute = true;
         }
         newPlayer.toDestination();
-        if(response.data.startTime>=0){
+        if (response.data.startTime >= 0) {
           newPlayer.sync().start(response.data.startTime);
         }
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
           ttsTransportMap: {
             ...prevState.ttsTransportMap,
-            [tts_id]: newPlayer
-          }
+            [tts_id]: newPlayer,
+          },
         }));
         break;
       default:
         break;
     }
-  }
+  };
 
   handleTTSGenerated = (e) => {
     this.fetchTracks();
     this.createOrUpdateTransportTTS(e);
-  }
-  
+  };
+
   getTTSDuration = (id) => {
-    const thisPlayer = (this.state.ttsTransportMap)[id]
+    const thisPlayer = this.state.ttsTransportMap[id];
     return thisPlayer.buffer.duration / thisPlayer.playbackRate;
-  }
+  };
 
   handleTTSDelete = (id) => {
     console.log("app.js: should delete", id);
     const filteredTTSList = this.state.ttsList.filter((tts) => tts._id !== id);
-    (this.state.ttsTransportMap)[id].dispose();
+    this.state.ttsTransportMap[id].dispose();
     let newTTSTransportMap = this.state.ttsTransportMap;
     delete newTTSTransportMap[id];
     this.setState({ ttsTransportMap: newTTSTransportMap });
@@ -155,16 +169,23 @@ class App extends Component {
   handleScriptTextChange = (tts_id) => {
     this.setState({ selectedWaveId: tts_id });
     if (tts_id === -1) {
-      this.setState({ text: '', speed: 1, trackvolume: 50 });
+      this.setState({ text: "", speed: 1, trackvolume: 50 });
     } else {
       const currentTTS = this.state.ttsList.find((tts) => {
         return tts._id === tts_id;
       });
       if (currentTTS) {
         const duration = this.getTTSDuration(tts_id);
-        this.setState({ text: currentTTS.text, ttsStartTime: currentTTS.startTime, ttsDuration: duration, speed: currentTTS.speed, trackvolume: currentTTS.volume, ttsSource: currentTTS.source });
+        this.setState({
+          text: currentTTS.text,
+          ttsStartTime: currentTTS.startTime,
+          ttsDuration: duration,
+          speed: currentTTS.speed,
+          trackvolume: currentTTS.volume,
+          ttsSource: currentTTS.source,
+        });
       } else {
-        this.setState({ text: '', speed: 1, trackvolume: 50 });
+        this.setState({ text: "", speed: 1, trackvolume: 50 });
       }
     }
   };
@@ -199,7 +220,7 @@ class App extends Component {
   handleSeekTTS = (e) => {
     Tone.Transport.seconds = e;
     Tone.Transport.start();
-  }
+  };
 
   handleProgress = (state) => {
     if (!this.state.seeking) {
@@ -260,7 +281,7 @@ class App extends Component {
     });
   };
 
-  handleTrackSelection = async(trackId) => {
+  handleTrackSelection = async (trackId) => {
     if (trackId !== 99) {
       await this.setState({ selectedTrackId: trackId });
     } else {
@@ -268,12 +289,12 @@ class App extends Component {
     }
   };
 
-  handleselectedTTS = async(e) =>{
-    if(e == undefined){
-    await this.setState({ selectedttsList: [] });
+  handleselectedTTS = async (e) => {
+    if (e == undefined) {
+      await this.setState({ selectedttsList: [] });
     }
     await this.setState({ selectedttsList: e });
-    console.log("currently selecting "+this.state.selectedttsList);
+    console.log("currently selecting " + this.state.selectedttsList);
     this.loadTransportTTS();
   };
 
@@ -374,41 +395,39 @@ class App extends Component {
   };
 
   handleDeleteTrack = (localTrackId) => {
-    if (
-      window.confirm(
-        'Are you sure you want to delete this track ?'
-      )
-    ) {
-    console.log(`Trying to delete ${localTrackId}`);
-    // mark track for delete
-    this.state.tracks.map((track) => {
-      if (track.localTrackId === localTrackId) {
-        // push backendId for deletion if user saves project
-        // but the track must have backendId (exist in database)
-	if(this.state.selectedTrackId == track.backendId){
-	 this.setState({ selectedTrackId: undefined });
-	}
-	if(track.audioClips!=undefined){
-	track.audioClips.map((id) => {
-	if((this.state.ttsTransportMap)[id]!= undefined){
-        (this.state.ttsTransportMap)[id].dispose();
-	}
-	const response = axios.delete(
-      	`http://localhost:3001/audio-clips/${id}`
-    	);
-	});
-	}
-        if (track.backendId !== undefined) {
-          this.state.tracksToDelete.push(track.backendId);
+    if (window.confirm("Are you sure you want to delete this track ?")) {
+      console.log(`Trying to delete ${localTrackId}`);
+      // mark track for delete
+      this.state.tracks.map((track) => {
+        if (track.localTrackId === localTrackId) {
+          // push backendId for deletion if user saves project
+          // but the track must have backendId (exist in database)
+          if (this.state.selectedTrackId == track.backendId) {
+            this.setState({ selectedTrackId: undefined });
+          }
+          if (track.audioClips != undefined) {
+            track.audioClips.map((id) => {
+              if (this.state.ttsTransportMap[id] != undefined) {
+                this.state.ttsTransportMap[id].dispose();
+              }
+              const response = axios.delete(
+                `http://localhost:3001/audio-clips/${id}`
+              );
+            });
+          }
+          if (track.backendId !== undefined) {
+            this.state.tracksToDelete.push(track.backendId);
+          }
         }
-      }
-    });
+      });
 
-    this.setState((prevState) => ({
-      tracks: prevState.tracks.filter((el) => el.localTrackId !== localTrackId),
-    }));
+      this.setState((prevState) => ({
+        tracks: prevState.tracks.filter(
+          (el) => el.localTrackId !== localTrackId
+        ),
+      }));
 
-    this.saveTracks();
+      this.saveTracks();
     }
   };
 
@@ -531,8 +550,8 @@ class App extends Component {
   };
 
   updateTrackSelectedAtApp = (e) => {
-    this.setState({ trackselected: e })
-  }
+    this.setState({ trackselected: e });
+  };
 
   ref = (player) => {
     this.player = player;
@@ -541,7 +560,7 @@ class App extends Component {
   onChange(field, value) {
     // parent class change handler is always called with field name and value
     this.setState({ [field]: value });
-  };
+  }
 
   render() {
     const {
@@ -596,7 +615,7 @@ class App extends Component {
               trackvolume={trackvolume}
               speed={speed}
               text={text}
-	      playing={playing}
+              playing={playing}
               selectedWaveId={this.state.selectedWaveId}
               onChange={this.onChange.bind(this)}
               ttsStartTime={this.state.ttsStartTime}
@@ -689,7 +708,7 @@ class App extends Component {
           projectId={this.state.projectId}
           fetchTracks={this.fetchTracks}
           tracks={this.state.tracks}
-          onSelectTrack={(e)=>this.handleTrackSelection(e)}
+          onSelectTrack={(e) => this.handleTrackSelection(e)}
           localTrackId={this.state.localTrackId}
           onAddTrack={this.handleAddTrack}
           onNameChange={this.handleTrackNameChange}
