@@ -6,13 +6,6 @@ services:
     ports:
       - ${MONGO_PORT}:${MONGO_PORT}
 
-  front-end:
-    build: ./front-end
-    tty: true
-    command: ["yarn", "start"]
-    ports:
-      - ${FRONTEND_PORT}:${FRONTEND_PORT}
-
   back-end:
     container_name: back-end
     build: ./back-end

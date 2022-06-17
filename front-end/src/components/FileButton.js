@@ -7,7 +7,6 @@ import axios from "axios";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import NameModal from "./NameModal.js";
 import TrackModal from "./TrackModal.js";
-import fs from "fs";
 
 export default function SimpleMenu(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);

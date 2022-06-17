@@ -14,7 +14,7 @@
     "react-dom": "^17.0.1",
     "react-horizontal-scroll-container": "^1.0.1",
     "react-player": "^2.7.2",
-    "react-scripts": "4.0.1",
+    "react-scripts": "^5.0.1",
     "react-selectable-fast": "^3.4.0",
     "tone": "^14.7.77",
     "wavesurfer.js": "^4.6.0",
