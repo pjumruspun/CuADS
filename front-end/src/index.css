@@ -1,23 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+:root {
+  --menubar-color: #4f4f4f;
+  --menubar-size: 40px;
+  --border: 1px solid #474a4d;
+}
 
-body {
+* {
   margin: 0;
-  font-family: 'Roboto', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family: 'Roboto', sans-serif;
-}
-
-#root, #root > div {
-  height: 100%;
-  overflow: auto;
-}
-
-body, html {
-  height: 100%;
-  margin: 0;
+  padding: 0;
 }

@@ -1,0 +1,20 @@
+.menubar {
+    height: var(--menubar-size);
+    background-color: var(--menubar-color);
+    padding: 0px 1rem;
+    border-bottom: var(--border);
+}
+
+.menubar-menu {
+    max-width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.menubar-logo {
+    height: calc(var(--menubar-size) * 0.6);
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-right: 10px
+}
