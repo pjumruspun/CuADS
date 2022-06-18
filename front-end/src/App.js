@@ -12,7 +12,7 @@ const rootStyle = {
 };
 
 const gridStyle = {
-  height: "250px",
+  height: "400px",
 };
 
 function App() {

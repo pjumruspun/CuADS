@@ -4,7 +4,7 @@ var rootStyle = {
   backgroundColor: "#292929",
   display: "flex",
   height: "100%",
-  width: "50%",
+  width: "60%",
 };
 
 function Player() {

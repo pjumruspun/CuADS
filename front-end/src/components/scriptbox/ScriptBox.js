@@ -1,14 +1,18 @@
 import { Grid } from "@material-ui/core";
 import React from "react";
 import TextField from "@material-ui/core/TextField";
-import Paper from "@material-ui/core/Paper";
+import Typography from "@material-ui/core/Typography";
+import MenuItem from "@material-ui/core/MenuItem";
+import "typeface-roboto";
+
+const robotoFont = require("typeface-roboto");
 
 // Div style
 const rootStyle = {
   backgroundColor: "#333333",
   display: "flex",
   height: "100%",
-  width: "50%",
+  width: "40%",
 };
 
 // Main grid style
@@ -30,69 +34,160 @@ const inputProps = {
   },
 };
 
-const timeInputLabelProps = {
+const shrinkedInputLabelProps = {
+  shrink: true,
   style: {
     color: "gray",
-    shrink: true,
   },
 };
 
+const ttsSources = [
+  {
+    value: "Google",
+    label: "Google",
+  },
+  {
+    value: "Chula",
+    label: "Chula",
+  },
+];
+
+const rowStyle = {
+  marginTop: "12px",
+  marginBottom: "12px",
+};
+
+function CenteredLabelText(text) {
+  return <Typography align="center">{text}</Typography>;
+}
+
+function Row(children) {
+  return (
+    <Grid item style={rowStyle}>
+      {children}
+    </Grid>
+  );
+}
+
+function Column(children) {
+  return (
+    <Grid container justify="space-around" alignItems="center">
+      {children}
+    </Grid>
+  );
+}
+
+function InputTextField() {
+  return (
+    <TextField
+      id="input-text"
+      label="Input Text"
+      variant="filled"
+      InputLabelProps={shrinkedInputLabelProps}
+      InputProps={inputProps}
+      color="white"
+      fullWidth
+      multiline
+      minRows={2}
+      maxRows={2}
+    ></TextField>
+  );
+}
+
+function TimeInputField(id, label) {
+  return (
+    <Grid item>
+      <TextField
+        id={id}
+        label={label}
+        variant="filled"
+        type="time"
+        InputLabelProps={shrinkedInputLabelProps}
+        InputProps={inputProps}
+        color="white"
+        size="small"
+        style={{ width: "90%" }}
+      ></TextField>
+    </Grid>
+  );
+}
+
+function NumberInputField(id, label) {
+  return (
+    <TextField
+      id={id}
+      label={label}
+      variant="filled"
+      InputLabelProps={shrinkedInputLabelProps}
+      InputProps={inputProps}
+      type="number"
+      color="white"
+      size="small"
+      style={{ width: "90%" }}
+    ></TextField>
+  );
+}
+
+function SelectionInputField(id, label, choices, state, handleChange) {
+  return (
+    <TextField
+      id="volume"
+      label="Source"
+      variant="filled"
+      select
+      value={state}
+      onChange={handleChange}
+      InputLabelProps={shrinkedInputLabelProps}
+      InputProps={inputProps}
+      color="white"
+      size="small"
+      style={{ width: "90%" }}
+    >
+      {choices.map((option) => (
+        <MenuItem key={option.value} value={option.value}>
+          {option.label}
+        </MenuItem>
+      ))}
+    </TextField>
+  );
+}
+
 function ScriptBox() {
+  const [source, setSource] = React.useState("Google");
+
+  const handleSourceChange = (event) => {
+    setSource(event.target.value);
+  };
   return (
     <div align="left" style={rootStyle}>
       <Grid
         container
         direction="column"
-        justify="space-around"
+        justify="flex-start"
         alignItems="flex-start"
         style={scriptBoxStyle}
       >
-        <TextField
-          id="input-text"
-          label="Input Text"
-          variant="filled"
-          InputLabelProps={inputLabelProps}
-          InputProps={inputProps}
-          color="white"
-          fullWidth
-          multiline
-          minRows={2}
-          maxRows={2}
-        ></TextField>
-        <Grid container justify="flex-start" alignItems="center">
-          <Grid item xs={4} md={1}>
-            Time
-          </Grid>
-          <Grid item xs={4} md={4}>
-            <TextField
-              id="start-time"
-              label="Start"
-              variant="filled"
-              InputLabelProps={timeInputLabelProps}
-              InputProps={inputProps}
-              color="white"
-              size="small"
-              style={{ width: "90%" }}
-            ></TextField>
-          </Grid>
-          <Grid item xs={4} md={4}>
-            <TextField
-              id="end-time"
-              label="End"
-              variant="filled"
-              InputLabelProps={timeInputLabelProps}
-              InputProps={inputProps}
-              color="white"
-              size="small"
-              style={{ width: "90%" }}
-            ></TextField>
-          </Grid>
-        </Grid>
-
-        <h4>Adjustment</h4>
-        <h4>Volume</h4>
-        <h4>Speed</h4>
-        <h4>Source</h4>
+        {Row(CenteredLabelText("Script:"))}
+        {InputTextField()}
+        {Row(
+          Column([
+            TimeInputField("start-time", "Start Time"),
+            TimeInputField("end-time", "End Time"),
+          ])
+        )}
+        {Row(
+          Column([
+            NumberInputField("volume", "Volume"),
+            NumberInputField("speed", "Speed"),
+            SelectionInputField(
+              "tts-source",
+              "TTS Source",
+              ttsSources,
+              source,
+              handleSourceChange
+            ),
+          ])
+        )}
       </Grid>
     </div>
   );
