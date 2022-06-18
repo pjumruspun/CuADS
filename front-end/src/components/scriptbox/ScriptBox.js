@@ -57,8 +57,20 @@ const rowStyle = {
   marginBottom: "12px",
 };
 
-function CenteredLabelText(text) {
-  return <Typography align="center">{text}</Typography>;
+const timeInputFieldStyle = {
+  width: "100%",
+};
+
+const colElementInputStyle = {
+  marginRight: "12px",
+};
+
+function CenteredLabelText(text, style = null) {
+  return (
+    <Typography align="center" style={style}>
+      {text}
+    </Typography>
+  );
 }
 
 function Row(children) {
@@ -71,7 +83,7 @@ function Row(children) {
 
 function Column(children) {
   return (
-    <Grid container justify="space-around" alignItems="center">
+    <Grid container justify="flex-start" alignItems="center">
       {children}
     </Grid>
   );
@@ -96,59 +108,64 @@ function InputTextField() {
 
 function TimeInputField(id, label) {
   return (
-    <Grid item>
+    <Grid item xs={4}>
       <TextField
         id={id}
         label={label}
         variant="filled"
-        type="time"
+        defaultValue="00:00:00:000"
         InputLabelProps={shrinkedInputLabelProps}
         InputProps={inputProps}
         color="white"
         size="small"
-        style={{ width: "90%" }}
+        style={timeInputFieldStyle}
       ></TextField>
     </Grid>
   );
 }
 
-function NumberInputField(id, label) {
+function NumberInputField(id, label, defaultValue = null) {
   return (
-    <TextField
-      id={id}
-      label={label}
-      variant="filled"
-      InputLabelProps={shrinkedInputLabelProps}
-      InputProps={inputProps}
-      type="number"
-      color="white"
-      size="small"
-      style={{ width: "90%" }}
-    ></TextField>
+    <Grid item xs={2}>
+      <TextField
+        id={id}
+        label={label}
+        variant="filled"
+        InputLabelProps={shrinkedInputLabelProps}
+        InputProps={inputProps}
+        type="number"
+        color="white"
+        size="small"
+        style={colElementInputStyle}
+        defaultValue={defaultValue}
+      ></TextField>
+    </Grid>
   );
 }
 
 function SelectionInputField(id, label, choices, state, handleChange) {
   return (
-    <TextField
-      id="volume"
-      label="Source"
-      variant="filled"
-      select
-      value={state}
-      onChange={handleChange}
-      InputLabelProps={shrinkedInputLabelProps}
-      InputProps={inputProps}
-      color="white"
-      size="small"
-      style={{ width: "90%" }}
-    >
-      {choices.map((option) => (
-        <MenuItem key={option.value} value={option.value}>
-          {option.label}
-        </MenuItem>
-      ))}
-    </TextField>
+    <Grid item xs={4}>
+      <TextField
+        id="volume"
+        label="Source"
+        variant="filled"
+        select
+        value={state}
+        onChange={handleChange}
+        InputLabelProps={shrinkedInputLabelProps}
+        InputProps={inputProps}
+        color="white"
+        size="small"
+        style={{ width: "90%" }}
+      >
+        {choices.map((option) => (
+          <MenuItem key={option.value} value={option.value}>
+            {option.label}
+          </MenuItem>
+        ))}
+      </TextField>
+    </Grid>
   );
 }
 
@@ -171,14 +188,19 @@ function ScriptBox() {
         {InputTextField()}
         {Row(
           Column([
-            TimeInputField("start-time", "Start Time"),
-            TimeInputField("end-time", "End Time"),
+            TimeInputField("start-time", "Start"),
+
+            CenteredLabelText("To", {
+              marginLeft: "12px",
+              marginRight: "12px",
+            }),
+            TimeInputField("end-time", "End"),
           ])
         )}
         {Row(
           Column([
-            NumberInputField("volume", "Volume"),
-            NumberInputField("speed", "Speed"),
+            NumberInputField("volume", "Volume%", 100),
+            NumberInputField("speed", "Speed%", 100),
             SelectionInputField(
               "tts-source",
               "TTS Source",
