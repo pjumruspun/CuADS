@@ -1,3 +1,5 @@
+const showMilliseconds = false;
+
 function formatSeconds(seconds) {
   const date = new Date(seconds * 1000);
   const hh = date.getUTCHours();
@@ -5,9 +7,9 @@ function formatSeconds(seconds) {
   const ss = pad(date.getUTCSeconds());
   const mi = padMs(date.getUTCMilliseconds());
   if (hh) {
-    return `${hh}:${pad(mm)}:${ss}:${mi}`;
+    return `${hh}:${pad(mm)}:${ss}` + (showMilliseconds ? `:${mi}` : ``);
   }
-  return `${mm}:${ss}:${mi}`;
+  return `${mm}:${ss}` + (showMilliseconds ? `:${mi}` : ``);
 }
 
 function pad(string) {

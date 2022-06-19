@@ -3,6 +3,7 @@ import PlayPauseButton from "./PlayPauseButton";
 import Typography from "@material-ui/core/Typography";
 import formatSeconds from "./FormatDuration";
 import Grid from "@material-ui/core/Grid";
+import Seeker from "./Seeker";
 
 const rootStyle = {
   backgroundColor: "black",
@@ -24,26 +25,35 @@ function DurationDisplay(props) {
 function PlayerControlBar(props) {
   return (
     <ul style={rootStyle}>
-      <Grid
-        container
-        direction="row"
-        justifyContent="center"
-        alignContent="center"
-        alignItems="center"
-      >
-        <Grid item xs={5}>
-          <DurationDisplay
-            playedSeconds={props.playedSeconds}
-            duration={props.duration}
-          ></DurationDisplay>
+      <Grid container direction="row">
+        <Seeker
+          played={props.played}
+          setPlayed={props.setPlayed}
+          playing={props.playing}
+          setPlaying={props.setPlaying}
+          player={props.player}
+        ></Seeker>
+        <Grid
+          container
+          direction="row"
+          justifyContent="center"
+          alignContent="center"
+          alignItems="center"
+        >
+          <Grid item xs={5}>
+            <DurationDisplay
+              playedSeconds={props.playedSeconds}
+              duration={props.duration}
+            ></DurationDisplay>
+          </Grid>
+          <Grid item xs={1}>
+            <PlayPauseButton
+              playing={props.playing}
+              setPlaying={props.setPlaying}
+            ></PlayPauseButton>
+          </Grid>
+          <Grid item xs={5}></Grid>
         </Grid>
-        <Grid item xs={1}>
-          <PlayPauseButton
-            playing={props.playing}
-            setPlaying={props.setPlaying}
-          ></PlayPauseButton>
-        </Grid>
-        <Grid item xs={5}></Grid>
       </Grid>
     </ul>
   );

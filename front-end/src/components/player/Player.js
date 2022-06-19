@@ -25,7 +25,6 @@ function Player() {
   const [playing, setPlaying] = useState(false); // Boolean if the video is playing
   const [played, setPlayed] = useState(0.0); // How much have the video played
   const [playedSeconds, setPlayedSeconds] = useState(0.0);
-  const [seeking, setSeeking] = useState(false); // Is the video currently in seeking by user?
   const [volume, setVolume] = useState(defaultMasterVolume); // Master volume
   const [duration, setDuration] = useState(0.0);
 
@@ -72,6 +71,9 @@ function Player() {
         <PlayerControlBar
           playing={playing}
           setPlaying={setPlaying}
+          played={played}
+          setPlayed={setPlayed}
+          player={player}
           playedSeconds={playedSeconds}
           duration={duration}
         ></PlayerControlBar>
