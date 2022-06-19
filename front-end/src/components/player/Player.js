@@ -14,7 +14,7 @@ var rootStyle = {
 };
 
 // Video player
-function Player() {
+function Player(props) {
   const [player, setPlayer] = useState(null); // Main Player
   const [url, setUrl] = useState(
     // Url of the video playing
@@ -36,6 +36,9 @@ function Player() {
     // Calls when video is loaded
     // duration: Length of the video in seconds
     setDuration(duration);
+
+    // For passing state up to the parent (App.js)
+    props.setDuration(duration);
   };
 
   const handleProgress = (state) => {

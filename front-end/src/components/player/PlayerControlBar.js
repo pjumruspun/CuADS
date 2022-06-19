@@ -1,7 +1,7 @@
 import React from "react";
 import PlayPauseButton from "./PlayPauseButton";
 import Typography from "@material-ui/core/Typography";
-import formatSeconds from "./FormatDuration";
+import formatSeconds from "../../utils/FormatDuration";
 import Grid from "@material-ui/core/Grid";
 import Seeker from "./Seeker";
 import * as constant from "../../Constants";

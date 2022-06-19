@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import MenuBar from "./components/menubar/MenuBar";
 import ScriptBox from "./components/scriptbox/ScriptBox";
 import Player from "./components/player/Player";
@@ -15,6 +15,10 @@ const gridStyle = {
 };
 
 function App() {
+  // For holding duration from Player
+  // Pass value down to TrackArea
+  const [duration, setDuration] = useState(0.0);
+
   return (
     <div style={rootStyle}>
       <MenuBar></MenuBar>
@@ -25,9 +29,9 @@ function App() {
         style={gridStyle}
       >
         <ScriptBox></ScriptBox>
-        <Player></Player>
+        <Player setDuration={setDuration}></Player>
       </Grid>
-      <TrackArea></TrackArea>
+      <TrackArea duration={duration}></TrackArea>
     </div>
   );
 }

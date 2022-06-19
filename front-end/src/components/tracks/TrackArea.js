@@ -20,13 +20,13 @@ export const trackNameStyle = {
   marginBottom: "10%",
 };
 
-function TrackArea() {
+function TrackArea(props) {
   return (
     <div style={rootStyle}>
       <Grid container direction="column">
         <Grid container direction="row">
           <AddTrackButton></AddTrackButton>
-          <TimeRuler></TimeRuler>
+          <TimeRuler duration={props.duration}></TimeRuler>
         </Grid>
         <Grid container direction="row">
           <MainAudioLabel></MainAudioLabel>

@@ -1,4 +1,4 @@
-import * as constant from "../../Constants";
+import * as constant from "../Constants";
 
 function formatSeconds(seconds) {
   // Formats float number into HH:MM:SS:MI or MM:SS:MI
@@ -14,6 +14,19 @@ function formatSeconds(seconds) {
     );
   }
   return `${mm}:${ss}` + (constant.showMilliseconds ? `:${mi}` : ``);
+}
+
+function formatSecondsCustom(seconds, showMilliseconds) {
+  // For showing milliseconds on demand with parameter showMilliseconds (boolean)
+  const date = new Date(seconds * 1000);
+  const hh = date.getUTCHours();
+  const mm = date.getUTCMinutes();
+  const ss = pad(date.getUTCSeconds());
+  const mi = padMs(date.getUTCMilliseconds());
+  if (hh) {
+    return `${hh}:${pad(mm)}:${ss}` + (showMilliseconds ? `:${mi}` : ``);
+  }
+  return `${mm}:${ss}` + (showMilliseconds ? `:${mi}` : ``);
 }
 
 function pad(string) {
