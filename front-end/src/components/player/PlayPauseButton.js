@@ -4,15 +4,17 @@ import PlayArrowIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 
 // Play Pause Button Settings
-const [playPauseButtonWidth, playPauseButtonHeight] = ["50px", "100%"];
+const [playPauseButtonWidth, playPauseButtonHeight] = ["50px", "40px"];
 const playPauseIconColor = "gray";
 const playPauseButtonBackgroundColor = "black";
+const playPauseButtonBorderRadius = 0;
 
+// Button that transforms into play/pause depends if the video's playing or not
 function PlayPauseButton(props) {
   const playPauseButtonStyle = {
     width: playPauseButtonWidth,
     height: playPauseButtonHeight,
-    borderRadius: 5,
+    borderRadius: playPauseButtonBorderRadius,
     color: playPauseIconColor,
     backgroundColor: playPauseButtonBackgroundColor,
   };
