@@ -25,3 +25,12 @@ export const showMilliseconds = false;
 // Script Box
 export const scriptBoxBackgroundColor = "#333333";
 export const scriptBoxAreaWidth = "40%"; // 100% - videoPlayerAreaWidth
+
+// Track Area
+export const trackAreaBackgroundColor = "#242424";
+export const trackAreaBorder = "thin solid #111111";
+export const timeRulerHeight = "50px";
+export const audioTrackHeight = "100px";
+export const trackItemBackgroundColor = "#333333";
+export const addTrackButtonColor = "#FFFFFF";
+export const [trackAreaLeftXs, trackAreaRightXs] = [3, 9]; // Must sum to 12
