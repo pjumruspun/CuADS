@@ -2,17 +2,15 @@ import React, { useState } from "react";
 import ReactPlayer from "react-player";
 import Grid from "@material-ui/core/Grid";
 import PlayerControlBar from "./PlayerControlBar";
+import * as constant from "../../Constants";
 
-// Video Player Config
 const [videoPlayerWidth, videoPlayerHeight] = ["90%", "90%"];
-const progressInterval = 10;
-const defaultMasterVolume = 0.8;
 
 var rootStyle = {
-  backgroundColor: "black",
+  backgroundColor: constant.videoBackgroundColor,
   display: "flex",
   height: "100%",
-  width: "60%",
+  width: constant.videoPlayerAreaWidth,
 };
 
 // Video player
@@ -25,7 +23,7 @@ function Player() {
   const [playing, setPlaying] = useState(false); // Boolean if the video is playing
   const [played, setPlayed] = useState(0.0); // How much have the video played
   const [playedSeconds, setPlayedSeconds] = useState(0.0);
-  const [volume, setVolume] = useState(defaultMasterVolume); // Master volume
+  const [volume, setVolume] = useState(constant.defaultMasterVolume); // Master volume
   const [duration, setDuration] = useState(0.0);
 
   const ref = (player) => {
@@ -64,7 +62,7 @@ function Player() {
           onSeek={handleSeek}
           onDuration={handleDuration}
           onProgress={handleProgress}
-          progressInterval={progressInterval}
+          progressInterval={constant.progressInterval}
           width={videoPlayerWidth}
           height={videoPlayerHeight}
         ></ReactPlayer>

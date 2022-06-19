@@ -4,15 +4,14 @@ import ScriptBox from "./components/scriptbox/ScriptBox";
 import Player from "./components/player/Player";
 import TrackArea from "./components/tracks/TrackArea";
 import { Grid } from "@material-ui/core";
+import * as constant from "./Constants";
 
 const rootStyle = {
-  backgroundColor: "#222222",
-  height: "100%",
-  color: "white",
+  color: constant.mainFontColor,
 };
 
 const gridStyle = {
-  height: "400px",
+  height: constant.scriptBoxAndVideoHeight,
 };
 
 function App() {

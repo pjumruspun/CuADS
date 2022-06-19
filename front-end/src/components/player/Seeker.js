@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import Slider from "@material-ui/core/Slider";
+import * as constant from "../../Constants";
 
 const rootStyle = {
-  width: "60%", // Same value as rootStyle width in Player.js
+  width: constant.videoPlayerAreaWidth, // Same value as rootStyle width in Player.js
   position: "absolute", // Make slider overlap with the video
   marginTop: "-15px", // Move up so the slider lies on the bottom edge of the video
 };

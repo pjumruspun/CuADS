@@ -1,9 +1,7 @@
-import React, { useState } from "react";
-import "./MenuBar.css";
+import React from "react";
 import Button from "@material-ui/core/Button";
 import MenuList from "@material-ui/core/MenuList";
 import { ClickAwayListener, Paper, Popper } from "@material-ui/core";
-import { PopperPlacementType } from "@material-ui/core";
 import Grow from "@material-ui/core/Grow";
 
 function MenuButton(props) {

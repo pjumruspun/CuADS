@@ -4,9 +4,10 @@ import Typography from "@material-ui/core/Typography";
 import formatSeconds from "./FormatDuration";
 import Grid from "@material-ui/core/Grid";
 import Seeker from "./Seeker";
+import * as constant from "../../Constants";
 
 const rootStyle = {
-  backgroundColor: "black",
+  backgroundColor: constant.videoPlayerControlBarColor,
   width: "100%",
   height: "10%",
   display: "flex",

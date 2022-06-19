@@ -1,18 +1,19 @@
-import { Grid } from "@material-ui/core";
+import Grid from "@material-ui/core/Grid";
 import React from "react";
-import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
-import MenuItem from "@material-ui/core/MenuItem";
+import TimeInputField from "./TimeInputField";
+import TextInputField from "./TextInputField";
+import NumberInputField from "./NumberInputField";
+import SelectionInputField from "./SelectionInputField";
+import * as constant from "../../Constants";
 import "typeface-roboto";
-
-const robotoFont = require("typeface-roboto");
 
 // Div style
 const rootStyle = {
-  backgroundColor: "#333333",
+  backgroundColor: constant.scriptBoxBackgroundColor,
   display: "flex",
   height: "100%",
-  width: "40%",
+  width: constant.scriptBoxAreaWidth,
 };
 
 // Main grid style
@@ -20,21 +21,15 @@ const scriptBoxStyle = {
   padding: "12px",
 };
 
-// Preview text style
-const inputLabelProps = {
-  style: {
-    color: "gray",
-  },
-};
-
 // Typed text style
-const inputProps = {
+export const inputProps = {
   style: {
     color: "white",
   },
 };
 
-const shrinkedInputLabelProps = {
+// Label text style
+export const shrinkedInputLabelProps = {
   shrink: true,
   style: {
     color: "gray",
@@ -57,11 +52,7 @@ const rowStyle = {
   marginBottom: "12px",
 };
 
-const timeInputFieldStyle = {
-  width: "100%",
-};
-
-const colElementInputStyle = {
+export const colElementInputStyle = {
   marginRight: "12px",
 };
 
@@ -89,82 +80,6 @@ function Column(children) {
   );
 }
 
-function InputTextField() {
-  return (
-    <TextField
-      id="input-text"
-      label="Input Text"
-      variant="filled"
-      InputLabelProps={shrinkedInputLabelProps}
-      InputProps={inputProps}
-      fullWidth
-      multiline
-      minRows={2}
-      maxRows={2}
-    ></TextField>
-  );
-}
-
-function TimeInputField(id, label) {
-  return (
-    <Grid item xs={4}>
-      <TextField
-        id={id}
-        label={label}
-        variant="filled"
-        defaultValue="00:00:00:000"
-        InputLabelProps={shrinkedInputLabelProps}
-        InputProps={inputProps}
-        size="small"
-        style={timeInputFieldStyle}
-      ></TextField>
-    </Grid>
-  );
-}
-
-function NumberInputField(id, label, defaultValue = null) {
-  return (
-    <Grid item xs={2}>
-      <TextField
-        id={id}
-        label={label}
-        variant="filled"
-        InputLabelProps={shrinkedInputLabelProps}
-        InputProps={inputProps}
-        type="number"
-        size="small"
-        style={colElementInputStyle}
-        defaultValue={defaultValue}
-      ></TextField>
-    </Grid>
-  );
-}
-
-function SelectionInputField(id, label, choices, state, handleChange) {
-  return (
-    <Grid item xs={4}>
-      <TextField
-        id="volume"
-        label="Source"
-        variant="filled"
-        select
-        value={state}
-        onChange={handleChange}
-        InputLabelProps={shrinkedInputLabelProps}
-        InputProps={inputProps}
-        size="small"
-        style={{ width: "90%" }}
-      >
-        {choices.map((option) => (
-          <MenuItem key={option.value} value={option.value}>
-            {option.label}
-          </MenuItem>
-        ))}
-      </TextField>
-    </Grid>
-  );
-}
-
 function ScriptBox() {
   const [source, setSource] = React.useState("Google");
 
@@ -181,7 +96,7 @@ function ScriptBox() {
         style={scriptBoxStyle}
       >
         {Row(CenteredLabelText("Script:"))}
-        {InputTextField()}
+        {TextInputField()}
         {Row(
           Column([
             TimeInputField("start-time", "Start"),
