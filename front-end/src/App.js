@@ -7,8 +7,8 @@ import { Grid } from "@material-ui/core";
 
 const rootStyle = {
   backgroundColor: "#222222",
-  color: "white",
   height: "100%",
+  color: "white",
 };
 
 const gridStyle = {
@@ -22,8 +22,7 @@ function App() {
       <Grid
         container
         direction="row"
-        alignItems="flex"
-        justify="space-around"
+        justifyContent="space-around"
         style={gridStyle}
       >
         <ScriptBox></ScriptBox>

@@ -83,7 +83,7 @@ function Row(children) {
 
 function Column(children) {
   return (
-    <Grid container justify="flex-start" alignItems="center">
+    <Grid container justifyContent="flex-start" alignItems="center">
       {children}
     </Grid>
   );
@@ -97,7 +97,6 @@ function InputTextField() {
       variant="filled"
       InputLabelProps={shrinkedInputLabelProps}
       InputProps={inputProps}
-      color="white"
       fullWidth
       multiline
       minRows={2}
@@ -116,7 +115,6 @@ function TimeInputField(id, label) {
         defaultValue="00:00:00:000"
         InputLabelProps={shrinkedInputLabelProps}
         InputProps={inputProps}
-        color="white"
         size="small"
         style={timeInputFieldStyle}
       ></TextField>
@@ -134,7 +132,6 @@ function NumberInputField(id, label, defaultValue = null) {
         InputLabelProps={shrinkedInputLabelProps}
         InputProps={inputProps}
         type="number"
-        color="white"
         size="small"
         style={colElementInputStyle}
         defaultValue={defaultValue}
@@ -155,7 +152,6 @@ function SelectionInputField(id, label, choices, state, handleChange) {
         onChange={handleChange}
         InputLabelProps={shrinkedInputLabelProps}
         InputProps={inputProps}
-        color="white"
         size="small"
         style={{ width: "90%" }}
       >
@@ -180,7 +176,7 @@ function ScriptBox() {
       <Grid
         container
         direction="column"
-        justify="flex-start"
+        justifyContent="flex-start"
         alignItems="flex-start"
         style={scriptBoxStyle}
       >
@@ -189,7 +185,6 @@ function ScriptBox() {
         {Row(
           Column([
             TimeInputField("start-time", "Start"),
-
             CenteredLabelText("To", {
               marginLeft: "12px",
               marginRight: "12px",
