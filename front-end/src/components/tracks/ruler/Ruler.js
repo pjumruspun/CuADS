@@ -142,8 +142,27 @@ const Ruler = ({ value, start, end, step, onChange, className = "" }) => {
     // Temp variable for storing each tick
     let ruleDiv;
 
-    // Loop to create each ticks
-    for (let i = start; i <= end; i += step) {
+    // Leftover amount at start
+    let modResults = Math.round((start % step) * 10000) / 10000;
+    let startLeftOver = step - modResults;
+    // Boolean whether start aligns with ticks
+    let isStartAlignedWithTicks = modResults == 0;
+    // True starting point
+    let trueStart = isStartAlignedWithTicks ? start : start + step - modResults;
+
+    // If start not aligned with ticks,
+    // We need to create an extra tick at start
+    if (!isStartAlignedWithTicks) {
+      // Calculate width proportionally to the start leftover amount
+      let width = (stepWidth * startLeftOver) / step;
+      ruleDiv = (
+        <span key={start} className="line" style={{ width: `${width}%` }} />
+      );
+      ruleDom.push(ruleDiv);
+    }
+
+    // Loop to create the rest of ticks
+    for (let i = trueStart; i <= end; i += step) {
       // Boolean whether the line should be drawn with major grid style
       let majorGridCondition = i % majorGridTick() === 0;
 
@@ -181,7 +200,7 @@ const Ruler = ({ value, start, end, step, onChange, className = "" }) => {
       ruleDom.push(ruleDiv);
     }
 
-    console.log(`${start} ${end} ${step}`);
+    console.log(`${start} ${trueStart} ${end} ${step} ${modResults}`);
     return ruleDom;
   };
 

@@ -12,7 +12,7 @@ const rootStyle = {
 const maxTicksAllowed = 100;
 
 // How long each ticks can potentially be, in seconds
-const tickOptions = [0.1, 0.5, 1.0, 5.0, 10.0];
+const tickOptions = [0.05, 0.1, 0.5, 1.0, 5.0, 10.0];
 
 function TimeRuler(props) {
   const [value, setValue] = useState(0);
@@ -23,7 +23,7 @@ function TimeRuler(props) {
 
   const getStart = () => {
     // Scope of the time ruler should start from?
-    return 100.0;
+    return 98.4;
   };
 
   const getEnd = () => {
