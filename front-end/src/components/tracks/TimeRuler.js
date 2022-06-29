@@ -9,19 +9,60 @@ const rootStyle = {
   border: constant.trackAreaBorder,
 };
 
+const maxTicksAllowed = 100;
+
+// How long each ticks can potentially be, in seconds
+const tickOptions = [0.1, 0.5, 1.0, 5.0, 10.0];
+
 function TimeRuler(props) {
   const [value, setValue] = useState(0);
+
   const handleChange = (value) => {
-    console.log(value);
+    // console.log(value);
   };
+
+  const getStart = () => {
+    // Scope of the time ruler should start from?
+    return 100.0;
+  };
+
+  const getEnd = () => {
+    // Scope of the time ruler should end at?
+    return 110.6;
+  };
+
+  const getDuration = () => {
+    return getEnd() - getStart();
+  };
+
+  const getStep = () => {
+    // Don't allow ticks more than maxTicksAllowed
+    var chosenNumTicks;
+
+    // Iterate through each option available
+    for (let i = 0; i < tickOptions.length; ++i) {
+      let tick = tickOptions[i];
+      let numTicks = Math.floor(getDuration() / tick);
+
+      // If number of ticks is just below maxTicksAllowed,
+      // We choose it
+      if (numTicks < maxTicksAllowed) {
+        chosenNumTicks = tick;
+        break;
+      }
+    }
+
+    return chosenNumTicks;
+  };
+
   return (
     <Grid item xs={constant.trackAreaRightXs} style={rootStyle}>
       <div style={{ marginTop: "-31px" }}>
         <Ruler
           value={value}
-          start={0}
-          end={props.duration}
-          step={10}
+          start={getStart()}
+          end={getEnd()}
+          step={getStep()}
           onChange={handleChange}
         ></Ruler>
       </div>

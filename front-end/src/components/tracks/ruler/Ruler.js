@@ -35,6 +35,10 @@ const Ruler = ({ value, start, end, step, onChange, className = "" }) => {
   //   transform(newVal);
   // }, [value, start, end]);
 
+  const majorGridTick = () => {
+    return 1.0;
+  };
+
   useEffect(() => {
     if (!offsetWidth) return;
     let val = ((end - start) * offsetWidth) / containerWidthRef.current + start;
@@ -54,7 +58,7 @@ const Ruler = ({ value, start, end, step, onChange, className = "" }) => {
   };
 
   useEffect(() => {
-    console.log("offset", percentage * containerWidthRef.current);
+    // console.log("offset", percentage * containerWidthRef.current);
     setOffsetWidth(percentage * containerWidthRef.current);
   }, [percentage]);
 
@@ -79,7 +83,7 @@ const Ruler = ({ value, start, end, step, onChange, className = "" }) => {
 
   const dragMoves = ({ x }) => {
     setPercent((prev) => {
-      console.log("move", startPercentRef.current, x);
+      // console.log("move", startPercentRef.current, x);
 
       let currPercentage =
         startPercentRef.current + x / containerWidthRef.current;
@@ -97,7 +101,7 @@ const Ruler = ({ value, start, end, step, onChange, className = "" }) => {
     const dragObserver = gestureObserver(pointRef.current);
 
     const dragStart = ({ x }) => {
-      console.log("start", percentage);
+      // console.log("start", percentage);
       setPercent((prev) => {
         startPercentRef.current = prev; // 记录开始位置
         return prev;
@@ -123,36 +127,61 @@ const Ruler = ({ value, start, end, step, onChange, className = "" }) => {
   };
 
   const onDragStart = (x) => {
-    console.log(x);
+    // console.log(x);
   };
 
   const onDragEnd = (x) => {
-    console.log(x);
+    // console.log(x);
   };
 
   const renderRuler = () => {
+    // Width of each step in time ruler
     const stepWidth = (100 * step) / (end - start);
+    // Contains all ticks
     let ruleDom = [];
+    // Temp variable for storing each tick
     let ruleDiv;
-    for (let i = start; i < end + step; i += step) {
-      if (i % 10 === 0 || i === end || (step === 1 && i % 5 === 0)) {
+
+    // Loop to create each ticks
+    for (let i = start; i <= end; i += step) {
+      // Boolean whether the line should be drawn with major grid style
+      let majorGridCondition = i % majorGridTick() === 0;
+
+      // Tick width calculation
+      // Boolean whether the current i is the last tick
+      let isLastTick = i + step > end;
+      let width;
+      if (isLastTick) {
+        // If last tick, should calculate width
+        // Proportionally to the leftover amount
+        let leftOverAmount = end - i;
+        width = (stepWidth * leftOverAmount) / step;
+      } else {
+        width = stepWidth;
+      }
+
+      if (majorGridCondition) {
+        console.log(`major: ${i} width: ${width} ${isLastTick}`);
         ruleDiv = (
           <div
             key={i}
             className="rule-mark"
-            style={i === end + 1 || i === end ? {} : { width: `${stepWidth}%` }}
+            style={i === end + 1 || i === end ? {} : { width: `${width}%` }}
           >
-            <div className="line-text">{i === end + 1 ? end : i}</div>
+            <div className="line-text">{i}</div>
             <div className="line" />
           </div>
         );
       } else {
+        console.log(`\tminor: ${i} width: ${width} ${isLastTick}`);
         ruleDiv = (
-          <span key={i} className="line" style={{ width: `${stepWidth}%` }} />
+          <span key={i} className="line" style={{ width: `${width}%` }} />
         );
       }
       ruleDom.push(ruleDiv);
     }
+
+    console.log(`${start} ${end} ${step}`);
     return ruleDom;
   };
 
@@ -174,7 +203,9 @@ const Ruler = ({ value, start, end, step, onChange, className = "" }) => {
                 transform: `scaleX(${1 / percentage})`,
               }}
             >
-              <div className="point">{val || start}</div>
+              <div className="point">
+                {Math.round(val * 100) / 100 || start}
+              </div>
               <div className="ruler-line" />
             </div>
           </div>

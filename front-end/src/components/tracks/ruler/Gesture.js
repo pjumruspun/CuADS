@@ -27,34 +27,36 @@ export default function getDragObservables(element) {
     };
   };
 
+  const doNothing = () => {};
+
   let mouseDowns = fromEvent(element, "mousedown").pipe(
     map(mouseEventToCoordinate),
-    tap(() => console.log("mouse down"))
+    tap()
   );
   let mouseMoves = fromEvent(window, "mousemove").pipe(
     map(mouseEventToCoordinate),
-    tap(() => console.log("mouse move"))
+    tap()
   );
   let mouseUps = fromEvent(window, "mouseup").pipe(
     map(mouseEventToCoordinate),
-    tap(() => console.log("mouse up"))
+    tap()
   );
 
   let touchStarts = fromEvent(element, "touchstart").pipe(
     map(touchEventToCoordinate),
-    tap(() => console.log("touch start"))
+    tap()
   );
   let touchMoves = fromEvent(element, "touchmove").pipe(
     map(touchEventToCoordinate),
-    tap(() => console.log("touch move"))
+    tap()
   );
   let touchEnds = fromEvent(window, "touchend").pipe(
     map(touchEventToCoordinate),
-    tap(() => console.log("touch end"))
+    tap()
   );
   let touchCancels = fromEvent(window, "touchcancel").pipe(
     map(touchEventToCoordinate),
-    tap(() => console.log("touch cancel"))
+    tap()
   );
 
   let _starts = merge(mouseDowns, touchStarts);
@@ -70,7 +72,7 @@ export default function getDragObservables(element) {
         first(),
         takeUntil(_moves.pipe(elementAt(3))),
         takeUntil(timer(HOLDING_PERIOD)),
-        tap(() => console.log("click")),
+        tap(),
         catchError(() => empty())
       )
     )
@@ -83,7 +85,7 @@ export default function getDragObservables(element) {
         takeUntil(_moves.pipe(elementAt(3))),
         takeUntil(_ends),
         map(() => ({ x: dragStartEvent.x, y: dragStartEvent.y })),
-        tap(() => console.log("hold")),
+        tap(),
         catchError(() => empty())
       )
     )
@@ -119,7 +121,7 @@ export default function getDragObservables(element) {
         Math.abs(dragStartEvent.intialDeltaX) <
         Math.abs(dragStartEvent.initialDeltaY)
     ),
-    tap(() => console.log("vertical move starts"))
+    tap()
   );
 
   // Horizontal move starts: Keep only those move start events where the 3rd subsequent move event is rather horizontal than vertical
@@ -129,7 +131,7 @@ export default function getDragObservables(element) {
         Math.abs(dragStartEvent.intialDeltaX) >=
         Math.abs(dragStartEvent.initialDeltaY)
     ),
-    tap(() => console.log("horizontal move starts"))
+    tap()
   );
 
   // Take the moves until an end occurs
@@ -143,13 +145,10 @@ export default function getDragObservables(element) {
       })
     );
 
-  let verticalMoves = verticalMoveStarts.pipe(
-    concatMap(movesUntilEnds),
-    tap(() => console.log("vertical move"))
-  );
+  let verticalMoves = verticalMoveStarts.pipe(concatMap(movesUntilEnds), tap());
   let horizontalMoves = horizontalMoveStarts.pipe(
     concatMap(movesUntilEnds),
-    tap(() => console.log("horizontal move"))
+    tap()
   );
   let dragMoves = holds.pipe(concatMap(movesUntilEnds));
 
@@ -177,16 +176,13 @@ export default function getDragObservables(element) {
   // let ends = _starts.concatMap(lastMovesAtEnds);
   let verticalMoveEnds = verticalMoveStarts.pipe(
     concatMap(lastMovesAtEnds),
-    tap(() => console.log("vertical move end"))
+    tap()
   );
   let horizontalMoveEnds = horizontalMoveStarts.pipe(
     concatMap(lastMovesAtEnds),
-    tap(() => console.log("horizontal move end"))
+    tap()
   );
-  let dragMoveEnds = holds.pipe(
-    concatMap(lastMovesAtEnds),
-    tap(() => console.log("dragging end"))
-  );
+  let dragMoveEnds = holds.pipe(concatMap(lastMovesAtEnds), tap());
   let verticalSwipe = verticalMoveStarts.pipe(concatMap(fastMoveAtEnds));
   let horizontalSwipe = horizontalMoveStarts.pipe(concatMap(fastMoveAtEnds));
 
