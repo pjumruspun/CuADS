@@ -35,8 +35,28 @@ const Ruler = ({ value, start, end, step, onChange, className = "" }) => {
   //   transform(newVal);
   // }, [value, start, end]);
 
+  const maxMajorGridAllowed = 15;
+  const majorGridTickOptions = [0.5, 1.0, 5.0, 10.0, 30.0, 60.0, 300.0, 600.0];
+
+  // This function is similar to getStep() in TimeRuler.js
   const majorGridTick = () => {
-    return 1.0;
+    // Don't allow ticks more than maxMajorGridAllowed
+    var chosenNumTicks;
+
+    // Iterate through each option available
+    for (let i = 0; i < majorGridTickOptions.length; ++i) {
+      let tick = majorGridTickOptions[i];
+      let numTicks = Math.floor((end - start) / tick);
+
+      // If number of ticks is just below maxMajorGridAllowed,
+      // We choose it
+      if (numTicks < maxMajorGridAllowed) {
+        chosenNumTicks = tick;
+        break;
+      }
+    }
+
+    return chosenNumTicks;
   };
 
   useEffect(() => {
@@ -180,7 +200,7 @@ const Ruler = ({ value, start, end, step, onChange, className = "" }) => {
       }
 
       if (majorGridCondition) {
-        console.log(`major: ${i} width: ${width} ${isLastTick}`);
+        // console.log(`major: ${i} width: ${width} ${isLastTick}`);
         ruleDiv = (
           <div
             key={i}
@@ -192,7 +212,7 @@ const Ruler = ({ value, start, end, step, onChange, className = "" }) => {
           </div>
         );
       } else {
-        console.log(`\tminor: ${i} width: ${width} ${isLastTick}`);
+        // console.log(`\tminor: ${i} width: ${width} ${isLastTick}`);
         ruleDiv = (
           <span key={i} className="line" style={{ width: `${width}%` }} />
         );
@@ -200,7 +220,8 @@ const Ruler = ({ value, start, end, step, onChange, className = "" }) => {
       ruleDom.push(ruleDiv);
     }
 
-    console.log(`${start} ${trueStart} ${end} ${step} ${modResults}`);
+    // console.log(`${start} ${trueStart} ${end} ${step} ${modResults}`);
+    // console.log(majorGridTick());
     return ruleDom;
   };
 

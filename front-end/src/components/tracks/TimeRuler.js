@@ -9,10 +9,10 @@ const rootStyle = {
   border: constant.trackAreaBorder,
 };
 
-const maxTicksAllowed = 100;
+const maxTicksAllowed = 150;
 
 // How long each ticks can potentially be, in seconds
-const tickOptions = [0.05, 0.1, 0.5, 1.0, 5.0, 10.0];
+const tickOptions = [0.05, 0.1, 0.5, 1.0, 5.0, 10.0, 30.0, 60.0];
 
 function TimeRuler(props) {
   const [value, setValue] = useState(0);
@@ -23,12 +23,12 @@ function TimeRuler(props) {
 
   const getStart = () => {
     // Scope of the time ruler should start from?
-    return 98.4;
+    return 0;
   };
 
   const getEnd = () => {
     // Scope of the time ruler should end at?
-    return 110.6;
+    return 600.6;
   };
 
   const getDuration = () => {
